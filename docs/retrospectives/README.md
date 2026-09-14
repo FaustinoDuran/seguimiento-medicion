@@ -1,0 +1,3 @@
+# Retrospectivas
+
+Una acta por sprint: `sprint-1.md`, `sprint-2.md`, …
