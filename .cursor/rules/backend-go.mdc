@@ -1,0 +1,23 @@
+---
+description: Convenciones del backend Go feature-based
+globs: backend/**/*.go
+alwaysApply: false
+---
+
+# Backend Go
+
+Cada feature es un paquete en `internal/<feature>/`:
+
+- `model.go` entidades
+- `service.go` casos de uso (acá van las reglas; acá el TDD)
+- `repository.go` interfaz
+- `repository_postgres.go` SQL con pgx
+- `handler.go` / `routes.go` HTTP fino (decode, status, llamar service)
+
+No importar handler ni `repository_postgres` de otro módulo. `httpx` solo JSON, middleware y router. `platform/postgres` solo pool.
+
+Tests: tabla de casos con `testing`. Un test de regla no debe necesitar HTTP ni PostgreSQL.
+
+Chi, pgx, el router y la conexión todavía no están implementados. Deben
+agregarse solo mediante una Issue técnica aprobada. Las features registrarán
+sus rutas cuando exista ese bootstrap.

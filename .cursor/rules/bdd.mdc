@@ -1,0 +1,13 @@
+---
+description: Escenarios Gherkin por HU, vinculados a criterios AC
+globs: features/**/*.feature
+alwaysApply: false
+---
+
+# BDD
+
+Un archivo `HU-XXX-slug.feature` por historia. Copiar `_plantilla.feature`.
+
+Comentar cada escenario con el `AC-XXX-NN` que cubre. Incluir feliz, alternativo, límite y error cuando la SDD los liste.
+
+No automatizar Godog hasta que el service de esa HU esté en verde con tests unitarios.

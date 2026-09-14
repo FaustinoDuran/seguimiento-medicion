@@ -1,0 +1,44 @@
+name: User story
+description: Historia de usuario del Product Backlog
+title: "[HU-XXX] "
+labels: ["historia"]
+body:
+  - type: textarea
+    id: story
+    attributes:
+      label: Historia
+      description: Como… quiero… para…
+    validations:
+      required: true
+  - type: textarea
+    id: ac
+    attributes:
+      label: Criterios de aceptación
+      value: |
+        - [ ] AC-XXX-01
+        - [ ] AC-XXX-02
+    validations:
+      required: true
+  - type: dropdown
+    id: modulo
+    attributes:
+      label: Módulo
+      options:
+        - projects
+        - backlog
+        - sprints
+        - planningpoker
+        - effort
+        - defects
+        - metrics
+        - reports
+        - otro
+  - type: textarea
+    id: trace
+    attributes:
+      label: Trazabilidad
+      value: |
+        - SDD: docs/sdd/HU-XXX-slug.md
+        - BDD: features/HU-XXX-slug.feature
+        - Tests: backend/internal/<modulo>/
+        - Código: backend/internal/<modulo>/

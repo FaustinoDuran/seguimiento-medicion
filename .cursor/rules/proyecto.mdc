@@ -1,0 +1,17 @@
+---
+description: Núcleo del TP — stack, proceso SDD/BDD/TDD y dónde vive cada artefacto
+alwaysApply: true
+---
+
+# Seguimiento y medición
+
+Trabajo de facultad. El producto importa; el proceso (SDD → BDD → TDD → código Go) también.
+
+- Reglas de negocio solo en Go (`backend/internal/<feature>/`). React no calcula métricas ni Planning Poker.
+- Orden: issue HU → `docs/sdd/` → `features/*.feature` → test RED → código GREEN → `docs/traceability.md`.
+- Commits TDD separados: `test(#N): red`, `feat(#N): green`, `refactor(#N)`.
+- Infraestructura/configuración: Issue `TASK-XXX` y PR; no inventar SDD/BDD ni
+  adelantar código sin tarea.
+- Decisiones transversales en `docs/adr/`. Guía humana/agente: `docs/guia-de-trabajo.md`.
+- Go 1.24.x y pgx v5.7.x. Sin GORM. Sin auth hasta que una HU lo pida.
+- Nombres de código en inglés; specs, issues y Gherkin en español.

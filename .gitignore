@@ -1,0 +1,22 @@
+# Go
+backend/bin/
+backend/tmp/
+backend/coverage.out
+*.exe
+*.test
+
+# Node
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Env
+.env
+.env.local
+!.env.example
+
+# OS / IDE
+.DS_Store
+.idea/
+*.swp
+thumbs.db

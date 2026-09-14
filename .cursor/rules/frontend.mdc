@@ -1,0 +1,16 @@
+---
+description: El frontend es presentación; no duplica reglas de negocio
+globs: frontend/**/*.{ts,tsx,css}
+alwaysApply: false
+---
+
+# Frontend
+
+React + TypeScript + Tailwind. Feature-based en `src/features/<nombre>/`.
+
+Permitido: formularios, tablas, gráficos que pintan números ya calculados por la API, estados de carga.
+
+Prohibido: calcular velocidad, desviación, porcentajes de historias, reglas de votación o cierre de sprint.
+
+Hasta el Sprint 2 no hace falta armar pantallas de dominio. La URL y el proxy
+de la API se definirán mediante una tarea técnica cuando exista el backend.

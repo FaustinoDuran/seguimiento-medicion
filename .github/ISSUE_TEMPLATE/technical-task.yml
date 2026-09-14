@@ -1,0 +1,33 @@
+name: Tarea técnica
+description: Infraestructura, configuración o documentación sin comportamiento de negocio
+title: "[TASK-XXX] "
+labels: ["tarea técnica"]
+body:
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objetivo
+      description: Qué preparación o mejora técnica se necesita y por qué.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Alcance
+      description: Qué incluye y qué queda explícitamente afuera.
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Criterios de finalización
+      value: |
+        - [ ]
+        - [ ]
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidencia esperada
+      description: Archivos, comandos o documentación que demostrarán que terminó.

@@ -1,0 +1,13 @@
+---
+description: Plantillas y reglas de trazabilidad SDD/BDD/ADR
+globs: docs/**/*.md
+alwaysApply: false
+---
+
+# Documentación de proceso
+
+- Nueva HU: copiar `docs/sdd/_plantilla.md` → `docs/sdd/HU-XXX-slug.md`.
+- BDD: copiar `features/_plantilla.feature`. Cada escenario etiqueta el `AC-XXX-NN`.
+- Decisiones de stack/arquitectura/MVP: `docs/adr/NNNN-titulo.md`, no en la SDD.
+- Al implementar, actualizar `docs/traceability.md` en el mismo PR.
+- No reemplazar estos archivos por Notion, Slack o docs fuera del repo.
