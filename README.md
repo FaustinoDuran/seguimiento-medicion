@@ -16,8 +16,24 @@ Las reglas de negocio **no** se implementan en React.
 
 ## Estado actual
 
-Sprint 0 en preparación. Hay estructura y decisiones iniciales, pero todavía no
-se implementó ninguna historia de usuario ni infraestructura ejecutable.
+Sprint 0 en preparación. El bootstrap HTTP de TASK-006 está disponible: la API
+responde `GET /health`. Todavía no hay historias de usuario ni PostgreSQL.
+
+## Cómo ejecutar la API
+
+Desde `backend/`:
+
+```bash
+go run ./cmd/api
+```
+
+Luego consultar el estado:
+
+```bash
+curl -i http://localhost:8080/health
+```
+
+La respuesta esperada es `200 OK` con `{"status":"ok"}`.
 
 ## Documentación del equipo
 
@@ -30,6 +46,8 @@ se implementó ninguna historia de usuario ni infraestructura ejecutable.
 ## Estructura
 
 ```text
+backend/cmd/api               servidor HTTP (chi)
+backend/internal/httpx/      router y GET /health
 backend/internal/<feature>/   dominio Go (TDD)
 frontend/src/features/       UI (Sprint 2)
 docs/sdd/                    especificaciones
