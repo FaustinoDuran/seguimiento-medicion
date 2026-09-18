@@ -19,5 +19,6 @@ No importar handler ni `repository_postgres` de otro módulo. `httpx` solo JSON,
 Tests: tabla de casos con `testing`. Un test de regla no debe necesitar HTTP ni PostgreSQL.
 
 El bootstrap HTTP de TASK-006 ya existe: `cmd/api` y `internal/httpx` con
-`GET /health`. pgx y la conexión PostgreSQL siguen pendientes de TASK-007.
-Las features registrarán sus rutas sobre este router.
+`GET /health`. TASK-007 agrega `DATABASE_URL`, el pool en
+`internal/platform/postgres` y Docker Compose. Las features registrarán sus
+rutas sobre este router y el SQL de dominio en `repository_postgres.go`.

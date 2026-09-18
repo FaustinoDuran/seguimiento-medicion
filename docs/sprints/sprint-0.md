@@ -32,6 +32,7 @@ Detalle:
 - Guía del flujo Historia → SDD → aceptación → BDD → tests → código Go.
 - Reglas de Cursor y `AGENTS.md` para que los tres agentes sigan el mismo proceso.
 - Bootstrap HTTP de TASK-006: `go run ./cmd/api` y `GET /health`.
+- PostgreSQL 16 de TASK-007: Docker Compose, `DATABASE_URL` y pool pgx.
 
 ## Corrección de alcance
 
@@ -40,8 +41,9 @@ conexión PostgreSQL, migración, test y scripts de ejecución sin una Issue
 técnica que los justificara.
 
 Ese trabajo fue retirado. TASK-006 volvió a introducir únicamente el servidor
-HTTP mínimo y `GET /health`, ahora justificado por la Issue #7. PostgreSQL y
-los módulos de negocio siguen fuera de alcance.
+HTTP mínimo y `GET /health`, ahora justificado por la Issue #7. TASK-007 vuelve
+a introducir PostgreSQL (Compose, `DATABASE_URL`, pool pgx y carpeta de
+migraciones) sin tablas ni repositorios de features.
 
 ## Tablero
 
@@ -61,12 +63,12 @@ Pendiente:
 
 - [#5 TASK-004](https://github.com/FaustinoDuran/seguimiento-medicion/issues/5) aprobar ADRs en equipo
 - [#6 TASK-005](https://github.com/FaustinoDuran/seguimiento-medicion/issues/6) Product Backlog inicial (HUs)
-- [#8 TASK-007](https://github.com/FaustinoDuran/seguimiento-medicion/issues/8) PostgreSQL
 - [#9 TASK-008](https://github.com/FaustinoDuran/seguimiento-medicion/issues/9) ADR del MVP
 
 En revisión / implementado en esta rama:
 
 - [#7 TASK-006](https://github.com/FaustinoDuran/seguimiento-medicion/issues/7) bootstrap API Go + chi
+- [#8 TASK-007](https://github.com/FaustinoDuran/seguimiento-medicion/issues/8) PostgreSQL
 
 ## Evidencias
 
