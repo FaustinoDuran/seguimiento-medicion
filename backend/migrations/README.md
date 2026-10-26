@@ -1,2 +1,2 @@
-Las migraciones de dominio se agregan con la primera HU que persista datos.
-Este directorio no incluye tablas de features (TASK-007).
+Las migraciones de dominio viven acá. La API aplica `001_create_projects.sql`
+al arrancar cuando hay `DATABASE_URL` (`projects.EnsureSchema`).
