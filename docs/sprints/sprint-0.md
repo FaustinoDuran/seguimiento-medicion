@@ -1,7 +1,8 @@
 # Sprint 0 — La preparación
 
-- Estado: en curso
+- Estado: cerrado
 - Fecha de inicio: 2026-09-14
+- Fecha de fin: 2026-10-26
 - Equipo: Faustino (Agile Enabler), Valentino e Ignacio (Product Builders)
 - Objetivo: preparar la forma de trabajo, el repositorio y las decisiones
   técnicas antes de implementar historias de usuario.
@@ -11,28 +12,27 @@
 - Aplicación web.
 - Backend y reglas de negocio: Go 1.24 + chi.
 - Persistencia: PostgreSQL mediante pgx.
-- Frontend de presentación: TypeScript + React + Tailwind + Vite.
+- Frontend de presentación: TypeScript + React + Tailwind + Vite. Arranca en el
+  Sprint 2.
 - Arquitectura: monolito modular feature-based.
 - Fuente de verdad del proceso: GitHub Issues, Projects, Pull Requests y repo.
+- Alcance del Sprint 1: ver ADR 0003.
 
 Detalle:
 
 - `docs/adr/0001-stack-tecnologico.md`
 - `docs/adr/0002-arquitectura-feature-based.md`
+- `docs/adr/0003-alcance-mvp.md`
 
 ## Trabajo realizado
 
-- Repositorio creado en GitHub y clonado localmente.
-- Estructura mínima de carpetas para backend y frontend.
-- Módulos previstos del backend:
-  `projects`, `backlog`, `sprints`, `planningpoker`, `effort`, `defects`,
-  `metrics` y `reports`.
-- Frontend inicializado con Vite, React, TypeScript y Tailwind.
-- Plantillas iniciales de SDD, BDD, Issue y Pull Request.
-- Guía del flujo Historia → SDD → aceptación → BDD → tests → código Go.
-- Reglas de Cursor y `AGENTS.md` para que los tres agentes sigan el mismo proceso.
-- Bootstrap HTTP de TASK-006: `go run ./cmd/api` y `GET /health`.
-- PostgreSQL 16 de TASK-007: Docker Compose, `DATABASE_URL` y pool pgx.
+- Repositorio en GitHub, tablero Scrum y roles.
+- Product Backlog inicial: HU-001 a HU-022 (issues #10–#31).
+- Guía SDD → BDD → TDD y plantillas.
+- API mínima: `go run ./cmd/api` y `GET /health` (TASK-006).
+- PostgreSQL 16 local: Docker Compose, `DATABASE_URL` y pool pgx (TASK-007).
+- MVP del Sprint 1 acordado (TASK-008): HU-001, HU-003, HU-005, HU-007,
+  HU-008, HU-009 y HU-010.
 
 ## Corrección de alcance
 
@@ -40,10 +40,7 @@ Durante el armado inicial se adelantaron una API de health, middlewares,
 conexión PostgreSQL, migración, test y scripts de ejecución sin una Issue
 técnica que los justificara.
 
-Ese trabajo fue retirado. TASK-006 volvió a introducir únicamente el servidor
-HTTP mínimo y `GET /health`, ahora justificado por la Issue #7. TASK-007 vuelve
-a introducir PostgreSQL (Compose, `DATABASE_URL`, pool pgx y carpeta de
-migraciones) sin tablas ni repositorios de features.
+Ese trabajo fue retirado. TASK-006 y TASK-007 lo reintrodujeron con Issue y PR.
 
 ## Tablero
 
@@ -53,33 +50,28 @@ migraciones) sin tablas ni repositorios de features.
 
 ## Issues del Sprint 0
 
-Trabajo ya hecho, pendiente de commit a `main`:
+Hecho:
 
-- [#2 TASK-001](https://github.com/FaustinoDuran/seguimiento-medicion/issues/2) estructura del repo
+- [#2 TASK-001](https://github.com/FaustinoDuran/seguimiento-medicion/issues/2) estructura
 - [#3 TASK-002](https://github.com/FaustinoDuran/seguimiento-medicion/issues/3) guía y trazabilidad
-- [#4 TASK-003](https://github.com/FaustinoDuran/seguimiento-medicion/issues/4) scaffold frontend
-
-Pendiente:
-
-- [#5 TASK-004](https://github.com/FaustinoDuran/seguimiento-medicion/issues/5) aprobar ADRs en equipo
-- [#6 TASK-005](https://github.com/FaustinoDuran/seguimiento-medicion/issues/6) Product Backlog inicial (HUs)
+- [#4 TASK-003](https://github.com/FaustinoDuran/seguimiento-medicion/issues/4) frontend
+- [#6 TASK-005](https://github.com/FaustinoDuran/seguimiento-medicion/issues/6) Product Backlog
+- [#7 TASK-006](https://github.com/FaustinoDuran/seguimiento-medicion/issues/7) API Go + chi
+- [#8 TASK-007](https://github.com/FaustinoDuran/seguimiento-medicion/issues/8) PostgreSQL
 - [#9 TASK-008](https://github.com/FaustinoDuran/seguimiento-medicion/issues/9) ADR del MVP
 
-En revisión / implementado en esta rama:
+Pendiente de comentario en GitHub (no bloquea el código del Sprint 1):
 
-- [#7 TASK-006](https://github.com/FaustinoDuran/seguimiento-medicion/issues/7) bootstrap API Go + chi
-- [#8 TASK-007](https://github.com/FaustinoDuran/seguimiento-medicion/issues/8) PostgreSQL
+- [#5 TASK-004](https://github.com/FaustinoDuran/seguimiento-medicion/issues/5) los tres confirman ADR 0001, 0002 y 0003 en la issue
 
 ## Evidencias
 
 - Guía: `docs/guia-de-trabajo.md`
 - ADRs: `docs/adr/`
-- Reglas para agentes: `AGENTS.md` y `.cursor/rules/`
-- Plantillas: `.github/`, `docs/sdd/_plantilla.md`,
-  `features/_plantilla.feature`
+- Retro: `docs/retrospectives/sprint-0.md`
+- Plantillas: `.github/`, `docs/sdd/_plantilla.md`, `features/_plantilla.feature`
 
 ## Criterio de cierre
 
-El Sprint 0 se cerrará cuando exista el tablero, el backlog inicial, los roles y
-decisiones estén confirmados por el equipo, y las primeras HUs cumplan la
-Definition of Ready. No se implementarán HUs antes de ese cierre.
+Cumplido: tablero, backlog inicial, entorno (API + Postgres) y recorte del
+Sprint 1 documentado. No se implementan HUs en este sprint.
