@@ -17,6 +17,16 @@ CREATE TABLE IF NOT EXISTS projects (
     status TEXT NOT NULL CHECK (status IN ('planned', 'active', 'closed')),
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+CREATE TABLE IF NOT EXISTS project_members (
+    id BIGSERIAL PRIMARY KEY,
+    project_id BIGINT NOT NULL REFERENCES projects(id),
+    name TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS project_members_project_name_idx
+    ON project_members (project_id, lower(name));
 `
 
 type PostgresRepository struct {
@@ -70,4 +80,44 @@ func (r *PostgresRepository) FindByID(ctx context.Context, id int64) (Project, e
 		return Project{}, ErrNotFound
 	}
 	return project, err
+}
+
+func (r *PostgresRepository) SaveMember(ctx context.Context, member Member) (Member, error) {
+	const query = `
+		INSERT INTO project_members (project_id, name, created_at)
+		VALUES ($1, $2, $3)
+		RETURNING id, project_id, name, created_at`
+
+	var saved Member
+	err := r.pool.QueryRow(ctx, query, member.ProjectID, member.Name, member.CreatedAt).Scan(
+		&saved.ID,
+		&saved.ProjectID,
+		&saved.Name,
+		&saved.CreatedAt,
+	)
+	return saved, err
+}
+
+func (r *PostgresRepository) ListMembers(ctx context.Context, projectID int64) ([]Member, error) {
+	const query = `
+		SELECT id, project_id, name, created_at
+		FROM project_members
+		WHERE project_id = $1
+		ORDER BY id`
+
+	rows, err := r.pool.Query(ctx, query, projectID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	members := make([]Member, 0)
+	for rows.Next() {
+		var member Member
+		if err := rows.Scan(&member.ID, &member.ProjectID, &member.Name, &member.CreatedAt); err != nil {
+			return nil, err
+		}
+		members = append(members, member)
+	}
+	return members, rows.Err()
 }

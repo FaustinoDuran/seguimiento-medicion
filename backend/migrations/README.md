@@ -1,2 +1,2 @@
-Las migraciones de dominio viven acá. La API aplica `001_create_projects.sql`
-al arrancar cuando hay `DATABASE_URL` (`projects.EnsureSchema`).
+Las migraciones de dominio viven acá. La API aplica el esquema de `projects`
+(`001` y `002`) al arrancar cuando hay `DATABASE_URL` (`projects.EnsureSchema`).
