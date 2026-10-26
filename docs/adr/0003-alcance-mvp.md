@@ -41,8 +41,8 @@ cerrar el Sprint. API/JSON alcanza; la UI usable es Sprint 2.
 - HU-017 y HU-018 (defectos).
 - HU-019 a HU-022 (métricas, dashboard, reporte, PDF).
 
-Valor y estimación de cada HU se acuerdan en el planning del Sprint 1, no en
-este ADR.
+Estimación (SP) y responsables: ver `docs/sprints/sprint-1.md`.
+Valor de negocio sigue sin acordar; no bloquea este incremento.
 
 ## Consecuencias
 
