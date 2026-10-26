@@ -19,6 +19,5 @@
 ## Acciones
 
 - [#5](https://github.com/FaustinoDuran/seguimiento-medicion/issues/5): comentar
-  aceptación de ADR 0001–0003.
-- Planning Sprint 1: mover HU-001, 003, 005, 007, 008, 009 y 010 a Sprint ready
-  y acordar valor/estimación.
+  aceptación de ADR 0001–0003 (no bloquea el Sprint 1).
+- Planning Sprint 1: hecho. Registro en `docs/sprints/sprint-1.md`.
