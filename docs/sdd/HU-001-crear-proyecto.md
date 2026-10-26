@@ -2,7 +2,7 @@
 
 - Issue: [#10](https://github.com/FaustinoDuran/seguimiento-medicion/issues/10)
 - Módulo Go: `backend/internal/projects/`
-- Estado: lista para implementar
+- Estado: implementada
 
 ## Objetivo
 
@@ -63,10 +63,10 @@ La consulta por `id` devuelve el mismo proyecto.
 
 ## Criterios de aceptación
 
-- [ ] AC-001-01 — Con nombre y fechas válidas, el proyecto queda creado y se puede consultar por su `id`.
-- [ ] AC-001-02 — Si falta el nombre (o queda en blanco), no se crea y se informa el error.
-- [ ] AC-001-03 — El estado inicial queda `active` cuando no se envía `status`.
-- [ ] AC-001-04 — Si `end_date` es anterior a `start_date`, no se crea y se informa el error.
+- [x] AC-001-01 — Con nombre y fechas válidas, el proyecto queda creado y se puede consultar por su `id`.
+- [x] AC-001-02 — Si falta el nombre (o queda en blanco), no se crea y se informa el error.
+- [x] AC-001-03 — El estado inicial queda `active` cuando no se envía `status`.
+- [x] AC-001-04 — Si `end_date` es anterior a `start_date`, no se crea y se informa el error.
 
 ## Trazabilidad
 
