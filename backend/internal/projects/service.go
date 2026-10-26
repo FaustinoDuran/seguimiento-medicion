@@ -8,10 +8,12 @@ import (
 )
 
 var (
-	ErrNameRequired  = errors.New("project name is required")
-	ErrInvalidDates  = errors.New("project dates are invalid")
-	ErrInvalidStatus = errors.New("project status is invalid")
-	ErrNotFound      = errors.New("project not found")
+	ErrNameRequired       = errors.New("project name is required")
+	ErrInvalidDates       = errors.New("project dates are invalid")
+	ErrInvalidStatus      = errors.New("project status is invalid")
+	ErrNotFound           = errors.New("project not found")
+	ErrMemberNameRequired = errors.New("member name is required")
+	ErrDuplicateMember    = errors.New("member already belongs to the project")
 )
 
 type Service struct {
@@ -58,6 +60,40 @@ func (s *Service) Create(ctx context.Context, input CreateProject) (Project, err
 
 func (s *Service) Get(ctx context.Context, id int64) (Project, error) {
 	return s.repo.FindByID(ctx, id)
+}
+
+func (s *Service) AddMember(ctx context.Context, input AddMember) (Member, error) {
+	name := strings.TrimSpace(input.Name)
+	if name == "" {
+		return Member{}, ErrMemberNameRequired
+	}
+
+	if _, err := s.repo.FindByID(ctx, input.ProjectID); err != nil {
+		return Member{}, err
+	}
+
+	existing, err := s.repo.ListMembers(ctx, input.ProjectID)
+	if err != nil {
+		return Member{}, err
+	}
+	for _, member := range existing {
+		if strings.EqualFold(member.Name, name) {
+			return Member{}, ErrDuplicateMember
+		}
+	}
+
+	return s.repo.SaveMember(ctx, Member{
+		ProjectID: input.ProjectID,
+		Name:      name,
+		CreatedAt: s.now().UTC(),
+	})
+}
+
+func (s *Service) ListMembers(ctx context.Context, projectID int64) ([]Member, error) {
+	if _, err := s.repo.FindByID(ctx, projectID); err != nil {
+		return nil, err
+	}
+	return s.repo.ListMembers(ctx, projectID)
 }
 
 func calendarDate(value time.Time) time.Time {

@@ -34,3 +34,15 @@ type CreateProject struct {
 	EndDate   time.Time
 	Status    Status
 }
+
+type Member struct {
+	ID        int64
+	ProjectID int64
+	Name      string
+	CreatedAt time.Time
+}
+
+type AddMember struct {
+	ProjectID int64
+	Name      string
+}
