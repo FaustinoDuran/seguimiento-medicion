@@ -16,9 +16,8 @@ Las reglas de negocio **no** se implementan en React.
 
 ## Estado actual
 
-Sprint 0 en preparación. El bootstrap HTTP de TASK-006 está disponible: la API
-responde `GET /health`. TASK-007 deja PostgreSQL 16 y el pool pgx listos; las
-tablas de dominio llegan con la primera HU de persistencia.
+Sprint 1 en curso. La API responde `GET /health`. Con `DATABASE_URL` también
+expone alta y consulta de proyectos (HU-001).
 
 ## Cómo levantar PostgreSQL
 
@@ -52,6 +51,16 @@ curl -i http://localhost:8080/health
 
 La respuesta esperada es `200 OK` con `{"status":"ok"}`.
 
+Con Postgres levantado, crear y consultar un proyecto:
+
+```bash
+curl -s -X POST http://localhost:8080/projects \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"TP Integrador","start_date":"2026-10-26","end_date":"2026-11-23"}'
+
+curl -s http://localhost:8080/projects/1
+```
+
 ## Documentación del equipo
 
 - [Guía de trabajo y trazabilidad](docs/guia-de-trabajo.md) — cómo trabaja el equipo y el agente de Cursor
@@ -67,7 +76,7 @@ backend/cmd/api               servidor HTTP (chi)
 backend/internal/httpx/      router y GET /health
 backend/internal/config/     DATABASE_URL y .env
 backend/internal/platform/postgres/  pool pgx
-backend/migrations/          SQL de dominio (vacío hasta la primera HU)
+backend/migrations/          SQL de dominio (projects desde HU-001)
 backend/docker-compose.yml   PostgreSQL 16
 backend/internal/<feature>/   dominio Go (TDD)
 frontend/src/features/       UI (Sprint 2)
