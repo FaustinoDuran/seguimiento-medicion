@@ -2,7 +2,7 @@
 
 - Issue: [#12](https://github.com/FaustinoDuran/seguimiento-medicion/issues/12)
 - Módulo Go: `backend/internal/projects/`
-- Estado: lista para implementar
+- Estado: implementada
 
 ## Objetivo
 
@@ -55,10 +55,10 @@ La consulta por proyecto devuelve todos sus integrantes.
 
 ## Criterios de aceptación
 
-- [ ] AC-003-01 — Con un proyecto existente y un nombre válido, el integrante queda asociado y se puede listar.
-- [ ] AC-003-02 — Si el nombre está en blanco, no se crea y se informa el error.
-- [ ] AC-003-03 — Si el mismo nombre ya está en el proyecto, no se duplica y se informa el error.
-- [ ] AC-003-04 — Si el proyecto no existe, no se crea el integrante.
+- [x] AC-003-01 — Con un proyecto existente y un nombre válido, el integrante queda asociado y se puede listar.
+- [x] AC-003-02 — Si el nombre está en blanco, no se crea y se informa el error.
+- [x] AC-003-03 — Si el mismo nombre ya está en el proyecto, no se duplica y se informa el error.
+- [x] AC-003-04 — Si el proyecto no existe, no se crea el integrante.
 
 ## Trazabilidad
 
