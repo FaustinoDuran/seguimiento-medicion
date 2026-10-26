@@ -16,8 +16,8 @@ Las reglas de negocio **no** se implementan en React.
 
 ## Estado actual
 
-Sprint 1 en curso. La API responde `GET /health`. Con `DATABASE_URL` también
-expone alta y consulta de proyectos (HU-001).
+Sprint 1 en curso. Con `DATABASE_URL` la API expone proyectos (HU-001) e
+integrantes (HU-003).
 
 ## Cómo levantar PostgreSQL
 
@@ -59,6 +59,12 @@ curl -s -X POST http://localhost:8080/projects \
   -d '{"name":"TP Integrador","start_date":"2026-10-26","end_date":"2026-11-23"}'
 
 curl -s http://localhost:8080/projects/1
+
+curl -s -X POST http://localhost:8080/projects/1/members \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Valentino"}'
+
+curl -s http://localhost:8080/projects/1/members
 ```
 
 ## Documentación del equipo

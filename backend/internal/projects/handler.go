@@ -70,9 +70,8 @@ func (h *Handler) Create(writer http.ResponseWriter, request *http.Request) {
 }
 
 func (h *Handler) Get(writer http.ResponseWriter, request *http.Request) {
-	id, err := strconv.ParseInt(chi.URLParam(request, "id"), 10, 64)
-	if err != nil || id < 1 {
-		writeError(writer, http.StatusBadRequest, "invalid project id")
+	id, ok := parseProjectID(writer, request)
+	if !ok {
 		return
 	}
 
@@ -102,11 +101,88 @@ func parseDate(value string) (time.Time, error) {
 	return time.Parse("2006-01-02", value)
 }
 
+type memberResponse struct {
+	ID        int64     `json:"id"`
+	ProjectID int64     `json:"project_id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type addMemberRequest struct {
+	Name string `json:"name"`
+}
+
+type membersResponse struct {
+	Members []memberResponse `json:"members"`
+}
+
+func (h *Handler) AddMember(writer http.ResponseWriter, request *http.Request) {
+	projectID, ok := parseProjectID(writer, request)
+	if !ok {
+		return
+	}
+
+	var body addMemberRequest
+	if err := json.NewDecoder(request.Body).Decode(&body); err != nil {
+		writeError(writer, http.StatusBadRequest, "invalid json")
+		return
+	}
+
+	member, err := h.service.AddMember(request.Context(), AddMember{
+		ProjectID: projectID,
+		Name:      body.Name,
+	})
+	if err != nil {
+		writeServiceError(writer, err)
+		return
+	}
+	writeJSON(writer, http.StatusCreated, toMemberResponse(member))
+}
+
+func (h *Handler) ListMembers(writer http.ResponseWriter, request *http.Request) {
+	projectID, ok := parseProjectID(writer, request)
+	if !ok {
+		return
+	}
+
+	members, err := h.service.ListMembers(request.Context(), projectID)
+	if err != nil {
+		writeServiceError(writer, err)
+		return
+	}
+
+	body := membersResponse{Members: make([]memberResponse, 0, len(members))}
+	for _, member := range members {
+		body.Members = append(body.Members, toMemberResponse(member))
+	}
+	writeJSON(writer, http.StatusOK, body)
+}
+
+func parseProjectID(writer http.ResponseWriter, request *http.Request) (int64, bool) {
+	id, err := strconv.ParseInt(chi.URLParam(request, "id"), 10, 64)
+	if err != nil || id < 1 {
+		writeError(writer, http.StatusBadRequest, "invalid project id")
+		return 0, false
+	}
+	return id, true
+}
+
+func toMemberResponse(member Member) memberResponse {
+	return memberResponse{
+		ID:        member.ID,
+		ProjectID: member.ProjectID,
+		Name:      member.Name,
+		CreatedAt: member.CreatedAt,
+	}
+}
+
 func writeServiceError(writer http.ResponseWriter, err error) {
 	switch {
 	case errors.Is(err, ErrNotFound):
 		writeError(writer, http.StatusNotFound, err.Error())
-	case errors.Is(err, ErrNameRequired), errors.Is(err, ErrInvalidDates), errors.Is(err, ErrInvalidStatus):
+	case errors.Is(err, ErrDuplicateMember):
+		writeError(writer, http.StatusConflict, err.Error())
+	case errors.Is(err, ErrNameRequired), errors.Is(err, ErrMemberNameRequired), errors.Is(err, ErrInvalidDates), errors.Is(err, ErrInvalidStatus):
 		writeError(writer, http.StatusBadRequest, err.Error())
 	default:
 		writeError(writer, http.StatusInternalServerError, "internal error")

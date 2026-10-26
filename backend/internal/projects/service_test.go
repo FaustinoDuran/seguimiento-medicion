@@ -17,12 +17,19 @@ func testDate(t *testing.T, value string) time.Time {
 }
 
 type memoryRepository struct {
-	nextID int64
-	items  map[int64]Project
+	nextID       int64
+	nextMemberID int64
+	items        map[int64]Project
+	members      map[int64][]Member
 }
 
 func newMemoryRepository() *memoryRepository {
-	return &memoryRepository{nextID: 1, items: make(map[int64]Project)}
+	return &memoryRepository{
+		nextID:       1,
+		nextMemberID: 1,
+		items:        make(map[int64]Project),
+		members:      make(map[int64][]Member),
+	}
 }
 
 func (r *memoryRepository) Save(_ context.Context, project Project) (Project, error) {
@@ -154,5 +161,125 @@ func TestGetProjectNotFound(t *testing.T) {
 	_, err := service.Get(context.Background(), 99)
 	if !errors.Is(err, ErrNotFound) {
 		t.Fatalf("error: got %v want %v", err, ErrNotFound)
+	}
+}
+
+func (r *memoryRepository) SaveMember(_ context.Context, member Member) (Member, error) {
+	if member.ID == 0 {
+		member.ID = r.nextMemberID
+		r.nextMemberID++
+	}
+	r.members[member.ProjectID] = append(r.members[member.ProjectID], member)
+	return member, nil
+}
+
+func (r *memoryRepository) ListMembers(_ context.Context, projectID int64) ([]Member, error) {
+	members := r.members[projectID]
+	if members == nil {
+		return []Member{}, nil
+	}
+	copied := make([]Member, len(members))
+	copy(copied, members)
+	return copied, nil
+}
+
+func createTestProject(t *testing.T, service *Service) Project {
+	t.Helper()
+	project, err := service.Create(context.Background(), CreateProject{
+		Name:      "TP Integrador",
+		StartDate: testDate(t, "2026-10-26"),
+		EndDate:   testDate(t, "2026-11-23"),
+	})
+	if err != nil {
+		t.Fatalf("create project: %v", err)
+	}
+	return project
+}
+
+func TestAddMemberToProject(t *testing.T) {
+	service := NewService(newMemoryRepository())
+	project := createTestProject(t, service)
+
+	member, err := service.AddMember(context.Background(), AddMember{
+		ProjectID: project.ID,
+		Name:      "  Valentino  ",
+	})
+	if err != nil {
+		t.Fatalf("add member: %v", err)
+	}
+	if member.ID == 0 {
+		t.Fatal("expected generated member id")
+	}
+	if member.Name != "Valentino" {
+		t.Fatalf("name: got %q want %q", member.Name, "Valentino")
+	}
+	if member.ProjectID != project.ID {
+		t.Fatalf("project id: got %d want %d", member.ProjectID, project.ID)
+	}
+
+	listed, err := service.ListMembers(context.Background(), project.ID)
+	if err != nil {
+		t.Fatalf("list members: %v", err)
+	}
+	if len(listed) != 1 || listed[0].Name != "Valentino" {
+		t.Fatalf("listed members: %+v", listed)
+	}
+}
+
+func TestAddMemberRejectsBlankName(t *testing.T) {
+	service := NewService(newMemoryRepository())
+	project := createTestProject(t, service)
+
+	member, err := service.AddMember(context.Background(), AddMember{
+		ProjectID: project.ID,
+		Name:      "   ",
+	})
+	if !errors.Is(err, ErrMemberNameRequired) {
+		t.Fatalf("error: got %v want %v", err, ErrMemberNameRequired)
+	}
+	if member.ID != 0 {
+		t.Fatalf("expected no member, got id %d", member.ID)
+	}
+}
+
+func TestAddMemberRejectsDuplicateName(t *testing.T) {
+	service := NewService(newMemoryRepository())
+	project := createTestProject(t, service)
+	if _, err := service.AddMember(context.Background(), AddMember{ProjectID: project.ID, Name: "Valentino"}); err != nil {
+		t.Fatalf("seed member: %v", err)
+	}
+
+	_, err := service.AddMember(context.Background(), AddMember{ProjectID: project.ID, Name: "valentino"})
+	if !errors.Is(err, ErrDuplicateMember) {
+		t.Fatalf("error: got %v want %v", err, ErrDuplicateMember)
+	}
+
+	listed, err := service.ListMembers(context.Background(), project.ID)
+	if err != nil {
+		t.Fatalf("list members: %v", err)
+	}
+	if len(listed) != 1 {
+		t.Fatalf("expected 1 member, got %d", len(listed))
+	}
+}
+
+func TestAddMemberRejectsMissingProject(t *testing.T) {
+	service := NewService(newMemoryRepository())
+	_, err := service.AddMember(context.Background(), AddMember{ProjectID: 99, Name: "Ignacio"})
+	if !errors.Is(err, ErrNotFound) {
+		t.Fatalf("error: got %v want %v", err, ErrNotFound)
+	}
+}
+
+func TestListMembersEmpty(t *testing.T) {
+	service := NewService(newMemoryRepository())
+	project := createTestProject(t, service)
+
+	listed, err := service.ListMembers(context.Background(), project.ID)
+	if err != nil {
+		t.Fatalf("list members: %v", err)
+	}
+	if len(listed) != 0 {
+		t.Fatalf("expected empty list, got %+v", listed)
 	}
 }
