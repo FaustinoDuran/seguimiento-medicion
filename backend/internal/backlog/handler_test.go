@@ -74,7 +74,7 @@ func TestCreateOptionalFieldsHTTP(t *testing.T) {
 func TestStoryHTTPErrors(t *testing.T) {
 	tests := []struct {
 		name, method, path, body string
-		status int
+		status                   int
 	}{
 		{"missing title", "POST", "/projects/1/stories", `{"identifier":"x"}`, 400},
 		{"blank title", "POST", "/projects/1/stories", `{"identifier":"x","title":" "}`, 400},
@@ -101,7 +101,9 @@ func TestStoryHTTPErrors(t *testing.T) {
 			if response.Code != tt.status {
 				t.Fatalf("got %d %s, want %d", response.Code, response.Body.String(), tt.status)
 			}
-			var body struct { Error string `json:"error"` }
+			var body struct {
+				Error string `json:"error"`
+			}
 			if err := json.Unmarshal(response.Body.Bytes(), &body); err != nil || body.Error == "" {
 				t.Fatalf("invalid error response: %s", response.Body.String())
 			}

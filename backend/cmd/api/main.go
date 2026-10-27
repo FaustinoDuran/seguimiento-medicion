@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/backlog"
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/config"
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/httpx"
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/platform/postgres"
@@ -26,7 +27,12 @@ func main() {
 		if err := projects.EnsureSchema(ctx, pool); err != nil {
 			log.Fatalf("projects schema: %v", err)
 		}
-		projects.Mount(router, projects.NewService(projects.NewPostgresRepository(pool)))
+		projectService := projects.NewService(projects.NewPostgresRepository(pool))
+		projects.Mount(router, projectService)
+		if err := backlog.EnsureSchema(ctx, pool); err != nil {
+			log.Fatalf("backlog schema: %v", err)
+		}
+		backlog.Mount(router, backlog.NewService(backlog.NewPostgresRepository(pool), projectService))
 		log.Printf("connected to postgres")
 	}
 

@@ -35,7 +35,7 @@ type Story struct {
 }
 
 type CreateStory struct {
-	ProjectID          int64
+	ProjectID          int64    `json:"-"`
 	Identifier         string   `json:"identifier"`
 	Title              string   `json:"title"`
 	Description        string   `json:"description"`
