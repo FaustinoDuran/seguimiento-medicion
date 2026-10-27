@@ -17,7 +17,7 @@ Las reglas de negocio **no** se implementan en React.
 ## Estado actual
 
 Sprint 1 en curso. Con `DATABASE_URL` la API expone proyectos (HU-001) e
-integrantes (HU-003).
+integrantes (HU-003) e historias de backlog (HU-005).
 
 ## Cómo levantar PostgreSQL
 
@@ -66,6 +66,37 @@ curl -s -X POST http://localhost:8080/projects/1/members \
 
 curl -s http://localhost:8080/projects/1/members
 ```
+
+Crear y consultar una historia (reemplazar los IDs por los devueltos por la API):
+
+```bash
+curl -s -X POST http://localhost:8080/projects/1/stories \
+  -H 'Content-Type: application/json' \
+  -d '{"identifier":"HU-005","title":"Crear historia","priority":"high","story_points":5,"acceptance_criteria":["La historia se puede consultar"]}'
+
+curl -s http://localhost:8080/projects/1/stories/1
+```
+
+El identificador se normaliza a mayúsculas y es único por proyecto. Toda historia
+nueva comienza en `todo`. Se puede omitir prioridad (`unassigned`), story points
+(`null`), descripción (`""`) y criterios de aceptación (`[]`). La escala de
+prioridad en Go es `unassigned = 0`, `low = 1`, `medium = 2`, `high = 3`.
+
+La API devuelve `400` para datos inválidos, `404` para recursos inexistentes y
+`409` para identificadores duplicados o proyectos cerrados al crear.
+
+## Verificación del backend
+
+Desde `backend/`, ejecutar `go test ./...`. Para incluir persistencia PostgreSQL,
+HTTP con base real y unicidad concurrente:
+
+```bash
+BACKLOG_TEST_DATABASE_URL='postgres://postgres:postgres@localhost:5433/seguimiento_medicion?sslmode=disable' \
+  go test -race ./...
+```
+
+Los tests de backlog usan esquemas temporales aislados que se eliminan al
+terminar. Sin esa variable, los tests de PostgreSQL se omiten explícitamente.
 
 ## Documentación del equipo
 
