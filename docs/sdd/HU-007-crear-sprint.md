@@ -2,7 +2,7 @@
 
 - Issue: [#16](https://github.com/FaustinoDuran/seguimiento-medicion/issues/16)
 - Módulo Go: `backend/internal/sprints/`
-- Estado: lista para implementar
+- Estado: implementada
 
 ## Objetivo
 
@@ -62,9 +62,9 @@ La consulta por `id` devuelve el mismo Sprint.
 
 ## Criterios de aceptación
 
-- [ ] AC-007-01 — Con un proyecto existente y un objetivo, el Sprint queda creado en estado `open` y se puede consultar por su `id`.
-- [ ] AC-007-02 — Si falta el objetivo (o queda en blanco), no se crea y se informa el error.
-- [ ] AC-007-03 — Si el proyecto no existe, no se crea y se informa el error.
+- [x] AC-007-01 — Con un proyecto existente y un objetivo, el Sprint queda creado en estado `open` y se puede consultar por su `id`.
+- [x] AC-007-02 — Si falta el objetivo (o queda en blanco), no se crea y se informa el error.
+- [x] AC-007-03 — Si el proyecto no existe, no se crea y se informa el error.
 
 ## Trazabilidad
 
