@@ -73,10 +73,13 @@ func (s *Service) Create(ctx context.Context, input CreateStory) (Story, error) 
 		priority = PriorityUnassigned
 	}
 	return s.repo.Save(ctx, Story{
-		ProjectID:  input.ProjectID,
-		Identifier: identifier,
-		Title:      strings.TrimSpace(input.Title), Description: strings.TrimSpace(input.Description),
-		Priority: priority, Status: "todo", StoryPoints: input.StoryPoints,
+		ProjectID:          input.ProjectID,
+		Identifier:         identifier,
+		Title:              title,
+		Description:        strings.TrimSpace(input.Description),
+		Priority:           priority,
+		Status:             "todo",
+		StoryPoints:        input.StoryPoints,
 		AcceptanceCriteria: criteria,
 	})
 }

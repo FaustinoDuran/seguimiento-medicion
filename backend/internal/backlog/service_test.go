@@ -161,3 +161,18 @@ func TestPriorityOrdering(t *testing.T) {
 		}
 	}
 }
+
+func TestClosedProjectStoriesRemainReadable(t *testing.T) {
+	ctx := context.Background()
+	projectReader := activeProjects()
+	service := NewService(newMemoryRepository(), projectReader)
+	story, err := service.Create(ctx, CreateStory{ProjectID: 1, Identifier: "X", Title: "Historia"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	projectReader[1] = projects.Project{ID: 1, Status: projects.StatusClosed}
+	found, err := service.Get(ctx, 1, story.ID)
+	if err != nil || found.Identifier != "X" {
+		t.Fatalf("closed project lookup: %+v, %v", found, err)
+	}
+}

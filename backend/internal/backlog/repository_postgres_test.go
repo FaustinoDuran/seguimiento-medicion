@@ -2,8 +2,10 @@ package backlog
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"reflect"
 	"sync"
@@ -11,6 +13,7 @@ import (
 	"time"
 
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/projects"
+	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -57,6 +60,44 @@ func postgresTestPool(t *testing.T) *pgxpool.Pool {
 		t.Fatal(err)
 	}
 	return pool
+}
+
+func TestPostgresHTTPStoryRoundTrip(t *testing.T) {
+	pool := postgresTestPool(t)
+	projectService := projects.NewService(projects.NewPostgresRepository(pool))
+	router := chi.NewRouter()
+	projects.Mount(router, projectService)
+	Mount(router, NewService(NewPostgresRepository(pool), projectService))
+	projectResponse := storyRequest(router, http.MethodPost, "/projects", `{
+		"name":"API integration","start_date":"2026-10-26","end_date":"2026-11-23"
+	}`)
+	if projectResponse.Code != http.StatusCreated {
+		t.Fatalf("create project: %d %s", projectResponse.Code, projectResponse.Body.String())
+	}
+	var project struct {
+		ID int64 `json:"id"`
+	}
+	if err := json.Unmarshal(projectResponse.Body.Bytes(), &project); err != nil {
+		t.Fatal(err)
+	}
+	path := fmt.Sprintf("/projects/%d/stories", project.ID)
+	created := storyRequest(router, http.MethodPost, path, `{
+		"identifier":" api-1 ","title":" Integrar ","priority":"low","story_points":null
+	}`)
+	if created.Code != http.StatusCreated {
+		t.Fatalf("create story: %d %s", created.Code, created.Body.String())
+	}
+	var story Story
+	if err := json.Unmarshal(created.Body.Bytes(), &story); err != nil {
+		t.Fatal(err)
+	}
+	if story.Identifier != "API-1" || story.Title != "Integrar" || story.Priority != PriorityLow {
+		t.Fatalf("unexpected persisted story: %+v", story)
+	}
+	found := storyRequest(router, http.MethodGet, fmt.Sprintf("%s/%d", path, story.ID), "")
+	if found.Code != http.StatusOK || found.Body.String() != created.Body.String() {
+		t.Fatalf("get persisted story: %d %s", found.Code, found.Body.String())
+	}
 }
 
 func TestPostgresStoryPersistenceAndConcurrentUniqueness(t *testing.T) {
