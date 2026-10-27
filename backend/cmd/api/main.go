@@ -35,10 +35,9 @@ func main() {
 			log.Fatalf("sprints schema: %v", err)
 		}
 		projectRepo := projects.NewPostgresRepository(pool)
-		projectService := projects.NewService(projects.NewPostgresRepository(pool))
+		projectService := projects.NewService(projectRepo)
 		projects.Mount(router, projectService)
 		backlog.Mount(router, backlog.NewService(backlog.NewPostgresRepository(pool), projectService))
-		projects.Mount(router, projects.NewService(projectRepo))
 		sprints.Mount(router, sprints.NewService(
 			sprints.NewPostgresRepository(pool),
 			sprints.NewProjectLookup(projectRepo),

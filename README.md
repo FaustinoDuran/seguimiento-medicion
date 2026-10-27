@@ -16,13 +16,8 @@ Las reglas de negocio **no** se implementan en React.
 
 ## Estado actual
 
-<<<<<<< HEAD
-Sprint 1 en curso. Con `DATABASE_URL` la API expone proyectos (HU-001) e
-integrantes (HU-003) e historias de backlog (HU-005).
-=======
 Sprint 1 en curso. Con `DATABASE_URL` la API expone proyectos (HU-001),
-integrantes (HU-003) y sprints (HU-007).
->>>>>>> 54221f0 (docs(#16): record HU-007 traceability)
+integrantes (HU-003), historias de backlog (HU-005) y sprints (HU-007).
 
 ## Cómo levantar PostgreSQL
 
@@ -124,7 +119,7 @@ backend/cmd/api               servidor HTTP (chi)
 backend/internal/httpx/      router y GET /health
 backend/internal/config/     DATABASE_URL y .env
 backend/internal/platform/postgres/  pool pgx
-backend/migrations/          SQL de dominio (projects desde HU-001, sprints desde HU-007)
+backend/migrations/          SQL de dominio (projects, backlog y sprints)
 backend/docker-compose.yml   PostgreSQL 16
 backend/internal/<feature>/   dominio Go (TDD)
 frontend/src/features/       UI (Sprint 2)
