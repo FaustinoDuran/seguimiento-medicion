@@ -55,7 +55,7 @@ func activeProjects() projectCatalog {
 
 func TestCreateAndGetStory(t *testing.T) {
 	service := NewService(newMemoryRepository(), activeProjects())
-	points := 5
+	points := int64(5)
 	created, err := service.Create(context.Background(), CreateStory{
 		ProjectID: 1, Identifier: " hu-005 ", Title: " Crear historia ",
 		Description: " Detalle ", Priority: "high", StoryPoints: &points,
