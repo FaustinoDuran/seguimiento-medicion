@@ -68,15 +68,22 @@ func (s *Service) Create(ctx context.Context, input CreateStory) (Story, error) 
 	if project.Status == projects.StatusClosed {
 		return Story{}, ErrProjectClosed
 	}
+	priority := input.Priority
+	if priority == "" {
+		priority = PriorityUnassigned
+	}
 	return s.repo.Save(ctx, Story{
 		ProjectID:  input.ProjectID,
 		Identifier: identifier,
 		Title:      strings.TrimSpace(input.Title), Description: strings.TrimSpace(input.Description),
-		Priority: input.Priority, Status: "todo", StoryPoints: input.StoryPoints,
+		Priority: priority, Status: "todo", StoryPoints: input.StoryPoints,
 		AcceptanceCriteria: criteria,
 	})
 }
 
 func (s *Service) Get(ctx context.Context, projectID, id int64) (Story, error) {
+	if _, err := s.projects.Get(ctx, projectID); err != nil {
+		return Story{}, err
+	}
 	return s.repo.FindByID(ctx, projectID, id)
 }
