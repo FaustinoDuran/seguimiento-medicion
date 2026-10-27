@@ -2,6 +2,7 @@ package backlog
 
 import (
 	"context"
+	"errors"
 	"reflect"
 	"testing"
 
@@ -79,5 +80,44 @@ func TestCreateAndGetStory(t *testing.T) {
 	found, err := service.Get(context.Background(), 1, created.ID)
 	if err != nil || !reflect.DeepEqual(found, created) {
 		t.Fatalf("get: %+v, %v", found, err)
+	}
+}
+
+func TestCreateRejectsInvalidStoryWithoutSaving(t *testing.T) {
+	zero, negative := int64(0), int64(-1)
+	tests := []struct {
+		name string
+		change func(*CreateStory)
+		want error
+	}{
+		{"missing identifier", func(in *CreateStory) { in.Identifier = "" }, ErrIdentifierRequired},
+		{"blank identifier", func(in *CreateStory) { in.Identifier = "  " }, ErrIdentifierRequired},
+		{"missing title", func(in *CreateStory) { in.Title = "" }, ErrTitleRequired},
+		{"blank title", func(in *CreateStory) { in.Title = " \t " }, ErrTitleRequired},
+		{"unknown priority", func(in *CreateStory) { in.Priority = "urgent" }, ErrInvalidPriority},
+		{"noninitial status", func(in *CreateStory) { in.Status = "done" }, ErrInvalidStatus},
+		{"zero estimate", func(in *CreateStory) { in.StoryPoints = &zero }, ErrInvalidStoryPoints},
+		{"negative estimate", func(in *CreateStory) { in.StoryPoints = &negative }, ErrInvalidStoryPoints},
+		{"blank criterion", func(in *CreateStory) { in.AcceptanceCriteria = []string{"valid", " \t "} }, ErrInvalidCriterion},
+		{"missing project", func(in *CreateStory) { in.ProjectID = 9 }, projects.ErrNotFound},
+		{"closed project", func(in *CreateStory) { in.ProjectID = 3 }, ErrProjectClosed},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := newMemoryRepository()
+			service := NewService(repo, activeProjects())
+			input := CreateStory{ProjectID: 1, Identifier: "HU-005", Title: "Historia"}
+			tt.change(&input)
+			if _, err := service.Create(context.Background(), input); !errors.Is(err, tt.want) {
+				t.Fatalf("got %v, want %v", err, tt.want)
+			}
+			// A valid retry with the same identifier must still succeed.
+			_, err := service.Create(context.Background(), CreateStory{
+				ProjectID: 1, Identifier: "HU-005", Title: "Historia válida",
+			})
+			if err != nil {
+				t.Fatalf("invalid creation persisted a story: %v", err)
+			}
+		})
 	}
 }
