@@ -86,3 +86,33 @@ Característica: HU-005 — Crear historia de backlog
     Dado un identificador de proyecto inexistente
     Cuando intento crear una historia en ese proyecto
     Entonces se informa que el proyecto no existe sin persistir la historia
+
+  # AC-005-05, AC-005-09
+  Escenario: Rechazar otro estado inicial
+    Dado un proyecto activo existente
+    Cuando intento crear una historia con estado "done"
+    Entonces se rechaza la petición por datos inválidos
+
+  # AC-005-06, AC-005-09
+  Escenario: Rechazar una prioridad desconocida
+    Dado un proyecto activo existente
+    Cuando intento crear una historia con prioridad "urgent"
+    Entonces se rechaza la petición por datos inválidos
+
+  # AC-005-02, AC-005-09
+  Escenario: Consultar una historia desde otro proyecto
+    Dado una historia existente en un proyecto
+    Cuando intento consultarla bajo otro proyecto
+    Entonces se informa que la historia no existe en ese proyecto
+
+  # AC-005-02, AC-005-09
+  Escenario: Consultar una historia inexistente
+    Dado un proyecto activo existente
+    Cuando consulto un ID de historia inexistente en ese proyecto
+    Entonces se informa que la historia no existe
+
+  # AC-005-02, AC-005-08
+  Escenario: Consultar una historia de un proyecto cerrado
+    Dado una historia creada antes del cierre de su proyecto
+    Cuando consulto individualmente esa historia
+    Entonces puedo consultar todos sus datos

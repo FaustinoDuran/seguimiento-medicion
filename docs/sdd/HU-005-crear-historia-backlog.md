@@ -2,7 +2,7 @@
 
 - Issue: [#14](https://github.com/FaustinoDuran/seguimiento-medicion/issues/14)
 - Módulo Go: `backend/internal/backlog/`
-- Estado: lista para implementar; diseño confirmado por el usuario
+- Estado: implementada en rama; pendiente de revisión y merge
 
 ## Objetivo
 
@@ -74,19 +74,23 @@ Las validaciones corresponden al servicio Go; el handler decodifica la petición
 
 ## Criterios de aceptación
 
-- [ ] AC-005-01 — Crear y persistir una historia con sus campos válidos en un proyecto existente.
-- [ ] AC-005-02 — Consultar individualmente la historia creada.
-- [ ] AC-005-03 — Rechazar la creación sin título.
-- [ ] AC-005-04 — Rechazar identificadores ausentes o repetidos dentro del proyecto y permitir el mismo identificador en proyectos diferentes.
-- [ ] AC-005-05 — Establecer «To do» como estado inicial de toda historia nueva.
-- [ ] AC-005-06 — Permitir crear historias sin prioridad ni story points; rechazar story points informado que no sea un entero positivo.
-- [ ] AC-005-07 — Permitir descripción vacía y lista de criterios vacía; rechazar elementos vacíos dentro de la lista.
-- [ ] AC-005-08 — Rechazar nuevas historias en proyectos cerrados y permitirlas en proyectos planificados o activos.
-- [ ] AC-005-09 — Respetar el contrato HTTP y rechazar consultas de historias bajo un proyecto distinto.
+- [x] AC-005-01 — Crear y persistir una historia con sus campos válidos en un proyecto existente.
+- [x] AC-005-02 — Consultar individualmente la historia creada.
+- [x] AC-005-03 — Rechazar la creación sin título.
+- [x] AC-005-04 — Rechazar identificadores ausentes o repetidos dentro del proyecto y permitir el mismo identificador en proyectos diferentes.
+- [x] AC-005-05 — Establecer «To do» como estado inicial de toda historia nueva.
+- [x] AC-005-06 — Permitir crear historias sin prioridad ni story points; rechazar story points informado que no sea un entero positivo.
+- [x] AC-005-07 — Permitir descripción vacía y lista de criterios vacía; rechazar elementos vacíos dentro de la lista.
+- [x] AC-005-08 — Rechazar nuevas historias en proyectos cerrados y permitirlas en proyectos planificados o activos.
+- [x] AC-005-09 — Respetar el contrato HTTP y rechazar consultas de historias bajo un proyecto distinto.
 
 ## Trazabilidad
 
 - BDD: `features/HU-005-crear-historia-backlog.feature`.
-- Tests previstos: `backend/internal/backlog/service_test.go`.
-- Código previsto: `backend/internal/backlog/`.
+- Tests de servicio: `backend/internal/backlog/service_test.go` (AC-005-01 a AC-005-08).
+- Tests HTTP: `backend/internal/backlog/handler_test.go` (AC-005-01 a AC-005-09).
+- Tests PostgreSQL: `backend/internal/backlog/repository_postgres_test.go` (persistencia, unicidad concurrente e integración HTTP con base real).
+- Código: `backend/internal/backlog/` y montaje en `backend/cmd/api/main.go`.
+- Migración: `backend/migrations/003_create_backlog_stories.sql`.
+- Verificación: suite completa con `go test -race ./...` y `BACKLOG_TEST_DATABASE_URL` configurada; pruebas PostgreSQL realizadas en esquemas aislados.
 - Decisiones de alcance e identificador confirmadas por el usuario durante la entrevista `/grill-with-docs`.
