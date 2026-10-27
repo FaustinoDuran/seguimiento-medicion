@@ -86,9 +86,9 @@ func TestCreateAndGetStory(t *testing.T) {
 func TestCreateRejectsInvalidStoryWithoutSaving(t *testing.T) {
 	zero, negative := int64(0), int64(-1)
 	tests := []struct {
-		name string
+		name   string
 		change func(*CreateStory)
-		want error
+		want   error
 	}{
 		{"missing identifier", func(in *CreateStory) { in.Identifier = "" }, ErrIdentifierRequired},
 		{"blank identifier", func(in *CreateStory) { in.Identifier = "  " }, ErrIdentifierRequired},

@@ -11,6 +11,13 @@ import (
 var (
 	ErrDuplicateIdentifier = errors.New("story identifier already exists in project")
 	ErrNotFound            = errors.New("story not found")
+	ErrIdentifierRequired  = errors.New("story identifier is required")
+	ErrTitleRequired       = errors.New("story title is required")
+	ErrInvalidPriority     = errors.New("story priority is invalid")
+	ErrInvalidStatus       = errors.New("initial story status must be todo")
+	ErrInvalidStoryPoints  = errors.New("story points must be a positive integer")
+	ErrInvalidCriterion    = errors.New("acceptance criteria must not contain blank text")
+	ErrProjectClosed       = errors.New("project is closed")
 )
 
 type ProjectReader interface {
@@ -27,13 +34,43 @@ func NewService(repo Repository, projectReader ProjectReader) *Service {
 }
 
 func (s *Service) Create(ctx context.Context, input CreateStory) (Story, error) {
+	identifier := strings.ToUpper(strings.TrimSpace(input.Identifier))
+	if identifier == "" {
+		return Story{}, ErrIdentifierRequired
+	}
+	title := strings.TrimSpace(input.Title)
+	if title == "" {
+		return Story{}, ErrTitleRequired
+	}
+	switch input.Priority {
+	case "", PriorityUnassigned, PriorityLow, PriorityMedium, PriorityHigh:
+	default:
+		return Story{}, ErrInvalidPriority
+	}
+	if input.Status != "" && input.Status != "todo" {
+		return Story{}, ErrInvalidStatus
+	}
+	if input.StoryPoints != nil && *input.StoryPoints <= 0 {
+		return Story{}, ErrInvalidStoryPoints
+	}
 	criteria := make([]string, 0, len(input.AcceptanceCriteria))
 	for _, criterion := range input.AcceptanceCriteria {
-		criteria = append(criteria, strings.TrimSpace(criterion))
+		text := strings.TrimSpace(criterion)
+		if text == "" {
+			return Story{}, ErrInvalidCriterion
+		}
+		criteria = append(criteria, text)
+	}
+	project, err := s.projects.Get(ctx, input.ProjectID)
+	if err != nil {
+		return Story{}, err
+	}
+	if project.Status == projects.StatusClosed {
+		return Story{}, ErrProjectClosed
 	}
 	return s.repo.Save(ctx, Story{
 		ProjectID:  input.ProjectID,
-		Identifier: strings.ToUpper(strings.TrimSpace(input.Identifier)),
+		Identifier: identifier,
 		Title:      strings.TrimSpace(input.Title), Description: strings.TrimSpace(input.Description),
 		Priority: input.Priority, Status: "todo", StoryPoints: input.StoryPoints,
 		AcceptanceCriteria: criteria,
