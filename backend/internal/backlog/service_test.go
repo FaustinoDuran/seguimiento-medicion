@@ -121,3 +121,43 @@ func TestCreateRejectsInvalidStoryWithoutSaving(t *testing.T) {
 		})
 	}
 }
+
+func TestOptionalFieldsAndProjectScopedIdentity(t *testing.T) {
+	ctx := context.Background()
+	service := NewService(newMemoryRepository(), activeProjects())
+	input := CreateStory{ProjectID: 2, Identifier: "tarea-1", Title: "Tarea"}
+	created, err := service.Create(ctx, input)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if created.Priority != PriorityUnassigned || created.StoryPoints != nil || created.AcceptanceCriteria == nil {
+		t.Fatalf("unexpected optional fields: %+v", created)
+	}
+	input.Identifier = " TAREA-1 "
+	if _, err := service.Create(ctx, input); !errors.Is(err, ErrDuplicateIdentifier) {
+		t.Fatalf("duplicate: %v", err)
+	}
+	input.ProjectID = 1
+	if _, err := service.Create(ctx, input); err != nil {
+		t.Fatalf("same identifier in another project: %v", err)
+	}
+	if _, err := service.Get(ctx, 1, created.ID); !errors.Is(err, ErrNotFound) {
+		t.Fatalf("story from another project: %v", err)
+	}
+	if _, err := service.Get(ctx, 9, created.ID); !errors.Is(err, projects.ErrNotFound) {
+		t.Fatalf("missing project: %v", err)
+	}
+	if _, err := service.Get(ctx, 2, 99); !errors.Is(err, ErrNotFound) {
+		t.Fatalf("missing story: %v", err)
+	}
+}
+
+func TestPriorityOrdering(t *testing.T) {
+	for priority, want := range map[Priority]int{
+		PriorityUnassigned: 0, PriorityLow: 1, PriorityMedium: 2, PriorityHigh: 3,
+	} {
+		if got := priority.Value(); got != want {
+			t.Errorf("%s: got %d, want %d", priority, got, want)
+		}
+	}
+}
