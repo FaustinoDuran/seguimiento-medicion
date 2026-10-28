@@ -30,6 +30,17 @@ type createRequest struct {
 	Goal string `json:"goal"`
 }
 
+type assignRequest struct {
+	StoryID int64 `json:"story_id"`
+}
+
+type assignedStoryResponse struct {
+	SprintID   int64  `json:"sprint_id"`
+	StoryID    int64  `json:"story_id"`
+	Identifier string `json:"identifier"`
+	Title      string `json:"title"`
+}
+
 type errorResponse struct {
 	Error string `json:"error"`
 }
@@ -71,6 +82,54 @@ func (h *Handler) Get(writer http.ResponseWriter, request *http.Request) {
 	writeJSON(writer, http.StatusOK, toResponse(sprint))
 }
 
+func (h *Handler) Assign(writer http.ResponseWriter, request *http.Request) {
+	sprintID, ok := parseID(writer, request, "invalid sprint id")
+	if !ok {
+		return
+	}
+	var body assignRequest
+	if err := json.NewDecoder(request.Body).Decode(&body); err != nil {
+		writeError(writer, http.StatusBadRequest, "invalid json")
+		return
+	}
+	if body.StoryID < 1 {
+		writeError(writer, http.StatusBadRequest, "story id is required")
+		return
+	}
+	assigned, err := h.service.Assign(request.Context(), sprintID, body.StoryID)
+	if err != nil {
+		writeServiceError(writer, err)
+		return
+	}
+	writeJSON(writer, http.StatusCreated, toAssignedStory(assigned))
+}
+
+func (h *Handler) ListStories(writer http.ResponseWriter, request *http.Request) {
+	sprintID, ok := parseID(writer, request, "invalid sprint id")
+	if !ok {
+		return
+	}
+	stories, err := h.service.ListStories(request.Context(), sprintID)
+	if err != nil {
+		writeServiceError(writer, err)
+		return
+	}
+	response := make([]assignedStoryResponse, 0, len(stories))
+	for _, story := range stories {
+		response = append(response, toAssignedStory(story))
+	}
+	writeJSON(writer, http.StatusOK, response)
+}
+
+func toAssignedStory(story AssignedStory) assignedStoryResponse {
+	return assignedStoryResponse{
+		SprintID:   story.SprintID,
+		StoryID:    story.StoryID,
+		Identifier: story.Identifier,
+		Title:      story.Title,
+	}
+}
+
 func toResponse(sprint Sprint) sprintResponse {
 	return sprintResponse{
 		ID:        sprint.ID,
@@ -92,10 +151,12 @@ func parseID(writer http.ResponseWriter, request *http.Request, message string) 
 
 func writeServiceError(writer http.ResponseWriter, err error) {
 	switch {
-	case errors.Is(err, ErrNotFound), errors.Is(err, ErrProjectNotFound):
+	case errors.Is(err, ErrNotFound), errors.Is(err, ErrProjectNotFound), errors.Is(err, ErrStoryNotFound):
 		writeError(writer, http.StatusNotFound, err.Error())
 	case errors.Is(err, ErrGoalRequired):
 		writeError(writer, http.StatusBadRequest, err.Error())
+	case errors.Is(err, ErrSprintClosed), errors.Is(err, ErrStoryAlreadyAssigned):
+		writeError(writer, http.StatusConflict, err.Error())
 	default:
 		writeError(writer, http.StatusInternalServerError, "internal error")
 	}
