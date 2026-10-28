@@ -14,6 +14,7 @@ var (
 	ErrStoryNotFound        = errors.New("story not found")
 	ErrSprintClosed         = errors.New("sprint is closed")
 	ErrStoryAlreadyAssigned = errors.New("story is already assigned to a sprint")
+	errAssignmentNotFound   = errors.New("assignment not found")
 )
 
 type Service struct {
@@ -59,6 +60,11 @@ func (s *Service) Assign(ctx context.Context, sprintID, storyID int64) (Assigned
 	}
 	story, err := s.stories.FindInProject(ctx, sprint.ProjectID, storyID)
 	if err != nil {
+		return AssignedStory{}, err
+	}
+	if _, err := s.repo.FindAssignmentByStory(ctx, story.ID); err == nil {
+		return AssignedStory{}, ErrStoryAlreadyAssigned
+	} else if !errors.Is(err, errAssignmentNotFound) {
 		return AssignedStory{}, err
 	}
 	assignment := Assignment{SprintID: sprint.ID, StoryID: story.ID}

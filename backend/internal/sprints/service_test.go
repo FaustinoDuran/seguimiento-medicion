@@ -34,6 +34,15 @@ func (r *memoryRepository) SaveAssignment(_ context.Context, assignment Assignme
 	return nil
 }
 
+func (r *memoryRepository) FindAssignmentByStory(_ context.Context, storyID int64) (Assignment, error) {
+	for _, assignment := range r.assignments {
+		if assignment.StoryID == storyID {
+			return assignment, nil
+		}
+	}
+	return Assignment{}, errAssignmentNotFound
+}
+
 func (r *memoryRepository) ListAssignments(_ context.Context, sprintID int64) ([]Assignment, error) {
 	listed := make([]Assignment, 0)
 	for _, assignment := range r.assignments {

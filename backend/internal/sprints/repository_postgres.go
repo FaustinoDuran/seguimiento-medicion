@@ -69,6 +69,20 @@ func (r *PostgresRepository) FindByID(ctx context.Context, id int64) (Sprint, er
 	return sprint, err
 }
 
+func (r *PostgresRepository) FindAssignmentByStory(ctx context.Context, storyID int64) (Assignment, error) {
+	const query = `
+		SELECT sprint_id, story_id
+		FROM sprint_stories
+		WHERE story_id = $1`
+
+	var assignment Assignment
+	err := r.pool.QueryRow(ctx, query, storyID).Scan(&assignment.SprintID, &assignment.StoryID)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return Assignment{}, errAssignmentNotFound
+	}
+	return assignment, err
+}
+
 func (r *PostgresRepository) SaveAssignment(ctx context.Context, assignment Assignment) error {
 	const query = `
 		INSERT INTO sprint_stories (sprint_id, story_id)
