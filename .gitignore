@@ -21,3 +21,7 @@ frontend/.vite/
 .idea/
 *.swp
 thumbs.db
+
+# Local agent skills
+.agents/
+skills-lock.json
