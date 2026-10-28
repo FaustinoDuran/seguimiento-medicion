@@ -53,6 +53,9 @@ func (s *Service) Assign(ctx context.Context, sprintID, storyID int64) (Assigned
 	if err != nil {
 		return AssignedStory{}, err
 	}
+	if sprint.Status != StatusOpen {
+		return AssignedStory{}, ErrSprintClosed
+	}
 	story, err := s.stories.FindInProject(ctx, sprint.ProjectID, storyID)
 	if err != nil {
 		return AssignedStory{}, err
