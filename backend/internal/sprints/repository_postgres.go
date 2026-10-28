@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -15,6 +16,11 @@ CREATE TABLE IF NOT EXISTS sprints (
     goal TEXT NOT NULL,
     status TEXT NOT NULL CHECK (status IN ('open', 'closed')),
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS sprint_stories (
+    sprint_id BIGINT NOT NULL REFERENCES sprints (id),
+    story_id BIGINT PRIMARY KEY REFERENCES backlog_stories (id)
 );
 `
 
@@ -88,6 +94,10 @@ func (r *PostgresRepository) SaveAssignment(ctx context.Context, assignment Assi
 		INSERT INTO sprint_stories (sprint_id, story_id)
 		VALUES ($1, $2)`
 	_, err := r.pool.Exec(ctx, query, assignment.SprintID, assignment.StoryID)
+	var pgErr *pgconn.PgError
+	if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+		return ErrStoryAlreadyAssigned
+	}
 	return err
 }
 

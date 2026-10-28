@@ -98,11 +98,13 @@ HTTP con base real y unicidad concurrente:
 
 ```bash
 BACKLOG_TEST_DATABASE_URL='postgres://postgres:postgres@localhost:5433/seguimiento_medicion?sslmode=disable' \
+SPRINTS_TEST_DATABASE_URL='postgres://postgres:postgres@localhost:5433/seguimiento_medicion?sslmode=disable' \
   go test -race ./...
 ```
 
-Los tests de backlog usan esquemas temporales aislados que se eliminan al
-terminar. Sin esa variable, los tests de PostgreSQL se omiten explícitamente.
+Los tests de backlog y de sprints usan esquemas temporales aislados que se
+eliminan al terminar. Sin la variable de cada paquete, sus tests de PostgreSQL
+se omiten explícitamente.
 
 ## Documentación del equipo
 
