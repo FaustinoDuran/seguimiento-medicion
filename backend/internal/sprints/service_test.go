@@ -243,6 +243,34 @@ func TestAssignRejectsMissingSprintStoryOrOtherProject(t *testing.T) {
 	}
 }
 
+func TestAssignKeepsStoryOnItsOriginalSprint(t *testing.T) {
+	repo := newMemoryRepository()
+	original := saveSprint(t, repo, 7, StatusOpen)
+	other := saveSprint(t, repo, 7, StatusOpen)
+	stories := newMemoryStories(StoryRef{ID: 5, ProjectID: 7, Identifier: "HU-005", Title: "Crear historia"})
+	service := NewService(repo, newMemoryProjects(7), stories)
+
+	if _, err := service.Assign(context.Background(), original.ID, 5); err != nil {
+		t.Fatalf("first assign: %v", err)
+	}
+	_, err := service.Assign(context.Background(), other.ID, 5)
+	if !errors.Is(err, ErrStoryAlreadyAssigned) {
+		t.Fatalf("second sprint: got %v want %v", err, ErrStoryAlreadyAssigned)
+	}
+	_, again := service.Assign(context.Background(), original.ID, 5)
+	if !errors.Is(again, ErrStoryAlreadyAssigned) {
+		t.Fatalf("same sprint: got %v want %v", again, ErrStoryAlreadyAssigned)
+	}
+	listed, listErr := service.ListStories(context.Background(), original.ID)
+	if listErr != nil || len(listed) != 1 || listed[0].StoryID != 5 || listed[0].Identifier != "HU-005" {
+		t.Fatalf("original sprint: %+v, %v", listed, listErr)
+	}
+	otherListed, otherErr := service.ListStories(context.Background(), other.ID)
+	if otherErr != nil || len(otherListed) != 0 {
+		t.Fatalf("other sprint: %+v, %v", otherListed, otherErr)
+	}
+}
+
 func TestAssignRejectsClosedSprint(t *testing.T) {
 	repo := newMemoryRepository()
 	sprint := saveSprint(t, repo, 7, StatusClosed)

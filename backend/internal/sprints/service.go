@@ -8,11 +8,12 @@ import (
 )
 
 var (
-	ErrGoalRequired    = errors.New("sprint goal is required")
-	ErrProjectNotFound = errors.New("project not found")
-	ErrNotFound        = errors.New("sprint not found")
-	ErrStoryNotFound   = errors.New("story not found")
-	ErrSprintClosed    = errors.New("sprint is closed")
+	ErrGoalRequired         = errors.New("sprint goal is required")
+	ErrProjectNotFound      = errors.New("project not found")
+	ErrNotFound             = errors.New("sprint not found")
+	ErrStoryNotFound        = errors.New("story not found")
+	ErrSprintClosed         = errors.New("sprint is closed")
+	ErrStoryAlreadyAssigned = errors.New("story is already assigned to a sprint")
 )
 
 type Service struct {
