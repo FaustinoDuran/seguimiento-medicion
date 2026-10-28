@@ -2,7 +2,7 @@
 
 - Issue: [#17](https://github.com/FaustinoDuran/seguimiento-medicion/issues/17)
 - Módulo Go: `backend/internal/sprints/`
-- Estado: lista para implementar
+- Estado: implementada
 
 ## Objetivo
 
@@ -69,13 +69,16 @@ La historia sigue en estado `todo`. Esta HU no la completa.
 
 ## Criterios de aceptación
 
-- [ ] AC-008-01 — Con un Sprint abierto y una historia del mismo proyecto, la historia queda asignada y aparece al consultar el Sprint.
-- [ ] AC-008-02 — Si el Sprint o la historia no existen, o la historia es de otro proyecto, no se asigna.
-- [ ] AC-008-03 — Si el Sprint está cerrado, no se asigna.
-- [ ] AC-008-04 — Si la historia ya está en un Sprint, no se asigna de nuevo y el vínculo anterior se conserva.
+- [x] AC-008-01 — Con un Sprint abierto y una historia del mismo proyecto, la historia queda asignada y aparece al consultar el Sprint.
+- [x] AC-008-02 — Si el Sprint o la historia no existen, o la historia es de otro proyecto, no se asigna.
+- [x] AC-008-03 — Si el Sprint está cerrado, no se asigna.
+- [x] AC-008-04 — Si la historia ya está en un Sprint, no se asigna de nuevo y el vínculo anterior se conserva.
 
 ## Trazabilidad
 
 - BDD: `features/HU-008-asignar-historia-sprint.feature`
-- Tests: `backend/internal/sprints/service_test.go`
-- Código: `backend/internal/sprints/service.go`
+- Tests de servicio: `backend/internal/sprints/service_test.go`
+- Tests HTTP: `backend/internal/sprints/handler_test.go`
+- Tests PostgreSQL: `backend/internal/sprints/repository_postgres_test.go`
+- Código: `backend/internal/sprints/` y montaje en `backend/cmd/api/main.go`
+- Migración: `backend/migrations/005_create_sprint_stories.sql`
