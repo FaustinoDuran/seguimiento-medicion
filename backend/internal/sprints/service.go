@@ -12,6 +12,7 @@ var (
 	ErrProjectNotFound = errors.New("project not found")
 	ErrNotFound        = errors.New("sprint not found")
 	ErrStoryNotFound   = errors.New("story not found")
+	ErrSprintClosed    = errors.New("sprint is closed")
 )
 
 type Service struct {

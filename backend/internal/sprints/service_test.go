@@ -243,6 +243,22 @@ func TestAssignRejectsMissingSprintStoryOrOtherProject(t *testing.T) {
 	}
 }
 
+func TestAssignRejectsClosedSprint(t *testing.T) {
+	repo := newMemoryRepository()
+	sprint := saveSprint(t, repo, 7, StatusClosed)
+	stories := newMemoryStories(StoryRef{ID: 5, ProjectID: 7, Identifier: "HU-005", Title: "Crear historia"})
+	service := NewService(repo, newMemoryProjects(7), stories)
+
+	_, err := service.Assign(context.Background(), sprint.ID, 5)
+	if !errors.Is(err, ErrSprintClosed) {
+		t.Fatalf("error: got %v want %v", err, ErrSprintClosed)
+	}
+	listed, listErr := service.ListStories(context.Background(), sprint.ID)
+	if listErr != nil || len(listed) != 0 {
+		t.Fatalf("closed sprint stories: %+v, %v", listed, listErr)
+	}
+}
+
 func saveSprint(t *testing.T, repo *memoryRepository, projectID int64, status Status) Sprint {
 	t.Helper()
 	sprint, err := repo.Save(context.Background(), Sprint{
