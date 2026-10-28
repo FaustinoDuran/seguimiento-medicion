@@ -21,3 +21,22 @@ type CreateSprint struct {
 	ProjectID int64
 	Goal      string
 }
+
+type StoryRef struct {
+	ID         int64
+	ProjectID  int64
+	Identifier string
+	Title      string
+}
+
+type AssignedStory struct {
+	SprintID   int64
+	StoryID    int64
+	Identifier string
+	Title      string
+}
+
+type Assignment struct {
+	SprintID int64
+	StoryID  int64
+}

@@ -68,3 +68,35 @@ func (r *PostgresRepository) FindByID(ctx context.Context, id int64) (Sprint, er
 	}
 	return sprint, err
 }
+
+func (r *PostgresRepository) SaveAssignment(ctx context.Context, assignment Assignment) error {
+	const query = `
+		INSERT INTO sprint_stories (sprint_id, story_id)
+		VALUES ($1, $2)`
+	_, err := r.pool.Exec(ctx, query, assignment.SprintID, assignment.StoryID)
+	return err
+}
+
+func (r *PostgresRepository) ListAssignments(ctx context.Context, sprintID int64) ([]Assignment, error) {
+	const query = `
+		SELECT sprint_id, story_id
+		FROM sprint_stories
+		WHERE sprint_id = $1
+		ORDER BY story_id`
+
+	rows, err := r.pool.Query(ctx, query, sprintID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	assignments := make([]Assignment, 0)
+	for rows.Next() {
+		var assignment Assignment
+		if err := rows.Scan(&assignment.SprintID, &assignment.StoryID); err != nil {
+			return nil, err
+		}
+		assignments = append(assignments, assignment)
+	}
+	return assignments, rows.Err()
+}

@@ -12,7 +12,7 @@ import (
 
 func TestCreateAndGetSprintHTTP(t *testing.T) {
 	router := chi.NewRouter()
-	Mount(router, NewService(newMemoryRepository(), newMemoryProjects(7)))
+	Mount(router, NewService(newMemoryRepository(), newMemoryProjects(7), newMemoryStories()))
 
 	create := httptest.NewRequest(http.MethodPost, "/projects/7/sprints", strings.NewReader(`{
 		"goal": "  Entregar el alta de proyectos  "
@@ -42,7 +42,7 @@ func TestCreateAndGetSprintHTTP(t *testing.T) {
 
 func TestCreateSprintHTTPRejectsBlankGoal(t *testing.T) {
 	router := chi.NewRouter()
-	Mount(router, NewService(newMemoryRepository(), newMemoryProjects(7)))
+	Mount(router, NewService(newMemoryRepository(), newMemoryProjects(7), newMemoryStories()))
 
 	request := httptest.NewRequest(http.MethodPost, "/projects/7/sprints", strings.NewReader(`{"goal":"   "}`))
 	recorder := httptest.NewRecorder()
@@ -55,7 +55,7 @@ func TestCreateSprintHTTPRejectsBlankGoal(t *testing.T) {
 
 func TestCreateSprintHTTPRejectsMissingProject(t *testing.T) {
 	router := chi.NewRouter()
-	Mount(router, NewService(newMemoryRepository(), newMemoryProjects()))
+	Mount(router, NewService(newMemoryRepository(), newMemoryProjects(), newMemoryStories()))
 
 	request := httptest.NewRequest(http.MethodPost, "/projects/99/sprints", strings.NewReader(`{"goal":"Cerrar el ciclo"}`))
 	recorder := httptest.NewRecorder()
@@ -68,7 +68,7 @@ func TestCreateSprintHTTPRejectsMissingProject(t *testing.T) {
 
 func TestGetSprintHTTPNotFound(t *testing.T) {
 	router := chi.NewRouter()
-	Mount(router, NewService(newMemoryRepository(), newMemoryProjects()))
+	Mount(router, NewService(newMemoryRepository(), newMemoryProjects(), newMemoryStories()))
 
 	request := httptest.NewRequest(http.MethodGet, "/sprints/99", nil)
 	recorder := httptest.NewRecorder()

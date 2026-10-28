@@ -8,8 +8,9 @@ import (
 )
 
 type memoryRepository struct {
-	nextID int64
-	items  map[int64]Sprint
+	nextID      int64
+	items       map[int64]Sprint
+	assignments []Assignment
 }
 
 func newMemoryRepository() *memoryRepository {
@@ -26,6 +27,21 @@ func (r *memoryRepository) Save(_ context.Context, sprint Sprint) (Sprint, error
 	}
 	r.items[sprint.ID] = sprint
 	return sprint, nil
+}
+
+func (r *memoryRepository) SaveAssignment(_ context.Context, assignment Assignment) error {
+	r.assignments = append(r.assignments, assignment)
+	return nil
+}
+
+func (r *memoryRepository) ListAssignments(_ context.Context, sprintID int64) ([]Assignment, error) {
+	listed := make([]Assignment, 0)
+	for _, assignment := range r.assignments {
+		if assignment.SprintID == sprintID {
+			listed = append(listed, assignment)
+		}
+	}
+	return listed, nil
 }
 
 func (r *memoryRepository) FindByID(_ context.Context, id int64) (Sprint, error) {
@@ -107,7 +123,7 @@ func TestCreateSprintRules(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			service := NewService(newMemoryRepository(), tc.projects)
+			service := NewService(newMemoryRepository(), tc.projects, newMemoryStories())
 			got, err := service.Create(context.Background(), tc.input)
 			if tc.wantErr != nil {
 				if !errors.Is(err, tc.wantErr) {
@@ -142,7 +158,7 @@ func TestCreateSprintRules(t *testing.T) {
 
 func TestCreateSprintCanBeRetrieved(t *testing.T) {
 	repo := newMemoryRepository()
-	service := NewService(repo, newMemoryProjects(7))
+	service := NewService(repo, newMemoryProjects(7), newMemoryStories())
 
 	created, err := service.Create(context.Background(), CreateSprint{
 		ProjectID: 7,
@@ -242,7 +258,7 @@ func saveSprint(t *testing.T, repo *memoryRepository, projectID int64, status St
 }
 
 func TestGetSprintNotFound(t *testing.T) {
-	service := NewService(newMemoryRepository(), newMemoryProjects())
+	service := NewService(newMemoryRepository(), newMemoryProjects(), newMemoryStories())
 	_, err := service.Get(context.Background(), 99)
 	if !errors.Is(err, ErrNotFound) {
 		t.Fatalf("error: got %v want %v", err, ErrNotFound)
