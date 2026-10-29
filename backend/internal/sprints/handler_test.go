@@ -3,6 +3,7 @@ package sprints
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -290,5 +291,35 @@ func TestCompleteHTTPRejectsInvalidRequests(t *testing.T) {
 				t.Fatalf("closed sprint changed after rejection: %+v, %v", closed, err)
 			}
 		})
+	}
+}
+
+type unavailableStoryWriter struct {
+	StoryLookup
+}
+
+func (s unavailableStoryWriter) CompleteInProject(context.Context, int64, int64) (StoryRef, error) {
+	return StoryRef{}, errors.New("database unavailable: private connection details")
+}
+
+func TestCompleteHTTPHidesPersistenceErrorsAndKeepsState(t *testing.T) {
+	ctx := context.Background()
+	repo := newMemoryRepository()
+	saveSprint(t, repo, 7, StatusOpen)
+	stories := newMemoryStories(StoryRef{ID: 5, ProjectID: 7, Status: "todo"})
+	service := NewService(repo, newMemoryProjects(7), unavailableStoryWriter{StoryLookup: stories})
+	if _, err := service.Assign(ctx, 1, 5); err != nil {
+		t.Fatal(err)
+	}
+	router := chi.NewRouter()
+	Mount(router, service)
+
+	response := sprintRequest(router, http.MethodPost, "/sprints/1/stories/5/complete", "")
+	if response.Code != http.StatusInternalServerError || response.Body.String() != "{\"error\":\"internal error\"}\n" {
+		t.Fatalf("unexpected error response: %d, %s", response.Code, response.Body.String())
+	}
+	listed, err := service.ListStories(ctx, 1)
+	if err != nil || len(listed) != 1 || listed[0].Status != "todo" {
+		t.Fatalf("failed persistence changed story: %+v, %v", listed, err)
 	}
 }
