@@ -3,6 +3,7 @@ package sprints
 import (
 	"context"
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 )
@@ -360,5 +361,40 @@ func TestCompleteStoryIsVisibleInSprint(t *testing.T) {
 	assignment, err := repo.FindAssignmentByStory(ctx, 5)
 	if err != nil || assignment.SprintID != sprint.ID {
 		t.Fatalf("assignment after completion: %+v, %v", assignment, err)
+	}
+}
+
+func TestCompleteRequiresAssignmentToRequestedSprint(t *testing.T) {
+	for _, assignedElsewhere := range []bool{false, true} {
+		t.Run(fmt.Sprintf("assigned elsewhere %t", assignedElsewhere), func(t *testing.T) {
+			ctx := context.Background()
+			repo := newMemoryRepository()
+			sprint := saveSprint(t, repo, 7, StatusOpen)
+			other := saveSprint(t, repo, 7, StatusOpen)
+			original := StoryRef{ID: 5, ProjectID: 7, Identifier: "HU-005", Title: "Crear", Status: "todo"}
+			stories := newMemoryStories(original)
+			service := NewService(repo, newMemoryProjects(7), stories)
+			if assignedElsewhere {
+				if _, err := service.Assign(ctx, other.ID, 5); err != nil {
+					t.Fatal(err)
+				}
+			}
+
+			if _, err := service.Complete(ctx, sprint.ID, 5); !errors.Is(err, ErrStoryNotAssigned) {
+				t.Fatalf("complete: got %v, want %v", err, ErrStoryNotAssigned)
+			}
+			found, err := stories.FindInProject(ctx, 7, 5)
+			if err != nil || found != original {
+				t.Fatalf("story changed on rejection: %+v, %v", found, err)
+			}
+			assignment, err := repo.FindAssignmentByStory(ctx, 5)
+			if assignedElsewhere {
+				if err != nil || assignment.SprintID != other.ID {
+					t.Fatalf("assignment changed: %+v, %v", assignment, err)
+				}
+			} else if !errors.Is(err, errAssignmentNotFound) {
+				t.Fatalf("unassigned story changed: %+v, %v", assignment, err)
+			}
+		})
 	}
 }
