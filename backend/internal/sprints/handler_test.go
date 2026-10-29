@@ -198,7 +198,9 @@ func TestCompleteAndListStoryStatusHTTP(t *testing.T) {
 		if err := json.Unmarshal(response.Body.Bytes(), &story); err != nil {
 			t.Fatal(err)
 		}
-		if story.SprintID != 1 || story.StoryID != 5 || story.Identifier != "HU-005" || story.Title != "Crear" {
+		correctIdentity := story.SprintID == 1 && story.StoryID == 5
+		correctContent := story.Identifier == "HU-005" && story.Title == "Crear"
+		if !correctIdentity || !correctContent {
 			t.Fatalf("unexpected story: %+v", story)
 		}
 		if story.Status != "done" || response.Header().Get("Content-Type") != "application/json" {
@@ -216,7 +218,8 @@ func TestCompleteAndListStoryStatusHTTP(t *testing.T) {
 	if listed.Code != http.StatusOK || len(stories) != 2 {
 		t.Fatalf("list: got %d, body %s", listed.Code, listed.Body.String())
 	}
-	if stories[0].StoryID != 5 || stories[0].Status != "done" || stories[1].Status != "todo" {
+	completed := stories[0].StoryID == 5 && stories[0].Status == "done"
+	if !completed || stories[1].Status != "todo" {
 		t.Fatalf("unexpected states: %+v", stories)
 	}
 }
@@ -231,16 +234,28 @@ func TestCompleteHTTPRejectsInvalidRequests(t *testing.T) {
 		{name: "invalid sprint", path: "/sprints/no/stories/5/complete", status: 400, message: "invalid sprint id"},
 		{name: "zero sprint", path: "/sprints/0/stories/5/complete", status: 400, message: "invalid sprint id"},
 		{name: "negative sprint", path: "/sprints/-1/stories/5/complete", status: 400, message: "invalid sprint id"},
-		{name: "overflow sprint", path: "/sprints/9223372036854775808/stories/5/complete", status: 400, message: "invalid sprint id"},
+		{
+			name: "overflow sprint", path: "/sprints/9223372036854775808/stories/5/complete",
+			status: 400, message: "invalid sprint id",
+		},
 		{name: "invalid story", path: "/sprints/1/stories/no/complete", status: 400, message: "invalid story id"},
 		{name: "zero story", path: "/sprints/1/stories/0/complete", status: 400, message: "invalid story id"},
 		{name: "negative story", path: "/sprints/1/stories/-1/complete", status: 400, message: "invalid story id"},
-		{name: "overflow story", path: "/sprints/1/stories/9223372036854775808/complete", status: 400, message: "invalid story id"},
+		{
+			name: "overflow story", path: "/sprints/1/stories/9223372036854775808/complete",
+			status: 400, message: "invalid story id",
+		},
 		{name: "missing sprint", path: "/sprints/99/stories/5/complete", status: 404, message: "sprint not found"},
 		{name: "missing story", path: "/sprints/1/stories/99/complete", status: 404, message: "story not found"},
 		{name: "other project", path: "/sprints/1/stories/9/complete", status: 404, message: "story not found"},
-		{name: "no assignment", path: "/sprints/1/stories/8/complete", status: 409, message: "story is not assigned to this sprint"},
-		{name: "other sprint", path: "/sprints/3/stories/5/complete", status: 409, message: "story is not assigned to this sprint"},
+		{
+			name: "no assignment", path: "/sprints/1/stories/8/complete",
+			status: 409, message: "story is not assigned to this sprint",
+		},
+		{
+			name: "other sprint", path: "/sprints/3/stories/5/complete",
+			status: 409, message: "story is not assigned to this sprint",
+		},
 		{name: "closed sprint", path: "/sprints/2/stories/6/complete", status: 409, message: "sprint is closed"},
 		{name: "closed retry", path: "/sprints/2/stories/7/complete", status: 409, message: "sprint is closed"},
 	}

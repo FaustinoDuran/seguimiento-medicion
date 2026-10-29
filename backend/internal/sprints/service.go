@@ -52,12 +52,9 @@ func (s *Service) Get(ctx context.Context, id int64) (Sprint, error) {
 }
 
 func (s *Service) Assign(ctx context.Context, sprintID, storyID int64) (AssignedStory, error) {
-	sprint, err := s.repo.FindByID(ctx, sprintID)
+	sprint, err := s.openSprint(ctx, sprintID)
 	if err != nil {
 		return AssignedStory{}, err
-	}
-	if sprint.Status != StatusOpen {
-		return AssignedStory{}, ErrSprintClosed
 	}
 	story, err := s.stories.FindInProject(ctx, sprint.ProjectID, storyID)
 	if err != nil {
@@ -96,12 +93,9 @@ func (s *Service) ListStories(ctx context.Context, sprintID int64) ([]AssignedSt
 }
 
 func (s *Service) Complete(ctx context.Context, sprintID, storyID int64) (AssignedStory, error) {
-	sprint, err := s.repo.FindByID(ctx, sprintID)
+	sprint, err := s.openSprint(ctx, sprintID)
 	if err != nil {
 		return AssignedStory{}, err
-	}
-	if sprint.Status != StatusOpen {
-		return AssignedStory{}, ErrSprintClosed
 	}
 	if _, err := s.stories.FindInProject(ctx, sprint.ProjectID, storyID); err != nil {
 		return AssignedStory{}, err
@@ -121,6 +115,17 @@ func (s *Service) Complete(ctx context.Context, sprintID, storyID int64) (Assign
 		return AssignedStory{}, err
 	}
 	return assignedStory(sprint.ID, story), nil
+}
+
+func (s *Service) openSprint(ctx context.Context, id int64) (Sprint, error) {
+	sprint, err := s.repo.FindByID(ctx, id)
+	if err != nil {
+		return Sprint{}, err
+	}
+	if sprint.Status != StatusOpen {
+		return Sprint{}, ErrSprintClosed
+	}
+	return sprint, nil
 }
 
 func assignedStory(sprintID int64, story StoryRef) AssignedStory {
