@@ -175,7 +175,7 @@ func writeServiceError(writer http.ResponseWriter, err error) {
 		writeError(writer, http.StatusNotFound, err.Error())
 	case errors.Is(err, ErrGoalRequired):
 		writeError(writer, http.StatusBadRequest, err.Error())
-	case errors.Is(err, ErrSprintClosed), errors.Is(err, ErrStoryAlreadyAssigned):
+	case errors.Is(err, ErrSprintClosed), errors.Is(err, ErrStoryAlreadyAssigned), errors.Is(err, ErrStoryNotAssigned):
 		writeError(writer, http.StatusConflict, err.Error())
 	default:
 		writeError(writer, http.StatusInternalServerError, "internal error")
