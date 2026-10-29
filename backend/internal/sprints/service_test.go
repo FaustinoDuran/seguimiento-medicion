@@ -422,3 +422,62 @@ func TestCompleteRejectsClosedSprintIncludingRetries(t *testing.T) {
 		})
 	}
 }
+
+func TestCompleteRetryKeepsCompletedStory(t *testing.T) {
+	ctx := context.Background()
+	repo := newMemoryRepository()
+	sprint := saveSprint(t, repo, 7, StatusOpen)
+	stories := newMemoryStories(
+		StoryRef{ID: 5, ProjectID: 7, Identifier: "HU-005", Title: "Crear", Status: "todo"},
+	)
+	service := NewService(repo, newMemoryProjects(7), stories)
+	if _, err := service.Assign(ctx, sprint.ID, 5); err != nil {
+		t.Fatal(err)
+	}
+	first, err := service.Complete(ctx, sprint.ID, 5)
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, err := service.Complete(ctx, sprint.ID, 5)
+	if err != nil || second != first || second.Status != "done" {
+		t.Fatalf("repeat completion: %+v, %v; first %+v", second, err, first)
+	}
+	listed, err := service.ListStories(ctx, sprint.ID)
+	if err != nil || len(listed) != 1 || listed[0] != first {
+		t.Fatalf("stories after retry: %+v, %v", listed, err)
+	}
+}
+
+func TestCompleteRejectsMissingSprintStoryAndOtherProject(t *testing.T) {
+	cases := []struct {
+		name      string
+		sprintID  int64
+		storyID   int64
+		wantError error
+	}{
+		{name: "missing sprint", sprintID: 99, storyID: 5, wantError: ErrNotFound},
+		{name: "missing story", sprintID: 1, storyID: 99, wantError: ErrStoryNotFound},
+		{name: "other project", sprintID: 1, storyID: 8, wantError: ErrStoryNotFound},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			repo := newMemoryRepository()
+			saveSprint(t, repo, 7, StatusOpen)
+			stories := newMemoryStories(
+				StoryRef{ID: 5, ProjectID: 7, Status: "todo"},
+				StoryRef{ID: 8, ProjectID: 8, Status: "todo"},
+			)
+			service := NewService(repo, newMemoryProjects(7), stories)
+			if _, err := service.Complete(ctx, tc.sprintID, tc.storyID); !errors.Is(err, tc.wantError) {
+				t.Fatalf("complete: got %v, want %v", err, tc.wantError)
+			}
+			for _, id := range []int64{5, 8} {
+				story, err := stories.FindInProject(ctx, stories.items[id].ProjectID, id)
+				if err != nil || story.Status != "todo" {
+					t.Fatalf("story after rejection: %+v, %v", story, err)
+				}
+			}
+		})
+	}
+}
