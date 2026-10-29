@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -15,6 +16,11 @@ CREATE TABLE IF NOT EXISTS sprints (
     goal TEXT NOT NULL,
     status TEXT NOT NULL CHECK (status IN ('open', 'closed')),
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS sprint_stories (
+    sprint_id BIGINT NOT NULL REFERENCES sprints (id),
+    story_id BIGINT PRIMARY KEY REFERENCES backlog_stories (id)
 );
 `
 
@@ -67,4 +73,54 @@ func (r *PostgresRepository) FindByID(ctx context.Context, id int64) (Sprint, er
 		return Sprint{}, ErrNotFound
 	}
 	return sprint, err
+}
+
+func (r *PostgresRepository) FindAssignmentByStory(ctx context.Context, storyID int64) (Assignment, error) {
+	const query = `
+		SELECT sprint_id, story_id
+		FROM sprint_stories
+		WHERE story_id = $1`
+
+	var assignment Assignment
+	err := r.pool.QueryRow(ctx, query, storyID).Scan(&assignment.SprintID, &assignment.StoryID)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return Assignment{}, errAssignmentNotFound
+	}
+	return assignment, err
+}
+
+func (r *PostgresRepository) SaveAssignment(ctx context.Context, assignment Assignment) error {
+	const query = `
+		INSERT INTO sprint_stories (sprint_id, story_id)
+		VALUES ($1, $2)`
+	_, err := r.pool.Exec(ctx, query, assignment.SprintID, assignment.StoryID)
+	var pgErr *pgconn.PgError
+	if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+		return ErrStoryAlreadyAssigned
+	}
+	return err
+}
+
+func (r *PostgresRepository) ListAssignments(ctx context.Context, sprintID int64) ([]Assignment, error) {
+	const query = `
+		SELECT sprint_id, story_id
+		FROM sprint_stories
+		WHERE sprint_id = $1
+		ORDER BY story_id`
+
+	rows, err := r.pool.Query(ctx, query, sprintID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	assignments := make([]Assignment, 0)
+	for rows.Next() {
+		var assignment Assignment
+		if err := rows.Scan(&assignment.SprintID, &assignment.StoryID); err != nil {
+			return nil, err
+		}
+		assignments = append(assignments, assignment)
+	}
+	return assignments, rows.Err()
 }
