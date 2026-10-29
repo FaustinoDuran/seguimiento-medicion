@@ -100,6 +100,9 @@ func (s *Service) Complete(ctx context.Context, sprintID, storyID int64) (Assign
 	if err != nil {
 		return AssignedStory{}, err
 	}
+	if sprint.Status != StatusOpen {
+		return AssignedStory{}, ErrSprintClosed
+	}
 	if _, err := s.stories.FindInProject(ctx, sprint.ProjectID, storyID); err != nil {
 		return AssignedStory{}, err
 	}
