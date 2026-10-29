@@ -1,6 +1,7 @@
 package sprints
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -162,5 +163,59 @@ func TestGetSprintHTTPNotFound(t *testing.T) {
 
 	if recorder.Code != http.StatusNotFound {
 		t.Fatalf("status: got %d want %d body %s", recorder.Code, http.StatusNotFound, recorder.Body.String())
+	}
+}
+
+func TestCompleteAndListStoryStatusHTTP(t *testing.T) {
+	ctx := context.Background()
+	repo := newMemoryRepository()
+	saveSprint(t, repo, 7, StatusOpen)
+	service := NewService(repo, newMemoryProjects(7), newMemoryStories(
+		StoryRef{ID: 5, ProjectID: 7, Identifier: "HU-005", Title: "Crear", Status: "todo"},
+		StoryRef{ID: 8, ProjectID: 7, Identifier: "HU-008", Title: "Asignar", Status: "todo"},
+	))
+	for _, id := range []int64{5, 8} {
+		if _, err := service.Assign(ctx, 1, id); err != nil {
+			t.Fatal(err)
+		}
+	}
+	router := chi.NewRouter()
+	Mount(router, service)
+
+	for attempt := 0; attempt < 2; attempt++ {
+		response := sprintRequest(router, http.MethodPost, "/sprints/1/stories/5/complete", "")
+		if response.Code != http.StatusOK {
+			t.Fatalf("complete: got %d, body %s", response.Code, response.Body.String())
+		}
+		var story struct {
+			SprintID   int64  `json:"sprint_id"`
+			StoryID    int64  `json:"story_id"`
+			Identifier string `json:"identifier"`
+			Title      string `json:"title"`
+			Status     string `json:"status"`
+		}
+		if err := json.Unmarshal(response.Body.Bytes(), &story); err != nil {
+			t.Fatal(err)
+		}
+		if story.SprintID != 1 || story.StoryID != 5 || story.Identifier != "HU-005" || story.Title != "Crear" {
+			t.Fatalf("unexpected story: %+v", story)
+		}
+		if story.Status != "done" || response.Header().Get("Content-Type") != "application/json" {
+			t.Fatalf("unexpected completion response: %s", response.Body.String())
+		}
+	}
+	listed := sprintRequest(router, http.MethodGet, "/sprints/1/stories", "")
+	var stories []struct {
+		StoryID int64  `json:"story_id"`
+		Status  string `json:"status"`
+	}
+	if err := json.Unmarshal(listed.Body.Bytes(), &stories); err != nil {
+		t.Fatal(err)
+	}
+	if listed.Code != http.StatusOK || len(stories) != 2 {
+		t.Fatalf("list: got %d, body %s", listed.Code, listed.Body.String())
+	}
+	if stories[0].StoryID != 5 || stories[0].Status != "done" || stories[1].Status != "todo" {
+		t.Fatalf("unexpected states: %+v", stories)
 	}
 }
