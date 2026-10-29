@@ -23,7 +23,12 @@ CREATE TABLE IF NOT EXISTS backlog_stories (
     story_points BIGINT CHECK (story_points > 0),
     acceptance_criteria TEXT[] NOT NULL DEFAULT '{}',
     CONSTRAINT backlog_stories_project_identifier_key UNIQUE (project_id, identifier)
-);`
+);
+
+ALTER TABLE backlog_stories
+    DROP CONSTRAINT IF EXISTS backlog_stories_status_check,
+    ADD CONSTRAINT backlog_stories_status_check CHECK (status IN ('todo', 'done'));
+`
 
 type PostgresRepository struct {
 	pool *pgxpool.Pool
@@ -74,6 +79,18 @@ func (r *PostgresRepository) FindByID(ctx context.Context, projectID, id int64) 
         SELECT id, project_id, identifier, title, description, priority, status, story_points, acceptance_criteria
         FROM backlog_stories WHERE project_id = $1 AND id = $2`
 
+	story, err := scanStory(r.pool.QueryRow(ctx, query, projectID, id))
+	if errors.Is(err, pgx.ErrNoRows) {
+		return Story{}, ErrNotFound
+	}
+	return story, err
+}
+
+func (r *PostgresRepository) MarkCompleted(ctx context.Context, projectID, id int64) (Story, error) {
+	const query = `
+        UPDATE backlog_stories SET status = 'done'
+        WHERE project_id = $1 AND id = $2
+        RETURNING id, project_id, identifier, title, description, priority, status, story_points, acceptance_criteria`
 	story, err := scanStory(r.pool.QueryRow(ctx, query, projectID, id))
 	if errors.Is(err, pgx.ErrNoRows) {
 		return Story{}, ErrNotFound

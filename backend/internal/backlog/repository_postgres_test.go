@@ -100,6 +100,109 @@ func TestPostgresHTTPStoryRoundTrip(t *testing.T) {
 	}
 }
 
+func TestPostgresCompletionMigratesExistingStories(t *testing.T) {
+	for _, migration := range []string{"startup", "sql file"} {
+		t.Run(migration, func(t *testing.T) {
+			pool := postgresTestPool(t)
+			ctx := context.Background()
+			// Restore the pre-HU-009 constraint inside this test's isolated schema.
+			const legacyConstraint = `ALTER TABLE backlog_stories
+                DROP CONSTRAINT backlog_stories_status_check,
+                ADD CONSTRAINT backlog_stories_status_check CHECK (status = 'todo')`
+			if _, err := pool.Exec(ctx, legacyConstraint); err != nil {
+				t.Fatal(err)
+			}
+			projectService := projects.NewService(projects.NewPostgresRepository(pool))
+			project, err := projectService.Create(ctx, projects.CreateProject{
+				Name: "Migrar historias", StartDate: time.Now(), EndDate: time.Now().AddDate(0, 0, 1),
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			repo := NewPostgresRepository(pool)
+			service := NewService(repo, projectService)
+			points := int64(5)
+			original, err := service.Create(ctx, CreateStory{
+				ProjectID: project.ID, Identifier: "LEGACY-1", Title: "Conservar datos", Description: "Detalle",
+				Priority: PriorityHigh, StoryPoints: &points, AcceptanceCriteria: []string{"Persistir"},
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			migrate := func() error { return EnsureSchema(ctx, pool) }
+			if migration == "sql file" {
+				sql, err := os.ReadFile("../../migrations/006_allow_completed_stories.sql")
+				if err != nil {
+					t.Fatal(err)
+				}
+				migrate = func() error {
+					_, err := pool.Exec(ctx, string(sql))
+					return err
+				}
+			}
+			if err := migrate(); err != nil {
+				t.Fatal(err)
+			}
+			found, err := service.Get(ctx, project.ID, original.ID)
+			if err != nil || !reflect.DeepEqual(found, original) {
+				t.Fatalf("migration changed original: %+v, %v", found, err)
+			}
+			completed, err := repo.MarkCompleted(ctx, project.ID, original.ID)
+			want := original
+			want.Status = "done"
+			if err != nil || !reflect.DeepEqual(completed, want) {
+				t.Fatalf("complete migrated story: %+v, %v", completed, err)
+			}
+			if err := migrate(); err != nil {
+				t.Fatalf("repeat migration with completed stories: %v", err)
+			}
+			if err := EnsureSchema(ctx, pool); err != nil {
+				t.Fatalf("restart with completed stories: %v", err)
+			}
+			found, err = NewPostgresRepository(pool).FindByID(ctx, project.ID, original.ID)
+			if err != nil || !reflect.DeepEqual(found, want) {
+				t.Fatalf("restart changed completion: %+v, %v", found, err)
+			}
+			created, err := service.Create(ctx, CreateStory{
+				ProjectID: project.ID, Identifier: "NEW-1", Title: "Nueva historia",
+			})
+			if err != nil || created.Status != "todo" {
+				t.Fatalf("new story default changed: %+v, %v", created, err)
+			}
+		})
+	}
+}
+
+func TestPostgresMarkCompletedIsScopedToProject(t *testing.T) {
+	pool := postgresTestPool(t)
+	ctx := context.Background()
+	projectService := projects.NewService(projects.NewPostgresRepository(pool))
+	project, err := projectService.Create(ctx, projects.CreateProject{
+		Name: "Completar en proyecto", StartDate: time.Now(), EndDate: time.Now().AddDate(0, 0, 1),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	repo := NewPostgresRepository(pool)
+	service := NewService(repo, projectService)
+	story, err := service.Create(ctx, CreateStory{
+		ProjectID: project.ID, Identifier: "HU-009", Title: "Completar",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := repo.MarkCompleted(ctx, project.ID+1, story.ID); !errors.Is(err, ErrNotFound) {
+		t.Fatalf("wrong project completion: %v", err)
+	}
+	if _, err := repo.MarkCompleted(ctx, project.ID, story.ID+1); !errors.Is(err, ErrNotFound) {
+		t.Fatalf("missing story completion: %v", err)
+	}
+	found, err := service.Get(ctx, project.ID, story.ID)
+	if err != nil || !reflect.DeepEqual(found, story) {
+		t.Fatalf("rejected completion changed story: %+v, %v", found, err)
+	}
+}
+
 func TestPostgresStoryPersistenceAndConcurrentUniqueness(t *testing.T) {
 	pool := postgresTestPool(t)
 	ctx := context.Background()

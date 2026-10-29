@@ -27,6 +27,7 @@ type StoryRef struct {
 	ProjectID  int64
 	Identifier string
 	Title      string
+	Status     string
 }
 
 type AssignedStory struct {
@@ -34,6 +35,7 @@ type AssignedStory struct {
 	StoryID    int64
 	Identifier string
 	Title      string
+	Status     string
 }
 
 type Assignment struct {

@@ -38,6 +38,16 @@ func (r *memoryRepository) FindByID(_ context.Context, projectID, id int64) (Sto
 
 type projectCatalog map[int64]projects.Project
 
+func (r *memoryRepository) MarkCompleted(ctx context.Context, projectID, id int64) (Story, error) {
+	story, err := r.FindByID(ctx, projectID, id)
+	if err != nil {
+		return Story{}, err
+	}
+	story.Status = "done"
+	r.stories[id] = story
+	return story, nil
+}
+
 func (p projectCatalog) Get(_ context.Context, id int64) (projects.Project, error) {
 	project, ok := p[id]
 	if !ok {
