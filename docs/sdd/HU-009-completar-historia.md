@@ -2,7 +2,7 @@
 
 - Issue: [#18](https://github.com/FaustinoDuran/seguimiento-medicion/issues/18)
 - Módulo Go: `backend/internal/sprints/`
-- Estado: lista para implementar
+- Estado: implementada en rama; pendiente de revisión y merge
 
 ## Objetivo
 
@@ -75,21 +75,34 @@ historia sin asignación al Sprint indicado o fallo de persistencia.
 
 ## Criterios de aceptación
 
-- [ ] AC-009-01 — Completar y persistir una historia `todo` de un Sprint abierto,
+- [x] AC-009-01 — Completar y persistir una historia `todo` de un Sprint abierto,
   sin exigir story points ni criterios, conservando sus datos y su asignación.
-- [ ] AC-009-02 — Consultar el mismo estado en el backlog y el listado del Sprint,
+- [x] AC-009-02 — Consultar el mismo estado en el backlog y el listado del Sprint,
   sin alterar otras historias.
-- [ ] AC-009-03 — Rechazar historias sin asignación o asignadas a otro Sprint.
-- [ ] AC-009-04 — Rechazar un Sprint cerrado, incluso en solicitudes repetidas.
-- [ ] AC-009-05 — Rechazar Sprint o historia inexistentes e historias ajenas al proyecto.
-- [ ] AC-009-06 — Repetir la finalización en un Sprint abierto devuelve éxito y mantiene `done`.
-- [ ] AC-009-07 — Respetar el contrato HTTP, validar IDs y conservar el estado ante errores.
+- [x] AC-009-03 — Rechazar historias sin asignación o asignadas a otro Sprint.
+- [x] AC-009-04 — Rechazar un Sprint cerrado, incluso en solicitudes repetidas.
+- [x] AC-009-05 — Rechazar Sprint o historia inexistentes e historias ajenas al proyecto.
+- [x] AC-009-06 — Repetir la finalización en un Sprint abierto devuelve éxito y mantiene `done`.
+- [x] AC-009-07 — Respetar el contrato HTTP, validar IDs y conservar el estado ante errores.
 
 ## Trazabilidad
 
 - BDD: `features/HU-009-completar-historia.feature`.
 - Interfaces de prueba: servicio público Go (reglas), HTTP (contrato) y
   repositorios PostgreSQL (persistencia y actualización de bases existentes).
-- Tests: `backend/internal/sprints/{service,handler,repository_postgres}_test.go`.
+- Tests de servicio: `backend/internal/sprints/service_test.go`, `TestComplete*`
+  (AC-009-01 a AC-009-06).
+- Tests HTTP: `backend/internal/sprints/handler_test.go`, `TestComplete*`
+  (contrato, reintentos y errores; AC-009-02 a AC-009-07).
+- Tests PostgreSQL: `backend/internal/sprints/repository_postgres_test.go`,
+  `TestPostgresCompletePersistsAndIsVisibleThroughHTTP` (AC-009-01, AC-009-02,
+  AC-009-06), y `backend/internal/backlog/repository_postgres_test.go`,
+  `TestPostgresCompletionMigratesExistingStories` y
+  `TestPostgresMarkCompletedIsScopedToProject` (migración y aislamiento entre proyectos).
 - Código: `backend/internal/sprints/`, puerto y persistencia de `backend/internal/backlog/`.
 - Migración: `backend/migrations/006_allow_completed_stories.sql`.
+- Verificación: `go test -race -count=1 ./...` con `DATABASE_URL`,
+  `BACKLOG_TEST_DATABASE_URL` y `SPRINTS_TEST_DATABASE_URL` apuntando al contenedor
+  de desarrollo; `go vet ./...`. Las pruebas de dominio PostgreSQL crean y
+  eliminan esquemas aislados, sin modificar los datos de desarrollo.
+- Evidencia TDD y PR: `docs/traceability.md`.
