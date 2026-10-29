@@ -23,7 +23,12 @@ CREATE TABLE IF NOT EXISTS backlog_stories (
     story_points BIGINT CHECK (story_points > 0),
     acceptance_criteria TEXT[] NOT NULL DEFAULT '{}',
     CONSTRAINT backlog_stories_project_identifier_key UNIQUE (project_id, identifier)
-);`
+);
+
+ALTER TABLE backlog_stories
+    DROP CONSTRAINT IF EXISTS backlog_stories_status_check,
+    ADD CONSTRAINT backlog_stories_status_check CHECK (status IN ('todo', 'done'));
+`
 
 type PostgresRepository struct {
 	pool *pgxpool.Pool
