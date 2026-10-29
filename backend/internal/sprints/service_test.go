@@ -93,6 +93,16 @@ func (m *memoryStories) FindInProject(_ context.Context, projectID, storyID int6
 	return story, nil
 }
 
+func (m *memoryStories) CompleteInProject(ctx context.Context, projectID, storyID int64) (StoryRef, error) {
+	story, err := m.FindInProject(ctx, projectID, storyID)
+	if err != nil {
+		return StoryRef{}, err
+	}
+	story.Status = "done"
+	m.items[storyID] = story
+	return story, nil
+}
+
 func (p *memoryProjects) Exists(_ context.Context, projectID int64) error {
 	if _, ok := p.ids[projectID]; !ok {
 		return ErrProjectNotFound
@@ -315,5 +325,40 @@ func TestGetSprintNotFound(t *testing.T) {
 	_, err := service.Get(context.Background(), 99)
 	if !errors.Is(err, ErrNotFound) {
 		t.Fatalf("error: got %v want %v", err, ErrNotFound)
+	}
+}
+
+func TestCompleteStoryIsVisibleInSprint(t *testing.T) {
+	ctx := context.Background()
+	repo := newMemoryRepository()
+	sprint := saveSprint(t, repo, 7, StatusOpen)
+	stories := newMemoryStories(
+		StoryRef{ID: 5, ProjectID: 7, Identifier: "HU-005", Title: "Crear historia", Status: "todo"},
+		StoryRef{ID: 8, ProjectID: 7, Identifier: "HU-008", Title: "Asignar historia", Status: "todo"},
+	)
+	service := NewService(repo, newMemoryProjects(7), stories)
+	for _, id := range []int64{5, 8} {
+		if _, err := service.Assign(ctx, sprint.ID, id); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	completed, err := service.Complete(ctx, sprint.ID, 5)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := AssignedStory{
+		SprintID: sprint.ID, StoryID: 5, Identifier: "HU-005", Title: "Crear historia", Status: "done",
+	}
+	if completed != want {
+		t.Fatalf("completed %+v, want %+v", completed, want)
+	}
+	listed, err := service.ListStories(ctx, sprint.ID)
+	if err != nil || len(listed) != 2 || listed[0] != want || listed[1].Status != "todo" {
+		t.Fatalf("stories after completion: %+v, %v", listed, err)
+	}
+	assignment, err := repo.FindAssignmentByStory(ctx, 5)
+	if err != nil || assignment.SprintID != sprint.ID {
+		t.Fatalf("assignment after completion: %+v, %v", assignment, err)
 	}
 }
