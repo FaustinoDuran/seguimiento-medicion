@@ -398,3 +398,27 @@ func TestCompleteRequiresAssignmentToRequestedSprint(t *testing.T) {
 		})
 	}
 }
+
+func TestCompleteRejectsClosedSprintIncludingRetries(t *testing.T) {
+	for _, status := range []string{"todo", "done"} {
+		t.Run(status, func(t *testing.T) {
+			ctx := context.Background()
+			repo := newMemoryRepository()
+			sprint := saveSprint(t, repo, 7, StatusClosed)
+			original := StoryRef{ID: 5, ProjectID: 7, Identifier: "HU-005", Title: "Crear", Status: status}
+			stories := newMemoryStories(original)
+			if err := repo.SaveAssignment(ctx, Assignment{SprintID: sprint.ID, StoryID: 5}); err != nil {
+				t.Fatal(err)
+			}
+			service := NewService(repo, newMemoryProjects(7), stories)
+
+			if _, err := service.Complete(ctx, sprint.ID, 5); !errors.Is(err, ErrSprintClosed) {
+				t.Fatalf("complete: got %v, want %v", err, ErrSprintClosed)
+			}
+			found, err := stories.FindInProject(ctx, 7, 5)
+			if err != nil || found != original {
+				t.Fatalf("story changed on rejection: %+v, %v", found, err)
+			}
+		})
+	}
+}
