@@ -81,6 +81,18 @@ func (r *PostgresRepository) FindByID(ctx context.Context, projectID, id int64) 
 	return story, err
 }
 
+func (r *PostgresRepository) MarkCompleted(ctx context.Context, projectID, id int64) (Story, error) {
+	const query = `
+        UPDATE backlog_stories SET status = 'done'
+        WHERE project_id = $1 AND id = $2
+        RETURNING id, project_id, identifier, title, description, priority, status, story_points, acceptance_criteria`
+	story, err := scanStory(r.pool.QueryRow(ctx, query, projectID, id))
+	if errors.Is(err, pgx.ErrNoRows) {
+		return Story{}, ErrNotFound
+	}
+	return story, err
+}
+
 func scanStory(row pgx.Row) (Story, error) {
 	var story Story
 	err := row.Scan(

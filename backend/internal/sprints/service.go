@@ -94,11 +94,24 @@ func (s *Service) ListStories(ctx context.Context, sprintID int64) ([]AssignedSt
 	return listed, nil
 }
 
+func (s *Service) Complete(ctx context.Context, sprintID, storyID int64) (AssignedStory, error) {
+	sprint, err := s.repo.FindByID(ctx, sprintID)
+	if err != nil {
+		return AssignedStory{}, err
+	}
+	story, err := s.stories.CompleteInProject(ctx, sprint.ProjectID, storyID)
+	if err != nil {
+		return AssignedStory{}, err
+	}
+	return assignedStory(sprint.ID, story), nil
+}
+
 func assignedStory(sprintID int64, story StoryRef) AssignedStory {
 	return AssignedStory{
 		SprintID:   sprintID,
 		StoryID:    story.ID,
 		Identifier: story.Identifier,
 		Title:      story.Title,
+		Status:     story.Status,
 	}
 }
