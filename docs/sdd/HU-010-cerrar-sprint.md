@@ -57,13 +57,13 @@ con el mismo `goal`, `project_id` e historias ya asignadas.
 
 ## Criterios de aceptación
 
-- [ ] AC-010-01 — Un Sprint abierto queda `closed` y se puede seguir consultando.
-- [ ] AC-010-02 — Un Sprint cerrado no acepta nuevas asignaciones y conserva las que ya tenía.
-- [ ] AC-010-03 — Si el Sprint ya está cerrado, no se cierra de nuevo y se informa el error.
-- [ ] AC-010-04 — Si el Sprint no existe, no se cierra y se informa el error.
+- [x] AC-010-01 — Un Sprint abierto queda `closed` y se puede seguir consultando.
+- [x] AC-010-02 — Un Sprint cerrado no acepta nuevas asignaciones y conserva las que ya tenía.
+- [x] AC-010-03 — Si el Sprint ya está cerrado, no se cierra de nuevo y se informa el error.
+- [x] AC-010-04 — Si el Sprint no existe, no se cierra y se informa el error.
 
 ## Trazabilidad
 
 - BDD: `features/HU-010-cerrar-sprint.feature`
-- Tests: `backend/internal/sprints/service_test.go`
-- Código: `backend/internal/sprints/service.go`
+- Tests: `backend/internal/sprints/{service,handler,repository_postgres}_test.go`
+- Código: `backend/internal/sprints/`

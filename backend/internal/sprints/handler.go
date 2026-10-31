@@ -104,6 +104,20 @@ func (h *Handler) Assign(writer http.ResponseWriter, request *http.Request) {
 	writeJSON(writer, http.StatusCreated, toAssignedStory(assigned))
 }
 
+func (h *Handler) Close(writer http.ResponseWriter, request *http.Request) {
+	id, ok := parseID(writer, request, "invalid sprint id")
+	if !ok {
+		return
+	}
+
+	sprint, err := h.service.Close(request.Context(), id)
+	if err != nil {
+		writeServiceError(writer, err)
+		return
+	}
+	writeJSON(writer, http.StatusOK, toResponse(sprint))
+}
+
 func (h *Handler) ListStories(writer http.ResponseWriter, request *http.Request) {
 	sprintID, ok := parseID(writer, request, "invalid sprint id")
 	if !ok {
