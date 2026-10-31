@@ -50,6 +50,18 @@ func (s *Service) Get(ctx context.Context, id int64) (Sprint, error) {
 	return s.repo.FindByID(ctx, id)
 }
 
+func (s *Service) Close(ctx context.Context, id int64) (Sprint, error) {
+	sprint, err := s.repo.FindByID(ctx, id)
+	if err != nil {
+		return Sprint{}, err
+	}
+	if sprint.Status != StatusOpen {
+		return Sprint{}, ErrSprintClosed
+	}
+	sprint.Status = StatusClosed
+	return s.repo.Update(ctx, sprint)
+}
+
 func (s *Service) Assign(ctx context.Context, sprintID, storyID int64) (AssignedStory, error) {
 	sprint, err := s.repo.FindByID(ctx, sprintID)
 	if err != nil {

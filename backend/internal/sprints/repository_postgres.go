@@ -55,6 +55,27 @@ func (r *PostgresRepository) Save(ctx context.Context, sprint Sprint) (Sprint, e
 	return saved, err
 }
 
+func (r *PostgresRepository) Update(ctx context.Context, sprint Sprint) (Sprint, error) {
+	const query = `
+		UPDATE sprints
+		SET status = $2
+		WHERE id = $1
+		RETURNING id, project_id, goal, status, created_at`
+
+	var saved Sprint
+	err := r.pool.QueryRow(ctx, query, sprint.ID, sprint.Status).Scan(
+		&saved.ID,
+		&saved.ProjectID,
+		&saved.Goal,
+		&saved.Status,
+		&saved.CreatedAt,
+	)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return Sprint{}, ErrNotFound
+	}
+	return saved, err
+}
+
 func (r *PostgresRepository) FindByID(ctx context.Context, id int64) (Sprint, error) {
 	const query = `
 		SELECT id, project_id, goal, status, created_at

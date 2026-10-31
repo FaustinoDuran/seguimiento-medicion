@@ -61,6 +61,14 @@ func (r *memoryRepository) FindByID(_ context.Context, id int64) (Sprint, error)
 	return sprint, nil
 }
 
+func (r *memoryRepository) Update(_ context.Context, sprint Sprint) (Sprint, error) {
+	if _, ok := r.items[sprint.ID]; !ok {
+		return Sprint{}, ErrNotFound
+	}
+	r.items[sprint.ID] = sprint
+	return sprint, nil
+}
+
 type memoryProjects struct {
 	ids map[int64]struct{}
 }
