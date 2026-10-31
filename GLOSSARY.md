@@ -15,6 +15,10 @@ _Evitar_: ID interno, número de Issue de GitHub.
 Estado inicial de toda historia de backlog recién creada.
 _Evitar_: Pending como nombre del estado inicial.
 
+**Historia completada**:
+Historia de backlog cuyo trabajo se marcó como terminado dentro de un Sprint abierto. Conserva su pertenencia al proyecto y su asignación al Sprint.
+_Evitar_: Historia eliminada, historia desasignada.
+
 **Historia sin estimar**:
 Historia de backlog que todavía no tiene story points registrados. La ausencia de estimación no equivale a cero story points.
 

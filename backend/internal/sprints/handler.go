@@ -39,6 +39,7 @@ type assignedStoryResponse struct {
 	StoryID    int64  `json:"story_id"`
 	Identifier string `json:"identifier"`
 	Title      string `json:"title"`
+	Status     string `json:"status"`
 }
 
 type errorResponse struct {
@@ -121,12 +122,31 @@ func (h *Handler) ListStories(writer http.ResponseWriter, request *http.Request)
 	writeJSON(writer, http.StatusOK, response)
 }
 
+func (h *Handler) Complete(writer http.ResponseWriter, request *http.Request) {
+	sprintID, ok := parseID(writer, request, "invalid sprint id")
+	if !ok {
+		return
+	}
+	storyID, err := strconv.ParseInt(chi.URLParam(request, "story_id"), 10, 64)
+	if err != nil || storyID < 1 {
+		writeError(writer, http.StatusBadRequest, "invalid story id")
+		return
+	}
+	story, err := h.service.Complete(request.Context(), sprintID, storyID)
+	if err != nil {
+		writeServiceError(writer, err)
+		return
+	}
+	writeJSON(writer, http.StatusOK, toAssignedStory(story))
+}
+
 func toAssignedStory(story AssignedStory) assignedStoryResponse {
 	return assignedStoryResponse{
 		SprintID:   story.SprintID,
 		StoryID:    story.StoryID,
 		Identifier: story.Identifier,
 		Title:      story.Title,
+		Status:     story.Status,
 	}
 }
 
@@ -155,7 +175,7 @@ func writeServiceError(writer http.ResponseWriter, err error) {
 		writeError(writer, http.StatusNotFound, err.Error())
 	case errors.Is(err, ErrGoalRequired):
 		writeError(writer, http.StatusBadRequest, err.Error())
-	case errors.Is(err, ErrSprintClosed), errors.Is(err, ErrStoryAlreadyAssigned):
+	case errors.Is(err, ErrSprintClosed), errors.Is(err, ErrStoryAlreadyAssigned), errors.Is(err, ErrStoryNotAssigned):
 		writeError(writer, http.StatusConflict, err.Error())
 	default:
 		writeError(writer, http.StatusInternalServerError, "internal error")

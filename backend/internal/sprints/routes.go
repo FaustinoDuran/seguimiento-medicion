@@ -8,4 +8,5 @@ func Mount(router chi.Router, service *Service) {
 	router.Get("/sprints/{id}", handler.Get)
 	router.Post("/sprints/{id}/stories", handler.Assign)
 	router.Get("/sprints/{id}/stories", handler.ListStories)
+	router.Post("/sprints/{id}/stories/{story_id}/complete", handler.Complete)
 }
