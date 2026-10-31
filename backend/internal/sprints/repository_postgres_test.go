@@ -159,12 +159,13 @@ func TestPostgresAssignPersistsAndRejectsConcurrentDuplicate(t *testing.T) {
 	}
 }
 
-func TestPostgresCompletePersistsAndIsVisibleThroughHTTP(t *testing.T) {
+func TestPostgresClosePersistsAndRejectsNewAssignment(t *testing.T) {
 	pool := postgresTestPool(t)
 	ctx := context.Background()
 	projectRepo := projects.NewPostgresRepository(pool)
 	projectService := projects.NewService(projectRepo)
 	project, err := projectService.Create(ctx, projects.CreateProject{
+		Name:      "Cierre",
 		Name:      "Completar historia",
 		StartDate: time.Date(2026, 10, 26, 0, 0, 0, 0, time.UTC),
 		EndDate:   time.Date(2026, 11, 23, 0, 0, 0, 0, time.UTC),
@@ -173,6 +174,9 @@ func TestPostgresCompletePersistsAndIsVisibleThroughHTTP(t *testing.T) {
 		t.Fatal(err)
 	}
 	backlogRepo := backlog.NewPostgresRepository(pool)
+	stories := backlog.NewService(backlogRepo, projectService)
+	assignedStory, err := stories.Create(ctx, backlog.CreateStory{
+		ProjectID: project.ID, Identifier: "HU-008", Title: "Asignada",
 	backlogService := backlog.NewService(backlogRepo, projectService)
 	story, err := backlogService.Create(ctx, backlog.CreateStory{
 		ProjectID: project.ID, Identifier: "HU-009", Title: "Completar", Description: "Sin estimación",
@@ -180,6 +184,8 @@ func TestPostgresCompletePersistsAndIsVisibleThroughHTTP(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	otherStory, err := stories.Create(ctx, backlog.CreateStory{
+		ProjectID: project.ID, Identifier: "HU-010", Title: "Tardia",
 	points := int64(3)
 	other, err := backlogService.Create(ctx, backlog.CreateStory{
 		ProjectID: project.ID, Identifier: "HU-010", Title: "Cerrar", Description: "Conservar",
@@ -189,6 +195,32 @@ func TestPostgresCompletePersistsAndIsVisibleThroughHTTP(t *testing.T) {
 		t.Fatal(err)
 	}
 	service := NewService(NewPostgresRepository(pool), NewProjectLookup(projectRepo), NewStoryLookup(backlogRepo))
+	sprint, err := service.Create(ctx, CreateSprint{ProjectID: project.ID, Goal: "Cerrar el ciclo"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := service.Assign(ctx, sprint.ID, assignedStory.ID); err != nil {
+		t.Fatal(err)
+	}
+
+	closed, err := service.Close(ctx, sprint.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if closed.Status != StatusClosed {
+		t.Fatalf("status: got %q want %q", closed.Status, StatusClosed)
+	}
+	fresh := NewService(NewPostgresRepository(pool), NewProjectLookup(projectRepo), NewStoryLookup(backlogRepo))
+	got, err := fresh.Get(ctx, sprint.ID)
+	if err != nil || got.Status != StatusClosed {
+		t.Fatalf("persisted %+v, %v", got, err)
+	}
+	if _, err := fresh.Assign(ctx, sprint.ID, otherStory.ID); !errors.Is(err, ErrSprintClosed) {
+		t.Fatalf("assign after close: got %v want %v", err, ErrSprintClosed)
+	}
+	listed, listErr := fresh.ListStories(ctx, sprint.ID)
+	if listErr != nil || len(listed) != 1 || listed[0].StoryID != assignedStory.ID {
+		t.Fatalf("stories after close: %+v, %v", listed, listErr)
 	sprint, err := service.Create(ctx, CreateSprint{ProjectID: project.ID, Goal: "Registrar avance"})
 	if err != nil {
 		t.Fatal(err)

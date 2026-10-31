@@ -154,6 +154,64 @@ func sprintRequest(router http.Handler, method, path, body string) *httptest.Res
 	return recorder
 }
 
+func TestCloseSprintHTTP(t *testing.T) {
+	router := chi.NewRouter()
+	Mount(router, NewService(newMemoryRepository(), newMemoryProjects(7), newMemoryStories(
+		StoryRef{ID: 5, ProjectID: 7, Identifier: "HU-005", Title: "Crear historia"},
+		StoryRef{ID: 6, ProjectID: 7, Identifier: "HU-006", Title: "Otra historia"},
+	)))
+
+	created := sprintRequest(router, http.MethodPost, "/projects/7/sprints", `{"goal":"Cerrar el ciclo"}`)
+	if created.Code != http.StatusCreated {
+		t.Fatalf("create: got %d body %s", created.Code, created.Body.String())
+	}
+	assigned := sprintRequest(router, http.MethodPost, "/sprints/1/stories", `{"story_id":5}`)
+	if assigned.Code != http.StatusCreated {
+		t.Fatalf("assign: got %d body %s", assigned.Code, assigned.Body.String())
+	}
+
+	closed := sprintRequest(router, http.MethodPost, "/sprints/1/close", "")
+	if closed.Code != http.StatusOK {
+		t.Fatalf("close status: got %d want %d body %s", closed.Code, http.StatusOK, closed.Body.String())
+	}
+	var sprint sprintResponse
+	if err := json.NewDecoder(closed.Body).Decode(&sprint); err != nil {
+		t.Fatalf("decode close: %v", err)
+	}
+	if sprint.ID != 1 || sprint.Status != StatusClosed || sprint.Goal != "Cerrar el ciclo" {
+		t.Fatalf("closed %+v", sprint)
+	}
+
+	got := sprintRequest(router, http.MethodGet, "/sprints/1", "")
+	if got.Code != http.StatusOK {
+		t.Fatalf("get after close: got %d body %s", got.Code, got.Body.String())
+	}
+	late := sprintRequest(router, http.MethodPost, "/sprints/1/stories", `{"story_id":6}`)
+	if late.Code != http.StatusConflict {
+		t.Fatalf("assign after close: got %d want %d body %s", late.Code, http.StatusConflict, late.Body.String())
+	}
+	listed := sprintRequest(router, http.MethodGet, "/sprints/1/stories", "")
+	if listed.Code != http.StatusOK {
+		t.Fatalf("list after close: got %d body %s", listed.Code, listed.Body.String())
+	}
+	var stories []assignedStoryResponse
+	if err := json.NewDecoder(listed.Body).Decode(&stories); err != nil {
+		t.Fatalf("decode list: %v", err)
+	}
+	if len(stories) != 1 || stories[0].StoryID != 5 {
+		t.Fatalf("stories after close %+v", stories)
+	}
+
+	again := sprintRequest(router, http.MethodPost, "/sprints/1/close", "")
+	if again.Code != http.StatusConflict {
+		t.Fatalf("second close: got %d want %d body %s", again.Code, http.StatusConflict, again.Body.String())
+	}
+	missing := sprintRequest(router, http.MethodPost, "/sprints/99/close", "")
+	if missing.Code != http.StatusNotFound {
+		t.Fatalf("missing close: got %d want %d body %s", missing.Code, http.StatusNotFound, missing.Body.String())
+	}
+}
+
 func TestGetSprintHTTPNotFound(t *testing.T) {
 	router := chi.NewRouter()
 	Mount(router, NewService(newMemoryRepository(), newMemoryProjects(), newMemoryStories()))

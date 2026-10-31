@@ -72,6 +72,8 @@ curl -s -X POST http://localhost:8080/projects/1/sprints \
   -d '{"goal":"Entregar el alta de proyectos"}'
 
 curl -s http://localhost:8080/sprints/1
+
+curl -s -X POST http://localhost:8080/sprints/1/close
 ```
 
 Crear y consultar una historia (reemplazar los IDs por los devueltos por la API):
@@ -111,7 +113,8 @@ si no existe el Sprint o la historia en su proyecto, devuelve `404`.
 La reapertura corresponde a HU-006.
 
 La API devuelve `400` para datos inválidos, `404` para recursos inexistentes y
-`409` para identificadores duplicados o proyectos cerrados al crear.
+`409` para identificadores duplicados, proyectos cerrados al crear o un Sprint
+ya cerrado.
 
 ## Verificación del backend
 
