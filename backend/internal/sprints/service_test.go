@@ -310,6 +310,84 @@ func saveSprint(t *testing.T, repo *memoryRepository, projectID int64, status St
 	return sprint
 }
 
+func TestCloseOpenSprintCanStillBeRetrieved(t *testing.T) {
+	repo := newMemoryRepository()
+	service := NewService(repo, newMemoryProjects(7), newMemoryStories())
+	created, err := service.Create(context.Background(), CreateSprint{ProjectID: 7, Goal: "Entregar el alta"})
+	if err != nil {
+		t.Fatalf("create: %v", err)
+	}
+
+	closed, err := service.Close(context.Background(), created.ID)
+	if err != nil {
+		t.Fatalf("close: %v", err)
+	}
+	if closed.Status != StatusClosed {
+		t.Fatalf("status: got %q want %q", closed.Status, StatusClosed)
+	}
+
+	got, err := service.Get(context.Background(), created.ID)
+	if err != nil {
+		t.Fatalf("get: %v", err)
+	}
+	if got.Status != StatusClosed || got.ID != created.ID || got.Goal != created.Goal {
+		t.Fatalf("retrieved %+v", got)
+	}
+}
+
+func TestCloseRejectsNewAssignmentsAndKeepsExisting(t *testing.T) {
+	repo := newMemoryRepository()
+	stories := newMemoryStories(
+		StoryRef{ID: 5, ProjectID: 7, Identifier: "HU-005", Title: "Crear historia"},
+		StoryRef{ID: 6, ProjectID: 7, Identifier: "HU-006", Title: "Otra historia"},
+	)
+	service := NewService(repo, newMemoryProjects(7), stories)
+	created, err := service.Create(context.Background(), CreateSprint{ProjectID: 7, Goal: "Entregar el alta"})
+	if err != nil {
+		t.Fatalf("create: %v", err)
+	}
+	if _, err := service.Assign(context.Background(), created.ID, 5); err != nil {
+		t.Fatalf("assign: %v", err)
+	}
+	if _, err := service.Close(context.Background(), created.ID); err != nil {
+		t.Fatalf("close: %v", err)
+	}
+
+	_, err = service.Assign(context.Background(), created.ID, 6)
+	if !errors.Is(err, ErrSprintClosed) {
+		t.Fatalf("assign after close: got %v want %v", err, ErrSprintClosed)
+	}
+	listed, listErr := service.ListStories(context.Background(), created.ID)
+	if listErr != nil || len(listed) != 1 || listed[0].StoryID != 5 {
+		t.Fatalf("stories after close: %+v, %v", listed, listErr)
+	}
+}
+
+func TestCloseRejectsAlreadyClosedSprint(t *testing.T) {
+	repo := newMemoryRepository()
+	service := NewService(repo, newMemoryProjects(7), newMemoryStories())
+	created, err := service.Create(context.Background(), CreateSprint{ProjectID: 7, Goal: "Entregar el alta"})
+	if err != nil {
+		t.Fatalf("create: %v", err)
+	}
+	if _, err := service.Close(context.Background(), created.ID); err != nil {
+		t.Fatalf("first close: %v", err)
+	}
+
+	_, err = service.Close(context.Background(), created.ID)
+	if !errors.Is(err, ErrSprintClosed) {
+		t.Fatalf("second close: got %v want %v", err, ErrSprintClosed)
+	}
+}
+
+func TestCloseRejectsMissingSprint(t *testing.T) {
+	service := NewService(newMemoryRepository(), newMemoryProjects(), newMemoryStories())
+	_, err := service.Close(context.Background(), 99)
+	if !errors.Is(err, ErrNotFound) {
+		t.Fatalf("error: got %v want %v", err, ErrNotFound)
+	}
+}
+
 func TestGetSprintNotFound(t *testing.T) {
 	service := NewService(newMemoryRepository(), newMemoryProjects(), newMemoryStories())
 	_, err := service.Get(context.Background(), 99)
