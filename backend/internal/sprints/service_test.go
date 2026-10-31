@@ -3,6 +3,7 @@ package sprints
 import (
 	"context"
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 )
@@ -98,6 +99,16 @@ func (m *memoryStories) FindInProject(_ context.Context, projectID, storyID int6
 	if !ok || story.ProjectID != projectID {
 		return StoryRef{}, ErrStoryNotFound
 	}
+	return story, nil
+}
+
+func (m *memoryStories) CompleteInProject(ctx context.Context, projectID, storyID int64) (StoryRef, error) {
+	story, err := m.FindInProject(ctx, projectID, storyID)
+	if err != nil {
+		return StoryRef{}, err
+	}
+	story.Status = "done"
+	m.items[storyID] = story
 	return story, nil
 }
 
@@ -401,5 +412,158 @@ func TestGetSprintNotFound(t *testing.T) {
 	_, err := service.Get(context.Background(), 99)
 	if !errors.Is(err, ErrNotFound) {
 		t.Fatalf("error: got %v want %v", err, ErrNotFound)
+	}
+}
+
+func TestCompleteStoryIsVisibleInSprint(t *testing.T) {
+	ctx := context.Background()
+	repo := newMemoryRepository()
+	sprint := saveSprint(t, repo, 7, StatusOpen)
+	stories := newMemoryStories(
+		StoryRef{ID: 5, ProjectID: 7, Identifier: "HU-005", Title: "Crear historia", Status: "todo"},
+		StoryRef{ID: 8, ProjectID: 7, Identifier: "HU-008", Title: "Asignar historia", Status: "todo"},
+	)
+	service := NewService(repo, newMemoryProjects(7), stories)
+	for _, id := range []int64{5, 8} {
+		if _, err := service.Assign(ctx, sprint.ID, id); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	completed, err := service.Complete(ctx, sprint.ID, 5)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := AssignedStory{
+		SprintID: sprint.ID, StoryID: 5, Identifier: "HU-005", Title: "Crear historia", Status: "done",
+	}
+	if completed != want {
+		t.Fatalf("completed %+v, want %+v", completed, want)
+	}
+	listed, err := service.ListStories(ctx, sprint.ID)
+	if err != nil || len(listed) != 2 || listed[0] != want || listed[1].Status != "todo" {
+		t.Fatalf("stories after completion: %+v, %v", listed, err)
+	}
+	assignment, err := repo.FindAssignmentByStory(ctx, 5)
+	if err != nil || assignment.SprintID != sprint.ID {
+		t.Fatalf("assignment after completion: %+v, %v", assignment, err)
+	}
+}
+
+func TestCompleteRequiresAssignmentToRequestedSprint(t *testing.T) {
+	for _, assignedElsewhere := range []bool{false, true} {
+		t.Run(fmt.Sprintf("assigned elsewhere %t", assignedElsewhere), func(t *testing.T) {
+			ctx := context.Background()
+			repo := newMemoryRepository()
+			sprint := saveSprint(t, repo, 7, StatusOpen)
+			other := saveSprint(t, repo, 7, StatusOpen)
+			original := StoryRef{ID: 5, ProjectID: 7, Identifier: "HU-005", Title: "Crear", Status: "todo"}
+			stories := newMemoryStories(original)
+			service := NewService(repo, newMemoryProjects(7), stories)
+			if assignedElsewhere {
+				if _, err := service.Assign(ctx, other.ID, 5); err != nil {
+					t.Fatal(err)
+				}
+			}
+
+			if _, err := service.Complete(ctx, sprint.ID, 5); !errors.Is(err, ErrStoryNotAssigned) {
+				t.Fatalf("complete: got %v, want %v", err, ErrStoryNotAssigned)
+			}
+			found, err := stories.FindInProject(ctx, 7, 5)
+			if err != nil || found != original {
+				t.Fatalf("story changed on rejection: %+v, %v", found, err)
+			}
+			assignment, err := repo.FindAssignmentByStory(ctx, 5)
+			if assignedElsewhere {
+				if err != nil || assignment.SprintID != other.ID {
+					t.Fatalf("assignment changed: %+v, %v", assignment, err)
+				}
+			} else if !errors.Is(err, errAssignmentNotFound) {
+				t.Fatalf("unassigned story changed: %+v, %v", assignment, err)
+			}
+		})
+	}
+}
+
+func TestCompleteRejectsClosedSprintIncludingRetries(t *testing.T) {
+	for _, status := range []string{"todo", "done"} {
+		t.Run(status, func(t *testing.T) {
+			ctx := context.Background()
+			repo := newMemoryRepository()
+			sprint := saveSprint(t, repo, 7, StatusClosed)
+			original := StoryRef{ID: 5, ProjectID: 7, Identifier: "HU-005", Title: "Crear", Status: status}
+			stories := newMemoryStories(original)
+			if err := repo.SaveAssignment(ctx, Assignment{SprintID: sprint.ID, StoryID: 5}); err != nil {
+				t.Fatal(err)
+			}
+			service := NewService(repo, newMemoryProjects(7), stories)
+
+			if _, err := service.Complete(ctx, sprint.ID, 5); !errors.Is(err, ErrSprintClosed) {
+				t.Fatalf("complete: got %v, want %v", err, ErrSprintClosed)
+			}
+			found, err := stories.FindInProject(ctx, 7, 5)
+			if err != nil || found != original {
+				t.Fatalf("story changed on rejection: %+v, %v", found, err)
+			}
+		})
+	}
+}
+
+func TestCompleteRetryKeepsCompletedStory(t *testing.T) {
+	ctx := context.Background()
+	repo := newMemoryRepository()
+	sprint := saveSprint(t, repo, 7, StatusOpen)
+	stories := newMemoryStories(
+		StoryRef{ID: 5, ProjectID: 7, Identifier: "HU-005", Title: "Crear", Status: "todo"},
+	)
+	service := NewService(repo, newMemoryProjects(7), stories)
+	if _, err := service.Assign(ctx, sprint.ID, 5); err != nil {
+		t.Fatal(err)
+	}
+	first, err := service.Complete(ctx, sprint.ID, 5)
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, err := service.Complete(ctx, sprint.ID, 5)
+	if err != nil || second != first || second.Status != "done" {
+		t.Fatalf("repeat completion: %+v, %v; first %+v", second, err, first)
+	}
+	listed, err := service.ListStories(ctx, sprint.ID)
+	if err != nil || len(listed) != 1 || listed[0] != first {
+		t.Fatalf("stories after retry: %+v, %v", listed, err)
+	}
+}
+
+func TestCompleteRejectsMissingSprintStoryAndOtherProject(t *testing.T) {
+	cases := []struct {
+		name      string
+		sprintID  int64
+		storyID   int64
+		wantError error
+	}{
+		{name: "missing sprint", sprintID: 99, storyID: 5, wantError: ErrNotFound},
+		{name: "missing story", sprintID: 1, storyID: 99, wantError: ErrStoryNotFound},
+		{name: "other project", sprintID: 1, storyID: 8, wantError: ErrStoryNotFound},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			repo := newMemoryRepository()
+			saveSprint(t, repo, 7, StatusOpen)
+			stories := newMemoryStories(
+				StoryRef{ID: 5, ProjectID: 7, Status: "todo"},
+				StoryRef{ID: 8, ProjectID: 8, Status: "todo"},
+			)
+			service := NewService(repo, newMemoryProjects(7), stories)
+			if _, err := service.Complete(ctx, tc.sprintID, tc.storyID); !errors.Is(err, tc.wantError) {
+				t.Fatalf("complete: got %v, want %v", err, tc.wantError)
+			}
+			for _, id := range []int64{5, 8} {
+				story, err := stories.FindInProject(ctx, stories.items[id].ProjectID, id)
+				if err != nil || story.Status != "todo" {
+					t.Fatalf("story after rejection: %+v, %v", story, err)
+				}
+			}
+		})
 	}
 }

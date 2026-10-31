@@ -17,6 +17,15 @@ func NewStoryLookup(repo backlog.Repository) StoryLookup {
 
 func (l storyLookup) FindInProject(ctx context.Context, projectID, storyID int64) (StoryRef, error) {
 	story, err := l.repo.FindByID(ctx, projectID, storyID)
+	return toStoryRef(story, err)
+}
+
+func (l storyLookup) CompleteInProject(ctx context.Context, projectID, storyID int64) (StoryRef, error) {
+	story, err := l.repo.MarkCompleted(ctx, projectID, storyID)
+	return toStoryRef(story, err)
+}
+
+func toStoryRef(story backlog.Story, err error) (StoryRef, error) {
 	if errors.Is(err, backlog.ErrNotFound) {
 		return StoryRef{}, ErrStoryNotFound
 	}
@@ -28,5 +37,6 @@ func (l storyLookup) FindInProject(ctx context.Context, projectID, storyID int64
 		ProjectID:  story.ProjectID,
 		Identifier: story.Identifier,
 		Title:      story.Title,
+		Status:     story.Status,
 	}, nil
 }

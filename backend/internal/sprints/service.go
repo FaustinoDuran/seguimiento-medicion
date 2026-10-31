@@ -14,6 +14,7 @@ var (
 	ErrStoryNotFound        = errors.New("story not found")
 	ErrSprintClosed         = errors.New("sprint is closed")
 	ErrStoryAlreadyAssigned = errors.New("story is already assigned to a sprint")
+	ErrStoryNotAssigned     = errors.New("story is not assigned to this sprint")
 	errAssignmentNotFound   = errors.New("assignment not found")
 )
 
@@ -63,12 +64,9 @@ func (s *Service) Close(ctx context.Context, id int64) (Sprint, error) {
 }
 
 func (s *Service) Assign(ctx context.Context, sprintID, storyID int64) (AssignedStory, error) {
-	sprint, err := s.repo.FindByID(ctx, sprintID)
+	sprint, err := s.openSprint(ctx, sprintID)
 	if err != nil {
 		return AssignedStory{}, err
-	}
-	if sprint.Status != StatusOpen {
-		return AssignedStory{}, ErrSprintClosed
 	}
 	story, err := s.stories.FindInProject(ctx, sprint.ProjectID, storyID)
 	if err != nil {
@@ -106,11 +104,48 @@ func (s *Service) ListStories(ctx context.Context, sprintID int64) ([]AssignedSt
 	return listed, nil
 }
 
+func (s *Service) Complete(ctx context.Context, sprintID, storyID int64) (AssignedStory, error) {
+	sprint, err := s.openSprint(ctx, sprintID)
+	if err != nil {
+		return AssignedStory{}, err
+	}
+	if _, err := s.stories.FindInProject(ctx, sprint.ProjectID, storyID); err != nil {
+		return AssignedStory{}, err
+	}
+	assignment, err := s.repo.FindAssignmentByStory(ctx, storyID)
+	if errors.Is(err, errAssignmentNotFound) {
+		return AssignedStory{}, ErrStoryNotAssigned
+	}
+	if err != nil {
+		return AssignedStory{}, err
+	}
+	if assignment.SprintID != sprint.ID {
+		return AssignedStory{}, ErrStoryNotAssigned
+	}
+	story, err := s.stories.CompleteInProject(ctx, sprint.ProjectID, storyID)
+	if err != nil {
+		return AssignedStory{}, err
+	}
+	return assignedStory(sprint.ID, story), nil
+}
+
+func (s *Service) openSprint(ctx context.Context, id int64) (Sprint, error) {
+	sprint, err := s.repo.FindByID(ctx, id)
+	if err != nil {
+		return Sprint{}, err
+	}
+	if sprint.Status != StatusOpen {
+		return Sprint{}, ErrSprintClosed
+	}
+	return sprint, nil
+}
+
 func assignedStory(sprintID int64, story StoryRef) AssignedStory {
 	return AssignedStory{
 		SprintID:   sprintID,
 		StoryID:    story.ID,
 		Identifier: story.Identifier,
 		Title:      story.Title,
+		Status:     story.Status,
 	}
 }

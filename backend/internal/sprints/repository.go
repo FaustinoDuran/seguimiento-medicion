@@ -17,4 +17,5 @@ type ProjectLookup interface {
 
 type StoryLookup interface {
 	FindInProject(ctx context.Context, projectID, storyID int64) (StoryRef, error)
+	CompleteInProject(ctx context.Context, projectID, storyID int64) (StoryRef, error)
 }

@@ -17,7 +17,8 @@ Las reglas de negocio **no** se implementan en React.
 ## Estado actual
 
 Sprint 1 en curso. Con `DATABASE_URL` la API expone proyectos (HU-001),
-integrantes (HU-003), historias de backlog (HU-005) y sprints (HU-007).
+integrantes (HU-003), historias de backlog (HU-005), sprints (HU-007),
+asignación de historias (HU-008) y finalización de historias (HU-009).
 
 ## Cómo levantar PostgreSQL
 
@@ -90,6 +91,27 @@ nueva comienza en `todo`. Se puede omitir prioridad (`unassigned`), story points
 (`null`), descripción (`""`) y criterios de aceptación (`[]`). La escala de
 prioridad en Go es `unassigned = 0`, `low = 1`, `medium = 2`, `high = 3`.
 
+Asignar una historia a un Sprint abierto, completarla y consultar el avance
+(reemplazar los IDs por los devueltos por la API):
+
+```bash
+curl -s -X POST http://localhost:8080/sprints/1/stories \
+  -H 'Content-Type: application/json' \
+  -d '{"story_id":1}'
+
+curl -s -X POST http://localhost:8080/sprints/1/stories/1/complete
+
+curl -s http://localhost:8080/sprints/1/stories
+curl -s http://localhost:8080/projects/1/stories/1
+```
+
+Completar devuelve `200` con estado `done`; ese mismo estado aparece en ambas
+consultas. Repetir la finalización devuelve éxito mientras el Sprint siga
+abierto. No se exige estimación ni criterios de aceptación registrados.
+Sin asignación al Sprint indicado o con Sprint cerrado, devuelve `409`;
+si no existe el Sprint o la historia en su proyecto, devuelve `404`.
+La reapertura corresponde a HU-006.
+
 La API devuelve `400` para datos inválidos, `404` para recursos inexistentes y
 `409` para identificadores duplicados, proyectos cerrados al crear o un Sprint
 ya cerrado.
@@ -100,6 +122,7 @@ Desde `backend/`, ejecutar `go test ./...`. Para incluir persistencia PostgreSQL
 HTTP con base real y unicidad concurrente:
 
 ```bash
+DATABASE_URL='postgres://postgres:postgres@localhost:5433/seguimiento_medicion?sslmode=disable' \
 BACKLOG_TEST_DATABASE_URL='postgres://postgres:postgres@localhost:5433/seguimiento_medicion?sslmode=disable' \
 SPRINTS_TEST_DATABASE_URL='postgres://postgres:postgres@localhost:5433/seguimiento_medicion?sslmode=disable' \
   go test -race ./...
