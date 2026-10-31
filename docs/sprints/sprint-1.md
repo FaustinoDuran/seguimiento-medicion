@@ -1,7 +1,8 @@
 # Sprint 1 — El MVP
 
-- Estado: en curso
+- Estado: cerrado
 - Fecha de inicio: 2026-10-26
+- Fecha de fin: 2026-10-31
 - Equipo: Faustino (Agile Enabler), Valentino e Ignacio (Product Builders)
 - Alcance: [ADR 0003](../adr/0003-alcance-mvp.md)
 - Tablero: [Seguimiento y medición](https://github.com/users/FaustinoDuran/projects/3)
@@ -24,13 +25,21 @@ Capacidad planificada: **24 SP**.
 | HU-009 Completar historia | [#18](https://github.com/FaustinoDuran/seguimiento-medicion/issues/18) | media | 2 | Ignacio | `sprints` | Después de HU-008 |
 | HU-010 Cerrar Sprint | [#19](https://github.com/FaustinoDuran/seguimiento-medicion/issues/19) | media | 3 | Faustino | `sprints` | Último, para la demo |
 
-## Cómo tomar una HU
+## Cierre
 
-1. Confirmar que está asignada y en Sprint 1.
-2. Mover la tarjeta a `In progress`.
-3. Escribir SDD (`docs/sdd/HU-XXX-*.md`) **antes** de tests y código.
-4. Escenarios BDD → TDD en Go (commits RED / GREEN / REFACTOR separados).
-5. Un PR por HU, con `Closes #N` (sin espacio). React no entra en este sprint.
+El ciclo MVP quedó en `main` (API/JSON):
+
+| HU | PR |
+|---|---|
+| HU-001 | [#36](https://github.com/FaustinoDuran/seguimiento-medicion/pull/36) |
+| HU-003 | [#37](https://github.com/FaustinoDuran/seguimiento-medicion/pull/37) |
+| HU-005 | [#38](https://github.com/FaustinoDuran/seguimiento-medicion/pull/38) |
+| HU-007 | [#39](https://github.com/FaustinoDuran/seguimiento-medicion/pull/39) |
+| HU-008 | [#42](https://github.com/FaustinoDuran/seguimiento-medicion/pull/42) |
+| HU-009 | [#51](https://github.com/FaustinoDuran/seguimiento-medicion/pull/51) |
+| HU-010 | [#52](https://github.com/FaustinoDuran/seguimiento-medicion/pull/52) |
+
+La UI usable es el Sprint 2 ([ADR 0004](../adr/0004-alcance-sprint-2.md)).
 
 ## Demo de la Review
 

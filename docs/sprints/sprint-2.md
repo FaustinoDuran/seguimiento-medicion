@@ -1,7 +1,7 @@
 # Sprint 2 — La interfaz
 
-- Estado: planificado
-- Fecha de inicio: a confirmar en planning
+- Estado: en curso
+- Fecha de inicio: 2026-10-31
 - Equipo: Faustino (Agile Enabler), Valentino e Ignacio (Product Builders)
 - Alcance: [ADR 0004](../adr/0004-alcance-sprint-2.md)
 - Tablero: [Seguimiento y medición](https://github.com/users/FaustinoDuran/projects/3)
@@ -9,37 +9,32 @@
 
 ## Precondición (Sprint 1)
 
-Siguen abiertas y **no** se mueven a Sprint 2:
-
-- [#18 HU-009](https://github.com/FaustinoDuran/seguimiento-medicion/issues/18) Completar historia
-- [#19 HU-010](https://github.com/FaustinoDuran/seguimiento-medicion/issues/19) Cerrar Sprint
-
-HU-011 y HU-027 esperan a que esas dos estén en `main`.
+Cumplida. HU-009 ([#18](https://github.com/FaustinoDuran/seguimiento-medicion/issues/18), PR [#51](https://github.com/FaustinoDuran/seguimiento-medicion/pull/51)) y HU-010 ([#19](https://github.com/FaustinoDuran/seguimiento-medicion/issues/19), PR [#52](https://github.com/FaustinoDuran/seguimiento-medicion/pull/52)) están en `main`.
 
 ## Planning
 
 Estimación = esfuerzo relativo (Fibonacci, campo `SP` del Project). **SP
-vacío** hasta la reunión de planning. Valor de negocio sigue vacío.
+vacío** hasta acordarlos en planning. Valor de negocio sigue vacío.
 
-Dueños tentativos (a confirmar en planning):
+Dueños:
 
 | Ítem | Issue | Prioridad | SP | Responsable | Orden |
 |---|---|---|---|---|---|
-| TASK-010 Alcance Sprint 2 | [#43](https://github.com/FaustinoDuran/seguimiento-medicion/issues/43) | alta | — | Faustino | 1.º |
-| TASK-011 Shell frontend | [#44](https://github.com/FaustinoDuran/seguimiento-medicion/issues/44) | alta | — | Ignacio | En paralelo con HU-023 |
-| HU-023 Listar proyectos | [#45](https://github.com/FaustinoDuran/seguimiento-medicion/issues/45) | alta | — | Faustino | API, en paralelo con TASK-011 |
+| TASK-010 Alcance Sprint 2 | [#43](https://github.com/FaustinoDuran/seguimiento-medicion/issues/43) | alta | — | Faustino | Done |
+| TASK-011 Shell frontend | [#44](https://github.com/FaustinoDuran/seguimiento-medicion/issues/44) | alta | — | Ignacio | Ahora, en paralelo con HU-023 |
+| HU-023 Listar proyectos | [#45](https://github.com/FaustinoDuran/seguimiento-medicion/issues/45) | alta | — | Faustino | Ahora, API, en paralelo con TASK-011 |
 | HU-024 UI proyectos | [#46](https://github.com/FaustinoDuran/seguimiento-medicion/issues/46) | alta | — | Faustino | Después de TASK-011 y HU-023 |
 | HU-025 UI integrantes | [#47](https://github.com/FaustinoDuran/seguimiento-medicion/issues/47) | alta | — | Faustino | Después de HU-024 |
 | HU-026 UI backlog | [#48](https://github.com/FaustinoDuran/seguimiento-medicion/issues/48) | alta | — | Ignacio | Después de HU-024 |
-| HU-011 Consultar sprints anteriores | [#20](https://github.com/FaustinoDuran/seguimiento-medicion/issues/20) | media | — | Valentino | Después de HU-010 |
+| HU-011 Consultar sprints anteriores | [#20](https://github.com/FaustinoDuran/seguimiento-medicion/issues/20) | media | — | Valentino | Ahora SDD; código Go (HU-010 ya está en `main`) |
 | HU-027 UI sprints | [#49](https://github.com/FaustinoDuran/seguimiento-medicion/issues/49) | media | — | Valentino | Último, para la demo |
 
 ## Olas
 
-1. TASK-010 (este recorte).
-2. TASK-011 y HU-023 en paralelo. Nacho y Faustino cierran HU-009 y HU-010 del Sprint 1.
+1. TASK-010: Done.
+2. TASK-011 (Nacho) y HU-023 (Faustino) en paralelo. Tino escribe SDD de HU-011.
 3. HU-024 (UI proyectos).
-4. HU-025 y HU-026 en paralelo; HU-011 cuando exista HU-010.
+4. HU-025 y HU-026 en paralelo; HU-011 en Go.
 5. HU-027: crear sprint, asignar, completar, cerrar y ver anteriores.
 
 ## Cómo tomar una HU
