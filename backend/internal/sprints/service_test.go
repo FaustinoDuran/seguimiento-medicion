@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sort"
 	"testing"
 	"time"
 )
@@ -68,6 +69,23 @@ func (r *memoryRepository) Update(_ context.Context, sprint Sprint) (Sprint, err
 	}
 	r.items[sprint.ID] = sprint
 	return sprint, nil
+}
+
+func (r *memoryRepository) ListClosedByProject(_ context.Context, projectID int64) ([]Sprint, error) {
+	listed := make([]Sprint, 0)
+	for _, sprint := range r.items {
+		if sprint.ProjectID != projectID || sprint.Status != StatusClosed {
+			continue
+		}
+		listed = append(listed, sprint)
+	}
+	sort.Slice(listed, func(i, j int) bool {
+		if listed[i].CreatedAt.Equal(listed[j].CreatedAt) {
+			return listed[i].ID < listed[j].ID
+		}
+		return listed[i].CreatedAt.Before(listed[j].CreatedAt)
+	})
+	return listed, nil
 }
 
 type memoryProjects struct {
