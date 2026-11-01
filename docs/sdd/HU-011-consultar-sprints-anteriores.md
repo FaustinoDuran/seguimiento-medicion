@@ -2,7 +2,7 @@
 
 - Issue: [#20](https://github.com/FaustinoDuran/seguimiento-medicion/issues/20)
 - Módulo Go: `backend/internal/sprints/`
-- Estado: lista para implementar
+- Estado: implementada
 
 ## Objetivo
 
@@ -73,10 +73,10 @@ Si el proyecto existe y no hay sprints cerrados, la lista queda vacía.
 
 ## Criterios de aceptación
 
-- [ ] AC-011-01 — Con sprints cerrados en el proyecto, el listado los devuelve con sus datos y omite los abiertos.
-- [ ] AC-011-02 — Si el proyecto no tiene sprints cerrados, la lista queda vacía.
-- [ ] AC-011-03 — Si el proyecto no existe, no se lista y se informa el error.
-- [ ] AC-011-04 — Un sprint cerrado del listado se puede seguir consultando por `id` y con sus historias.
+- [x] AC-011-01 — Con sprints cerrados en el proyecto, el listado los devuelve con sus datos y omite los abiertos.
+- [x] AC-011-02 — Si el proyecto no tiene sprints cerrados, la lista queda vacía.
+- [x] AC-011-03 — Si el proyecto no existe, no se lista y se informa el error.
+- [x] AC-011-04 — Un sprint cerrado del listado se puede seguir consultando por `id` y con sus historias.
 
 ## Trazabilidad
 
