@@ -96,6 +96,36 @@ func (r *PostgresRepository) FindByID(ctx context.Context, id int64) (Sprint, er
 	return sprint, err
 }
 
+func (r *PostgresRepository) ListClosedByProject(ctx context.Context, projectID int64) ([]Sprint, error) {
+	const query = `
+		SELECT id, project_id, goal, status, created_at
+		FROM sprints
+		WHERE project_id = $1 AND status = 'closed'
+		ORDER BY created_at ASC, id ASC`
+
+	rows, err := r.pool.Query(ctx, query, projectID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	listed := make([]Sprint, 0)
+	for rows.Next() {
+		var sprint Sprint
+		if err := rows.Scan(
+			&sprint.ID,
+			&sprint.ProjectID,
+			&sprint.Goal,
+			&sprint.Status,
+			&sprint.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		listed = append(listed, sprint)
+	}
+	return listed, rows.Err()
+}
+
 func (r *PostgresRepository) FindAssignmentByStory(ctx context.Context, storyID int64) (Assignment, error) {
 	const query = `
 		SELECT sprint_id, story_id

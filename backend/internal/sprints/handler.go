@@ -83,6 +83,24 @@ func (h *Handler) Get(writer http.ResponseWriter, request *http.Request) {
 	writeJSON(writer, http.StatusOK, toResponse(sprint))
 }
 
+func (h *Handler) ListClosed(writer http.ResponseWriter, request *http.Request) {
+	projectID, ok := parseID(writer, request, "invalid project id")
+	if !ok {
+		return
+	}
+
+	sprints, err := h.service.ListClosed(request.Context(), projectID)
+	if err != nil {
+		writeServiceError(writer, err)
+		return
+	}
+	response := make([]sprintResponse, 0, len(sprints))
+	for _, sprint := range sprints {
+		response = append(response, toResponse(sprint))
+	}
+	writeJSON(writer, http.StatusOK, response)
+}
+
 func (h *Handler) Assign(writer http.ResponseWriter, request *http.Request) {
 	sprintID, ok := parseID(writer, request, "invalid sprint id")
 	if !ok {

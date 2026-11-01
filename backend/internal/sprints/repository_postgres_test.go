@@ -166,7 +166,6 @@ func TestPostgresClosePersistsAndRejectsNewAssignment(t *testing.T) {
 	projectService := projects.NewService(projectRepo)
 	project, err := projectService.Create(ctx, projects.CreateProject{
 		Name:      "Cierre",
-		Name:      "Completar historia",
 		StartDate: time.Date(2026, 10, 26, 0, 0, 0, 0, time.UTC),
 		EndDate:   time.Date(2026, 11, 23, 0, 0, 0, 0, time.UTC),
 	})
@@ -177,19 +176,12 @@ func TestPostgresClosePersistsAndRejectsNewAssignment(t *testing.T) {
 	stories := backlog.NewService(backlogRepo, projectService)
 	assignedStory, err := stories.Create(ctx, backlog.CreateStory{
 		ProjectID: project.ID, Identifier: "HU-008", Title: "Asignada",
-	backlogService := backlog.NewService(backlogRepo, projectService)
-	story, err := backlogService.Create(ctx, backlog.CreateStory{
-		ProjectID: project.ID, Identifier: "HU-009", Title: "Completar", Description: "Sin estimación",
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
 	otherStory, err := stories.Create(ctx, backlog.CreateStory{
 		ProjectID: project.ID, Identifier: "HU-010", Title: "Tardia",
-	points := int64(3)
-	other, err := backlogService.Create(ctx, backlog.CreateStory{
-		ProjectID: project.ID, Identifier: "HU-010", Title: "Cerrar", Description: "Conservar",
-		Priority: backlog.PriorityHigh, StoryPoints: &points, AcceptanceCriteria: []string{"No cambia"},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -221,6 +213,104 @@ func TestPostgresClosePersistsAndRejectsNewAssignment(t *testing.T) {
 	listed, listErr := fresh.ListStories(ctx, sprint.ID)
 	if listErr != nil || len(listed) != 1 || listed[0].StoryID != assignedStory.ID {
 		t.Fatalf("stories after close: %+v, %v", listed, listErr)
+	}
+}
+
+func TestPostgresListClosedByProjectOmitsOpenAndOtherProjects(t *testing.T) {
+	pool := postgresTestPool(t)
+	ctx := context.Background()
+	projectRepo := projects.NewPostgresRepository(pool)
+	projectService := projects.NewService(projectRepo)
+	project, err := projectService.Create(ctx, projects.CreateProject{
+		Name:      "Anteriores",
+		StartDate: time.Date(2026, 10, 26, 0, 0, 0, 0, time.UTC),
+		EndDate:   time.Date(2026, 11, 23, 0, 0, 0, 0, time.UTC),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	otherProject, err := projectService.Create(ctx, projects.CreateProject{
+		Name:      "Otro",
+		StartDate: project.StartDate,
+		EndDate:   project.EndDate,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	service := NewService(NewPostgresRepository(pool), NewProjectLookup(projectRepo), NewStoryLookup(backlog.NewPostgresRepository(pool)))
+	first, err := service.Create(ctx, CreateSprint{ProjectID: project.ID, Goal: "Primero cerrado"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	open, err := service.Create(ctx, CreateSprint{ProjectID: project.ID, Goal: "Abierto"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, err := service.Create(ctx, CreateSprint{ProjectID: project.ID, Goal: "Segundo cerrado"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	foreign, err := service.Create(ctx, CreateSprint{ProjectID: otherProject.ID, Goal: "Ajeno"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, id := range []int64{first.ID, second.ID, foreign.ID} {
+		if _, err := service.Close(ctx, id); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	listed, err := NewService(NewPostgresRepository(pool), NewProjectLookup(projectRepo), NewStoryLookup(backlog.NewPostgresRepository(pool))).
+		ListClosed(ctx, project.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(listed) != 2 {
+		t.Fatalf("len: got %d want 2 (%+v)", len(listed), listed)
+	}
+	if listed[0].ID != first.ID || listed[0].Goal != "Primero cerrado" || listed[0].Status != StatusClosed {
+		t.Fatalf("first: %+v", listed[0])
+	}
+	if listed[1].ID != second.ID || listed[1].Goal != "Segundo cerrado" || listed[1].Status != StatusClosed {
+		t.Fatalf("second: %+v", listed[1])
+	}
+	for _, sprint := range listed {
+		if sprint.ID == open.ID {
+			t.Fatalf("open sprint appeared: %+v", sprint)
+		}
+	}
+}
+
+func TestPostgresCompletePersistsAndIsVisibleThroughHTTP(t *testing.T) {
+	pool := postgresTestPool(t)
+	ctx := context.Background()
+	projectRepo := projects.NewPostgresRepository(pool)
+	projectService := projects.NewService(projectRepo)
+	project, err := projectService.Create(ctx, projects.CreateProject{
+		Name:      "Completar historia",
+		StartDate: time.Date(2026, 10, 26, 0, 0, 0, 0, time.UTC),
+		EndDate:   time.Date(2026, 11, 23, 0, 0, 0, 0, time.UTC),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	backlogRepo := backlog.NewPostgresRepository(pool)
+	backlogService := backlog.NewService(backlogRepo, projectService)
+	story, err := backlogService.Create(ctx, backlog.CreateStory{
+		ProjectID: project.ID, Identifier: "HU-009", Title: "Completar", Description: "Sin estimación",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	points := int64(3)
+	other, err := backlogService.Create(ctx, backlog.CreateStory{
+		ProjectID: project.ID, Identifier: "HU-010", Title: "Cerrar", Description: "Conservar",
+		Priority: backlog.PriorityHigh, StoryPoints: &points, AcceptanceCriteria: []string{"No cambia"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	service := NewService(NewPostgresRepository(pool), NewProjectLookup(projectRepo), NewStoryLookup(backlogRepo))
 	sprint, err := service.Create(ctx, CreateSprint{ProjectID: project.ID, Goal: "Registrar avance"})
 	if err != nil {
 		t.Fatal(err)

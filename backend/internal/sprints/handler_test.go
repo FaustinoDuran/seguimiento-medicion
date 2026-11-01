@@ -396,3 +396,61 @@ func TestCompleteHTTPHidesPersistenceErrorsAndKeepsState(t *testing.T) {
 		t.Fatalf("failed persistence changed story: %+v, %v", listed, err)
 	}
 }
+
+func TestListClosedSprintsHTTP(t *testing.T) {
+	repo := newMemoryRepository()
+	closed := saveSprint(t, repo, 7, StatusClosed)
+	saveSprint(t, repo, 7, StatusOpen)
+	if err := repo.SaveAssignment(context.Background(), Assignment{SprintID: closed.ID, StoryID: 5}); err != nil {
+		t.Fatalf("assign: %v", err)
+	}
+	router := chi.NewRouter()
+	Mount(router, NewService(repo, newMemoryProjects(7), newMemoryStories(
+		StoryRef{ID: 5, ProjectID: 7, Identifier: "HU-005", Title: "Crear historia", Status: "done"},
+	)))
+
+	response := sprintRequest(router, http.MethodGet, "/projects/7/sprints/closed", "")
+	if response.Code != http.StatusOK {
+		t.Fatalf("list status: got %d want %d body %s", response.Code, http.StatusOK, response.Body.String())
+	}
+	var listed []sprintResponse
+	if err := json.NewDecoder(response.Body).Decode(&listed); err != nil {
+		t.Fatalf("decode: %v", err)
+	}
+	if len(listed) != 1 || listed[0].ID != closed.ID || listed[0].Goal != closed.Goal || listed[0].Status != StatusClosed {
+		t.Fatalf("listed %+v", listed)
+	}
+
+	emptyRouter := chi.NewRouter()
+	Mount(emptyRouter, NewService(newMemoryRepository(), newMemoryProjects(7), newMemoryStories()))
+	empty := sprintRequest(emptyRouter, http.MethodGet, "/projects/7/sprints/closed", "")
+	if empty.Code != http.StatusOK || empty.Body.String() != "[]\n" {
+		t.Fatalf("empty list: got %d body %s", empty.Code, empty.Body.String())
+	}
+
+	missing := sprintRequest(router, http.MethodGet, "/projects/99/sprints/closed", "")
+	if missing.Code != http.StatusNotFound {
+		t.Fatalf("missing project: got %d want %d body %s", missing.Code, http.StatusNotFound, missing.Body.String())
+	}
+
+	invalid := sprintRequest(router, http.MethodGet, "/projects/no/sprints/closed", "")
+	if invalid.Code != http.StatusBadRequest {
+		t.Fatalf("invalid project: got %d want %d body %s", invalid.Code, http.StatusBadRequest, invalid.Body.String())
+	}
+
+	detail := sprintRequest(router, http.MethodGet, "/sprints/1", "")
+	if detail.Code != http.StatusOK {
+		t.Fatalf("get closed: got %d body %s", detail.Code, detail.Body.String())
+	}
+	stories := sprintRequest(router, http.MethodGet, "/sprints/1/stories", "")
+	if stories.Code != http.StatusOK {
+		t.Fatalf("stories: got %d body %s", stories.Code, stories.Body.String())
+	}
+	var assigned []assignedStoryResponse
+	if err := json.NewDecoder(stories.Body).Decode(&assigned); err != nil {
+		t.Fatalf("decode stories: %v", err)
+	}
+	if len(assigned) != 1 || assigned[0].StoryID != 5 || assigned[0].Status != "done" {
+		t.Fatalf("assigned %+v", assigned)
+	}
+}
