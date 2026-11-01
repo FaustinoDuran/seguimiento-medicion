@@ -51,6 +51,10 @@ func (s *Service) Get(ctx context.Context, id int64) (Sprint, error) {
 	return s.repo.FindByID(ctx, id)
 }
 
+func (s *Service) ListClosed(ctx context.Context, projectID int64) ([]Sprint, error) {
+	return nil, nil
+}
+
 func (s *Service) Close(ctx context.Context, id int64) (Sprint, error) {
 	sprint, err := s.repo.FindByID(ctx, id)
 	if err != nil {

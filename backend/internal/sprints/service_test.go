@@ -567,3 +567,99 @@ func TestCompleteRejectsMissingSprintStoryAndOtherProject(t *testing.T) {
 		})
 	}
 }
+
+func TestListClosedReturnsClosedSprintsAndOmitsOpen(t *testing.T) {
+	repo := newMemoryRepository()
+	older, err := repo.Save(context.Background(), Sprint{
+		ProjectID: 7,
+		Goal:      "Sprint cerrado viejo",
+		Status:    StatusClosed,
+		CreatedAt: time.Date(2026, 9, 1, 12, 0, 0, 0, time.UTC),
+	})
+	if err != nil {
+		t.Fatalf("save older: %v", err)
+	}
+	saveSprint(t, repo, 7, StatusOpen)
+	newer, err := repo.Save(context.Background(), Sprint{
+		ProjectID: 7,
+		Goal:      "Sprint cerrado nuevo",
+		Status:    StatusClosed,
+		CreatedAt: time.Date(2026, 10, 1, 12, 0, 0, 0, time.UTC),
+	})
+	if err != nil {
+		t.Fatalf("save newer: %v", err)
+	}
+	if _, err := repo.Save(context.Background(), Sprint{
+		ProjectID: 8,
+		Goal:      "Otro proyecto",
+		Status:    StatusClosed,
+		CreatedAt: time.Date(2026, 8, 1, 12, 0, 0, 0, time.UTC),
+	}); err != nil {
+		t.Fatalf("save other project: %v", err)
+	}
+
+	service := NewService(repo, newMemoryProjects(7), newMemoryStories())
+	listed, err := service.ListClosed(context.Background(), 7)
+	if err != nil {
+		t.Fatalf("list closed: %v", err)
+	}
+	if len(listed) != 2 {
+		t.Fatalf("len: got %d want 2 (%+v)", len(listed), listed)
+	}
+	if listed[0].ID != older.ID || listed[0].Goal != older.Goal || listed[0].Status != StatusClosed {
+		t.Fatalf("first: %+v want %+v", listed[0], older)
+	}
+	if listed[1].ID != newer.ID || listed[1].Goal != newer.Goal || listed[1].Status != StatusClosed {
+		t.Fatalf("second: %+v want %+v", listed[1], newer)
+	}
+}
+
+func TestListClosedEmptyWhenNoClosedSprints(t *testing.T) {
+	repo := newMemoryRepository()
+	saveSprint(t, repo, 7, StatusOpen)
+	service := NewService(repo, newMemoryProjects(7), newMemoryStories())
+
+	listed, err := service.ListClosed(context.Background(), 7)
+	if err != nil {
+		t.Fatalf("list closed: %v", err)
+	}
+	if len(listed) != 0 {
+		t.Fatalf("expected empty list, got %+v", listed)
+	}
+}
+
+func TestListClosedRejectsMissingProject(t *testing.T) {
+	service := NewService(newMemoryRepository(), newMemoryProjects(), newMemoryStories())
+	listed, err := service.ListClosed(context.Background(), 99)
+	if !errors.Is(err, ErrProjectNotFound) {
+		t.Fatalf("error: got %v want %v", err, ErrProjectNotFound)
+	}
+	if listed != nil {
+		t.Fatalf("expected nil list, got %+v", listed)
+	}
+}
+
+func TestListClosedSprintRemainsQueryableWithStories(t *testing.T) {
+	repo := newMemoryRepository()
+	sprint := saveSprint(t, repo, 7, StatusClosed)
+	if err := repo.SaveAssignment(context.Background(), Assignment{SprintID: sprint.ID, StoryID: 5}); err != nil {
+		t.Fatalf("assign: %v", err)
+	}
+	stories := newMemoryStories(StoryRef{
+		ID: 5, ProjectID: 7, Identifier: "HU-005", Title: "Crear historia", Status: "done",
+	})
+	service := NewService(repo, newMemoryProjects(7), stories)
+
+	listed, err := service.ListClosed(context.Background(), 7)
+	if err != nil || len(listed) != 1 || listed[0].ID != sprint.ID {
+		t.Fatalf("list closed: %+v, %v", listed, err)
+	}
+	got, err := service.Get(context.Background(), listed[0].ID)
+	if err != nil || got.ID != sprint.ID || got.Status != StatusClosed {
+		t.Fatalf("get: %+v, %v", got, err)
+	}
+	assigned, err := service.ListStories(context.Background(), listed[0].ID)
+	if err != nil || len(assigned) != 1 || assigned[0].StoryID != 5 || assigned[0].Status != "done" {
+		t.Fatalf("stories: %+v, %v", assigned, err)
+	}
+}
