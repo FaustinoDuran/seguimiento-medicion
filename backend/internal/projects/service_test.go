@@ -3,6 +3,7 @@ package projects
 import (
 	"context"
 	"errors"
+	"sort"
 	"testing"
 	"time"
 )
@@ -39,6 +40,20 @@ func (r *memoryRepository) Save(_ context.Context, project Project) (Project, er
 	}
 	r.items[project.ID] = project
 	return project, nil
+}
+
+func (r *memoryRepository) List(_ context.Context) ([]Project, error) {
+	ids := make([]int64, 0, len(r.items))
+	for id := range r.items {
+		ids = append(ids, id)
+	}
+	sort.Slice(ids, func(i, j int) bool { return ids[i] < ids[j] })
+
+	projects := make([]Project, 0, len(ids))
+	for _, id := range ids {
+		projects = append(projects, r.items[id])
+	}
+	return projects, nil
 }
 
 func (r *memoryRepository) FindByID(_ context.Context, id int64) (Project, error) {
