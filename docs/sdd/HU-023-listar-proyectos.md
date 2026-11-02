@@ -2,7 +2,7 @@
 
 - Issue: [#45](https://github.com/FaustinoDuran/seguimiento-medicion/issues/45)
 - Módulo Go: `backend/internal/projects/`
-- Estado: lista para implementar
+- Estado: implementada
 
 ## Objetivo
 
@@ -58,9 +58,9 @@ en una lista vacía.
 
 ## Criterios de aceptación
 
-- [ ] AC-023-01 — Un proyecto recién creado aparece en el listado con sus datos.
-- [ ] AC-023-02 — Si no hay proyectos, la lista queda vacía.
-- [ ] AC-023-03 — Varios proyectos aparecen todos, ordenados por `id`.
+- [x] AC-023-01 — Un proyecto recién creado aparece en el listado con sus datos.
+- [x] AC-023-02 — Si no hay proyectos, la lista queda vacía.
+- [x] AC-023-03 — Varios proyectos aparecen todos, ordenados por `id`.
 
 ## Trazabilidad
 
