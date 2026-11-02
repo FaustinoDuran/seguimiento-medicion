@@ -61,6 +61,36 @@ func (r *PostgresRepository) Save(ctx context.Context, project Project) (Project
 	return saved, err
 }
 
+func (r *PostgresRepository) List(ctx context.Context) ([]Project, error) {
+	const query = `
+		SELECT id, name, start_date, end_date, status, created_at
+		FROM projects
+		ORDER BY id`
+
+	rows, err := r.pool.Query(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	found := make([]Project, 0)
+	for rows.Next() {
+		var project Project
+		if err := rows.Scan(
+			&project.ID,
+			&project.Name,
+			&project.StartDate,
+			&project.EndDate,
+			&project.Status,
+			&project.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		found = append(found, project)
+	}
+	return found, rows.Err()
+}
+
 func (r *PostgresRepository) FindByID(ctx context.Context, id int64) (Project, error) {
 	const query = `
 		SELECT id, name, start_date, end_date, status, created_at

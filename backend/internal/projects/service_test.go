@@ -3,6 +3,7 @@ package projects
 import (
 	"context"
 	"errors"
+	"sort"
 	"testing"
 	"time"
 )
@@ -39,6 +40,20 @@ func (r *memoryRepository) Save(_ context.Context, project Project) (Project, er
 	}
 	r.items[project.ID] = project
 	return project, nil
+}
+
+func (r *memoryRepository) List(_ context.Context) ([]Project, error) {
+	ids := make([]int64, 0, len(r.items))
+	for id := range r.items {
+		ids = append(ids, id)
+	}
+	sort.Slice(ids, func(i, j int) bool { return ids[i] < ids[j] })
+
+	projects := make([]Project, 0, len(ids))
+	for _, id := range ids {
+		projects = append(projects, r.items[id])
+	}
+	return projects, nil
 }
 
 func (r *memoryRepository) FindByID(_ context.Context, id int64) (Project, error) {
@@ -268,6 +283,59 @@ func TestAddMemberRejectsMissingProject(t *testing.T) {
 	_, err := service.AddMember(context.Background(), AddMember{ProjectID: 99, Name: "Ignacio"})
 	if !errors.Is(err, ErrNotFound) {
 		t.Fatalf("error: got %v want %v", err, ErrNotFound)
+	}
+}
+
+func TestListProjectsEmpty(t *testing.T) {
+	service := NewService(newMemoryRepository())
+
+	got, err := service.List(context.Background())
+	if err != nil {
+		t.Fatalf("list: %v", err)
+	}
+	if len(got) != 0 {
+		t.Fatalf("projects: got %d want 0", len(got))
+	}
+}
+
+func TestListProjectsIncludesCreatedInIDOrder(t *testing.T) {
+	service := NewService(newMemoryRepository())
+	start := testDate(t, "2026-10-26")
+	end := testDate(t, "2026-11-23")
+
+	first, err := service.Create(context.Background(), CreateProject{
+		Name:      "Alfa",
+		StartDate: start,
+		EndDate:   end,
+	})
+	if err != nil {
+		t.Fatalf("create alfa: %v", err)
+	}
+	second, err := service.Create(context.Background(), CreateProject{
+		Name:      "Beta",
+		StartDate: start,
+		EndDate:   end,
+		Status:    StatusPlanned,
+	})
+	if err != nil {
+		t.Fatalf("create beta: %v", err)
+	}
+
+	got, err := service.List(context.Background())
+	if err != nil {
+		t.Fatalf("list: %v", err)
+	}
+	if len(got) != 2 {
+		t.Fatalf("projects: got %d want 2", len(got))
+	}
+	if got[0].ID != first.ID || got[0].Name != "Alfa" || got[0].Status != StatusActive {
+		t.Fatalf("first: %+v", got[0])
+	}
+	if !got[0].StartDate.Equal(first.StartDate) || !got[0].EndDate.Equal(first.EndDate) {
+		t.Fatalf("first dates: %+v", got[0])
+	}
+	if got[1].ID != second.ID || got[1].Name != "Beta" || got[1].Status != StatusPlanned {
+		t.Fatalf("second: %+v", got[1])
 	}
 }
 

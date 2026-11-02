@@ -62,6 +62,17 @@ func (s *Service) Get(ctx context.Context, id int64) (Project, error) {
 	return s.repo.FindByID(ctx, id)
 }
 
+func (s *Service) List(ctx context.Context) ([]Project, error) {
+	projects, err := s.repo.List(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if projects == nil {
+		return []Project{}, nil
+	}
+	return projects, nil
+}
+
 func (s *Service) AddMember(ctx context.Context, input AddMember) (Member, error) {
 	name := strings.TrimSpace(input.Name)
 	if name == "" {
