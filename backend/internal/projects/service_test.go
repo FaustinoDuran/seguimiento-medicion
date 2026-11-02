@@ -271,6 +271,59 @@ func TestAddMemberRejectsMissingProject(t *testing.T) {
 	}
 }
 
+func TestListProjectsEmpty(t *testing.T) {
+	service := NewService(newMemoryRepository())
+
+	got, err := service.List(context.Background())
+	if err != nil {
+		t.Fatalf("list: %v", err)
+	}
+	if len(got) != 0 {
+		t.Fatalf("projects: got %d want 0", len(got))
+	}
+}
+
+func TestListProjectsIncludesCreatedInIDOrder(t *testing.T) {
+	service := NewService(newMemoryRepository())
+	start := testDate(t, "2026-10-26")
+	end := testDate(t, "2026-11-23")
+
+	first, err := service.Create(context.Background(), CreateProject{
+		Name:      "Alfa",
+		StartDate: start,
+		EndDate:   end,
+	})
+	if err != nil {
+		t.Fatalf("create alfa: %v", err)
+	}
+	second, err := service.Create(context.Background(), CreateProject{
+		Name:      "Beta",
+		StartDate: start,
+		EndDate:   end,
+		Status:    StatusPlanned,
+	})
+	if err != nil {
+		t.Fatalf("create beta: %v", err)
+	}
+
+	got, err := service.List(context.Background())
+	if err != nil {
+		t.Fatalf("list: %v", err)
+	}
+	if len(got) != 2 {
+		t.Fatalf("projects: got %d want 2", len(got))
+	}
+	if got[0].ID != first.ID || got[0].Name != "Alfa" || got[0].Status != StatusActive {
+		t.Fatalf("first: %+v", got[0])
+	}
+	if !got[0].StartDate.Equal(first.StartDate) || !got[0].EndDate.Equal(first.EndDate) {
+		t.Fatalf("first dates: %+v", got[0])
+	}
+	if got[1].ID != second.ID || got[1].Name != "Beta" || got[1].Status != StatusPlanned {
+		t.Fatalf("second: %+v", got[1])
+	}
+}
+
 func TestListMembersEmpty(t *testing.T) {
 	service := NewService(newMemoryRepository())
 	project := createTestProject(t, service)
