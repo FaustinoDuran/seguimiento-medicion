@@ -98,6 +98,69 @@ func TestPostgresHTTPStoryRoundTrip(t *testing.T) {
 	if found.Code != http.StatusOK || found.Body.String() != created.Body.String() {
 		t.Fatalf("get persisted story: %d %s", found.Code, found.Body.String())
 	}
+	listed := storyRequest(router, http.MethodGet, path, "")
+	var body struct {
+		Stories []Story `json:"stories"`
+	}
+	if err := json.Unmarshal(listed.Body.Bytes(), &body); err != nil {
+		t.Fatal(err)
+	}
+	if listed.Code != http.StatusOK || !reflect.DeepEqual(body.Stories, []Story{story}) {
+		t.Fatalf("list persisted story: %d %s", listed.Code, listed.Body.String())
+	}
+}
+
+func TestPostgresListStoriesPersistsScopeOrderAndFields(t *testing.T) {
+	pool := postgresTestPool(t)
+	ctx := context.Background()
+	projectService := projects.NewService(projects.NewPostgresRepository(pool))
+	start := time.Date(2026, 11, 3, 0, 0, 0, 0, time.UTC)
+	project, err := projectService.Create(ctx, projects.CreateProject{
+		Name: "Listado", StartDate: start, EndDate: start.AddDate(0, 0, 1),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	other, err := projectService.Create(ctx, projects.CreateProject{
+		Name: "Otro", StartDate: start, EndDate: start.AddDate(0, 0, 1),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	repo := NewPostgresRepository(pool)
+	service := NewService(repo, projectService)
+	points := int64(5)
+	first, err := service.Create(ctx, CreateStory{
+		ProjectID: project.ID, Identifier: "FIRST", Title: "Primera", Description: "Detalle",
+		Priority: PriorityHigh, StoryPoints: &points, AcceptanceCriteria: []string{"Aceptada"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	last, err := service.Create(ctx, CreateStory{ProjectID: project.ID, Identifier: "LAST", Title: "Última"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := service.Create(ctx, CreateStory{ProjectID: other.ID, Identifier: "OTHER", Title: "Otro"}); err != nil {
+		t.Fatal(err)
+	}
+	first, err = repo.MarkCompleted(ctx, project.ID, first.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := NewPostgresRepository(pool).ListByProject(ctx, project.ID)
+	if err != nil || !reflect.DeepEqual(got, []Story{last, first}) {
+		t.Fatalf("persisted list: got %+v, %v; want last then completed first", got, err)
+	}
+	got, err = repo.ListByProject(ctx, other.ID+1)
+	if err != nil || got == nil || len(got) != 0 {
+		t.Fatalf("empty list: got %+v, %v", got, err)
+	}
+	failedCtx, cancel := context.WithCancel(ctx)
+	cancel()
+	if _, err := repo.ListByProject(failedCtx, project.ID); err == nil {
+		t.Fatal("canceled query must return its error")
+	}
 }
 
 func TestPostgresCompletionMigratesExistingStories(t *testing.T) {

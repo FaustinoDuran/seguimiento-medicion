@@ -118,6 +118,12 @@ ya cerrado.
 
 ## Verificación del backend
 
+HU-028 agrega `GET /projects/{project_id}/stories`: devuelve
+`{ "stories": [...] }` con todas las historias del proyecto en `id DESC`,
+incluidas las completadas y asignadas a Sprint. Un proyecto vacío devuelve
+`{ "stories": [] }`; uno cerrado sigue siendo consultable. ID inválido: `400`;
+proyecto inexistente: `404`; fallo de persistencia: `500` JSON genérico.
+
 Desde `backend/`, ejecutar `go test ./...`. Para incluir persistencia PostgreSQL,
 HTTP con base real y unicidad concurrente:
 

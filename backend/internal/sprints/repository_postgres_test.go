@@ -367,4 +367,15 @@ func TestPostgresCompletePersistsAndIsVisibleThroughHTTP(t *testing.T) {
 	if response.Code != http.StatusOK || !reflect.DeepEqual(retrieved, want) {
 		t.Fatalf("backlog HTTP after completion: %d, %s", response.Code, response.Body.String())
 	}
+	collectionPath := fmt.Sprintf("/projects/%d/stories", project.ID)
+	collection := sprintRequest(router, http.MethodGet, collectionPath, "")
+	var body struct {
+		Stories []backlog.Story `json:"stories"`
+	}
+	if err := json.Unmarshal(collection.Body.Bytes(), &body); err != nil {
+		t.Fatal(err)
+	}
+	if collection.Code != http.StatusOK || !reflect.DeepEqual(body.Stories, []backlog.Story{other, want}) {
+		t.Fatalf("backlog must include assigned and completed stories: %d %s", collection.Code, collection.Body.String())
+	}
 }

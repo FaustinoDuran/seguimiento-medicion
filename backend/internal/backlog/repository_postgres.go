@@ -38,6 +38,29 @@ func NewPostgresRepository(pool *pgxpool.Pool) *PostgresRepository {
 	return &PostgresRepository{pool: pool}
 }
 
+func (r *PostgresRepository) ListByProject(ctx context.Context, projectID int64) ([]Story, error) {
+	const query = `
+        SELECT id, project_id, identifier, title, description, priority, status, story_points, acceptance_criteria
+        FROM backlog_stories WHERE project_id = $1 ORDER BY id DESC`
+	rows, err := r.pool.Query(ctx, query, projectID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	stories := make([]Story, 0)
+	for rows.Next() {
+		story, err := scanStory(rows)
+		if err != nil {
+			return nil, err
+		}
+		stories = append(stories, story)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return stories, nil
+}
+
 func EnsureSchema(ctx context.Context, pool *pgxpool.Pool) error {
 	_, err := pool.Exec(ctx, schemaSQL)
 	return err

@@ -61,6 +61,21 @@ func (h *Handler) Get(writer http.ResponseWriter, request *http.Request) {
 	writeJSON(writer, http.StatusOK, story)
 }
 
+func (h *Handler) List(writer http.ResponseWriter, request *http.Request) {
+	projectID, ok := parseID(writer, request, "project_id")
+	if !ok {
+		return
+	}
+	stories, err := h.service.List(request.Context(), projectID)
+	if err != nil {
+		writeServiceError(writer, err)
+		return
+	}
+	writeJSON(writer, http.StatusOK, struct {
+		Stories []Story `json:"stories"`
+	}{Stories: stories})
+}
+
 func parseID(writer http.ResponseWriter, request *http.Request, name string) (int64, bool) {
 	id, err := strconv.ParseInt(chi.URLParam(request, name), 10, 64)
 	if err != nil || id < 1 {
