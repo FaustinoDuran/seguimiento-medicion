@@ -38,6 +38,10 @@ func NewPostgresRepository(pool *pgxpool.Pool) *PostgresRepository {
 	return &PostgresRepository{pool: pool}
 }
 
+func (r *PostgresRepository) ListByProject(ctx context.Context, projectID int64) ([]Story, error) {
+	return nil, errors.New("list stories not implemented")
+}
+
 func EnsureSchema(ctx context.Context, pool *pgxpool.Pool) error {
 	_, err := pool.Exec(ctx, schemaSQL)
 	return err

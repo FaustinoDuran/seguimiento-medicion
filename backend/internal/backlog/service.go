@@ -90,3 +90,10 @@ func (s *Service) Get(ctx context.Context, projectID, id int64) (Story, error) {
 	}
 	return s.repo.FindByID(ctx, projectID, id)
 }
+
+func (s *Service) List(ctx context.Context, projectID int64) ([]Story, error) {
+	if _, err := s.projects.Get(ctx, projectID); err != nil {
+		return nil, err
+	}
+	return s.repo.ListByProject(ctx, projectID)
+}
