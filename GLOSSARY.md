@@ -7,6 +7,10 @@ Vocabulario del producto para organizar y seguir el trabajo de proyectos de soft
 **Historia de backlog**:
 Unidad de trabajo del producto que pertenece a un proyecto.
 
+**Backlog del proyecto**:
+Conjunto de todas las historias de backlog de un proyecto, incluidas las asignadas a un Sprint y las completadas.
+_Evitar_: Solo historias pendientes, solo historias sin Sprint.
+
 **Identificador de historia**:
 Código de negocio ingresado por el integrante, obligatorio y único dentro de su proyecto. Dos proyectos distintos pueden utilizar el mismo identificador.
 _Evitar_: ID interno, número de Issue de GitHub.
