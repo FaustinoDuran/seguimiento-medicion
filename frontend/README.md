@@ -78,6 +78,54 @@ test('muestra la respuesta exitosa del servicio', async () => {
 })
 ```
 
+## Matriz de escenarios cubiertos
+
+Corresponde a TASK-015 (#62). HTTP siempre está simulado con MSW: estas pruebas
+demuestran el comportamiento de la interfaz, **no** la aceptación integrada con
+Go y PostgreSQL.
+
+| Grupo (issue #62) | Escenario | Test | Archivo |
+| --- | --- | --- | --- |
+| 1 | Navegación de la portada a conexión | navega de la portada a la pantalla de conexión | `src/App.test.tsx` |
+| 1 | Conexión por URL directa, con carga | abre la pantalla de conexión por URL directa | `src/App.test.tsx` |
+| 1 | Ruta desconocida | muestra la página de dirección no encontrada | `src/App.test.tsx` |
+| 1 | Respuesta exitosa y reintento tras error | (ya cubierto por TASK-013, sin duplicar) | `src/app/ConnectionPage.test.tsx` |
+| 2 | Proyecto e historias, orden recibido, completadas y sin estimar | carga el proyecto y las historias en el orden entregado por la API | `src/features/backlog/BacklogPage.test.tsx` |
+| 2 | Respuesta exitosa vacía | muestra el vacío solo cuando la consulta fue exitosa | ídem |
+| 2 | Fallo de consulta y recuperación sin vacío falso | falla la consulta, no muestra vacío falso y se recupera al reintentar | ídem |
+| 3 | Alta mínima: payload, confirmación, limpieza y recarga | crea una historia con los datos mínimos y refresca el listado | ídem |
+| 3 | Bloqueo de envíos repetidos | no repite el alta mientras la primera está en curso | ídem |
+| 4 | Opcionales: descripción, prioridad, story points y criterios | envía los campos opcionales con el alta | `src/features/backlog/StoryForm.test.tsx` |
+| 4 | Agregar y quitar criterios | permite agregar y quitar criterios de aceptación | ídem |
+| 5 | Título faltante, asociación accesible, foco y datos conservados | muestra el error de título junto al campo, enfoca y conserva los datos | ídem |
+| 5 | Identificador faltante, asociación accesible, foco y datos conservados | muestra el error de identificador junto al campo, enfoca y conserva los datos | ídem |
+| 5 | Identificador duplicado | muestra el error de identificador duplicado en su campo | ídem |
+| 5 | Story points rechazados y detalles desplegados | muestra el rechazo de story points y despliega los detalles | ídem |
+| 5 | Prioridad rechazada | muestra el rechazo de prioridad y despliega los detalles | ídem |
+| 5 | Criterios vacíos rechazados | muestra el rechazo de criterios de aceptación vacíos | ídem |
+| 5 | Error desconocido con mensaje general | muestra un mensaje general ante un error desconocido | ídem |
+| 6 | Alta confirmada con recarga fallida y reintento solo de consulta | conserva la confirmación si falla la recarga y reintenta solo la consulta | `BacklogPage.test.tsx` |
+| 7 | Conexión interrumpida durante el alta | advierte que el alta no está confirmada si se corta la conexión | `StoryForm.test.tsx` |
+| 8 | Proyecto inexistente | muestra el proyecto inexistente sin formulario | `BacklogPage.test.tsx` |
+| 8 | Proyecto cerrado de solo lectura | muestra un proyecto cerrado sin formulario de alta | ídem |
+| 8 | Cierre concurrente durante el alta | conserva los datos cuando el proyecto se cierra durante el alta | ídem |
+| 9 | Cambio de proyecto con consulta pendiente | no conserva borradores ni datos del proyecto anterior | ídem |
+| 9 | Desmontaje con consulta pendiente | descarta la respuesta de una consulta pendiente tras el desmontaje | ídem |
+
+### Pendiente y fuera de alcance
+
+- **Aceptación integrada** con Go y PostgreSQL, y el contrato real de listado
+  (`HU-028`): todas las pruebas usan MSW.
+- **Navegación** desde el detalle de proyecto al backlog (`HU-024`): hoy solo se
+  prueba el acceso por URL directa.
+- **UI de sprints** (`HU-027`): queda para una TASK propia, porque la issue #62
+  la excluye explícitamente.
+- Mensajes de error de `invalid json` e `initial story status must be todo` no
+  tienen prueba todavía; son rechazos de la API sin flujo propio en la UI.
+- Los **snapshots** no se usan como evidencia; se comprueba comportamiento
+  visible y asociación accesible.
+
+
 
 Verificación de HU-026, cuando esté disponible el contrato de listado:
 
