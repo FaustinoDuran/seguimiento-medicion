@@ -17,5 +17,17 @@ Completar una fila por cada HU mergeada. La demo final se apoya en esta tabla.
 
 HU-001 a HU-010 del Sprint 1 están mergeadas en `main`. HU-011 del Sprint 2 está en revisión: el PR [#56](https://github.com/FaustinoDuran/seguimiento-medicion/pull/56) está abierto.
 
+## HU con integración pendiente
+
+| HU | Issue | SDD | Criterios | BDD | Verificación | Código | PR | Evidencia |
+|---|---|---|---|---|---|---|---|---|
+| HU-026 | [#48](https://github.com/FaustinoDuran/seguimiento-medicion/issues/48) | [SDD](sdd/HU-026-ui-backlog.md) | AC-026-01 a AC-026-14; aceptación integrada pendiente | [feature](../features/HU-026-ui-backlog.feature) | build, lint y 17 comprobaciones de navegador con API simulada; ver SDD | `frontend/src/features/backlog/`; `frontend/src/App.tsx` | Pendiente | Spec `04bf4b0`; contrato `1783dbf`; UI `b030717`. Sin cambios Go: excepción de UI del ADR 0004 |
+
+HU-026 está implementada como presentación contra contrato. No está Done:
+falta `GET /projects/{project_id}/stories` en una HU de backend separada y la
+integración de navegación con HU-024. El listado esperado devuelve
+`{ "stories": [...] }` ordenado por `id DESC`. No se validó contra un listado
+real en Go/PostgreSQL ni se implementaron las pantallas de otra HU.
+
 Las tareas técnicas del Sprint 0 no se agregan a esta matriz porque no recorren
 SDD/BDD. Se registran como Issues `TASK-XXX` y en `docs/sprints/sprint-0.md`.

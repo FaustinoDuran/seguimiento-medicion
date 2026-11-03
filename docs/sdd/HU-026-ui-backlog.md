@@ -3,7 +3,7 @@
 - Issue: [#48](https://github.com/FaustinoDuran/seguimiento-medicion/issues/48)
 - Módulo Go existente: `backend/internal/backlog/`
 - Presentación prevista: `frontend/src/features/backlog/`
-- Estado: diseño confirmado; UI en desarrollo contra contrato, integración pendiente
+- Estado: UI implementada contra contrato; integración y aceptación pendientes
 
 ## Objetivo
 
@@ -130,7 +130,10 @@ resultados y errores de la API.
 - Entrevista cerrada con confirmación final del usuario el 2026-11-02.
 - Pendiente HU de backend para listar historias, con Issue, SDD, BDD y TDD
   propios; el contrato debe satisfacer el orden y alcance acordados aquí.
-- Pendiente resolver HU-024 antes de implementar la pantalla.
+- Pendiente resolver HU-024 para completar la integración de navegación.
+- La UI ya admite acceso directo por URL. El enlace desde el detalle, el retorno
+  al detalle y la vuelta al listado requieren las pantallas de HU-024. AC-026-04
+  y AC-026-13 tienen pendiente su validación de navegación integrada.
 
 El diseño está confirmado. La UI se prepara contra el contrato documentado;
 su integración espera la resolución de las dependencias. No se requieren nuevas decisiones de
@@ -139,5 +142,20 @@ arquitectura: se mantiene ADR 0004.
 ## Trazabilidad
 
 - BDD: `features/HU-026-ui-backlog.feature` (diseño confirmado).
-- Código previsto: `frontend/src/features/backlog/` (pendiente).
+- Código: `frontend/src/features/backlog/` y ruta en `frontend/src/App.tsx`.
 - Reglas existentes: `backend/internal/backlog/service.go` y sus tests.
+
+## Verificación de la UI
+
+- `npm run build` y `npm run lint`.
+- 17 comprobaciones en Chrome con API simulada: acceso directo y vacío; error
+  de título y foco; alta mínima; opcionales y eliminación de criterios; historias
+  completadas y orden recibido; alta confirmada con recarga fallida; error de
+  consulta y recuperación; identificador duplicado; conexión interrumpida;
+  bloqueo de envíos repetidos; cierre concurrente; proyecto cerrado; proyecto
+  inexistente; recuperación de consulta de proyecto; cambio de proyecto; vista
+  móvil sin desbordamiento del documento; ausencia de errores de ejecución.
+- Estas comprobaciones verifican la presentación contra el contrato esperado;
+  no sustituyen la aceptación contra Go y PostgreSQL ni la navegación de HU-024.
+- No se agregó lógica Go. Según ADR 0004, esta HU de UI no requiere commits
+  RED/GREEN en Go. El listado pendiente requiere su propia HU con TDD.
