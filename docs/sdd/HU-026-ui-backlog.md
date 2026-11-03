@@ -3,7 +3,7 @@
 - Issue: [#48](https://github.com/FaustinoDuran/seguimiento-medicion/issues/48)
 - Módulo Go existente: `backend/internal/backlog/`
 - Presentación prevista: `frontend/src/features/backlog/`
-- Estado: diseño confirmado; implementación pendiente de resolución de dependencias
+- Estado: diseño confirmado; UI en desarrollo contra contrato, integración pendiente
 
 ## Objetivo
 
@@ -42,8 +42,9 @@ resultados y errores de la API.
 
 ## Restricciones
 
-- Completar la especificación ahora; resolver las dependencias antes de
-  implementar la pantalla.
+- Se prepara la UI contra el contrato de integración tras la solicitud de
+  implementación. La aceptación integrada sigue dependiendo de HU-024 y del
+  listado de backend.
 - Depende de HU-024 ([#46](https://github.com/FaustinoDuran/seguimiento-medicion/issues/46)).
 - Falta una HU de backend para listar historias por proyecto, con contrato y
   criterios propios, según ADR 0004. No implementar ese comportamiento dentro
@@ -51,6 +52,11 @@ resultados y errores de la API.
 - Creación disponible: `POST /projects/{project_id}/stories`.
 - Consulta individual disponible: `GET /projects/{project_id}/stories/{id}`.
 - El endpoint de listado está pendiente de definición en la HU de backend.
+  Contrato esperado por esta UI: `GET /projects/{project_id}/stories`, respuesta
+  `200` con `{ "stories": [...] }` y array vacío `[]` cuando no hay historias.
+  Cada elemento conserva el esquema de historia de HU-005. Los errores usan
+  `{ "error": "..." }`, como el resto de la API. Este contrato aún no está
+  implementado en el backend.
   Debe devolver todas las historias del proyecto ordenadas por `id DESC`.
   Las historias actuales no tienen `created_at`; no se incorpora ese campo
   para esta pantalla. El ID sirve como orden de altas, no como fecha real de
@@ -126,8 +132,8 @@ resultados y errores de la API.
   propios; el contrato debe satisfacer el orden y alcance acordados aquí.
 - Pendiente resolver HU-024 antes de implementar la pantalla.
 
-El diseño está confirmado. La implementación espera la resolución de las
-dependencias. No se requieren nuevas decisiones de
+El diseño está confirmado. La UI se prepara contra el contrato documentado;
+su integración espera la resolución de las dependencias. No se requieren nuevas decisiones de
 arquitectura: se mantiene ADR 0004.
 
 ## Trazabilidad
