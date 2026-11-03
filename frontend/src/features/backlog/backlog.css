@@ -1,0 +1,64 @@
+.backlog-page { padding: 40px 0 72px; }
+.backlog-page-heading { padding-top: 40px; }
+.backlog-page-heading h1 { font-size: clamp(38px, 5vw, 64px); }
+.backlog-page-heading .eyebrow { margin-bottom: 16px; }
+.backlog-page-heading .lead { margin: 20px 0 36px; }
+.backlog-form { border: 1px solid #183e3633; padding: clamp(20px, 4vw, 36px); background: #fffdf7; }
+.backlog-section-heading { display: flex; align-items: baseline; gap: 20px; margin-bottom: 24px; }
+.backlog-section-heading h2 { margin-bottom: 4px; }
+.backlog-section-heading p { color: #53675f; font-size: 14px; margin: 0; }
+.backlog-section-heading > button { margin-left: auto; }
+.backlog-form fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.backlog-form-grid { display: grid; grid-template-columns: minmax(150px, 1fr) minmax(200px, 2fr); gap: 24px; }
+.backlog-form label, .backlog-form legend { display: block; font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+.backlog-form label span { font-size: 12px; color: #53675f; font-weight: 400; }
+.backlog-form input, .backlog-form textarea, .backlog-form select {
+  display: block; box-sizing: border-box; width: 100%; border: 1px solid #75867b;
+  border-radius: 0; padding: 11px 12px; background: #fffdf7; color: #183e36; font: inherit; font-size: 15px;
+}
+.backlog-form textarea { resize: vertical; }
+.backlog-form :is(input, textarea, select, summary):focus-visible,
+.backlog-table-scroll:focus-visible { outline: 2px solid #a44721; outline-offset: 3px; }
+.backlog-form [aria-invalid="true"] { border-color: #a02e21; }
+.backlog-form input::placeholder, .backlog-form textarea::placeholder { color: #63766a; }
+.backlog-form details { border-top: 1px solid #183e3626; margin-top: 24px; padding-top: 18px; }
+.backlog-form summary { cursor: pointer; width: fit-content; font-weight: 600; font-size: 14px; }
+.backlog-form summary span { font-size: 12px; font-weight: 400; color: #53675f; margin-left: 12px; }
+.backlog-details { display: grid; gap: 24px; margin-top: 24px; }
+.backlog-criterion { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.backlog-quiet-button { border: 0; background: transparent; color: #183e36; padding: 8px 0;
+  font: inherit; font-size: 14px; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+.backlog-quiet-button:disabled { opacity: .6; cursor: wait; }
+.backlog-form-footer { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 28px; }
+.backlog-form-footer > span { font-size: 13px; color: #53675f; }
+.backlog-field-error { color: #a02e21; font-size: 13px; margin: 8px 0 0; }
+.backlog-alert { border-left: 3px solid #a44721; background: #f0e4d9; padding: 18px 22px; margin: 20px 0; }
+.backlog-alert p { margin: 0 0 16px; }
+.backlog-alert h1 { font-size: 32px; }
+.backlog-success { border-left: 3px solid #28594d; padding: 16px 22px; background: #e7ede3; }
+.backlog-list { margin-top: 44px; }
+.backlog-table-scroll { overflow-x: auto; }
+.backlog-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+.backlog-table thead { color: #53675f; font-size: 12px; }
+.backlog-table th, .backlog-table td { padding: 18px 16px; border-bottom: 1px solid #183e3626; }
+.backlog-table th:first-child, .backlog-table td:first-child { padding-left: 0; }
+.backlog-table th:last-child, .backlog-table td:last-child { padding-right: 0; }
+.backlog-table thead th { font-weight: 500; }
+.backlog-identifier { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.backlog-story-title { min-width: 180px; overflow-wrap: anywhere; }
+.backlog-status { display: inline-block; padding: 4px 8px; background: #e8e9de; white-space: nowrap; font-size: 12px; }
+.backlog-status-done { background: #dce9dc; }
+.backlog-points { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.backlog-empty, .backlog-loading { padding: 32px 0; color: #53675f; }
+.backlog-empty { border-top: 1px solid #183e3633; }
+.backlog-empty h3 { font-size: 20px; font-weight: 500; color: #183e36; margin: 0 0 12px; }
+.backlog-empty p { margin: 0; }
+.backlog-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+@media (max-width: 600px) {
+  .backlog-form-grid { grid-template-columns: 1fr; gap: 20px; }
+  .backlog-form-footer { align-items: flex-start; flex-direction: column; }
+  .backlog-section-heading { flex-wrap: wrap; gap: 12px; }
+  .backlog-section-heading > button { margin-left: 0; }
+  .backlog-form-footer .button { width: 100%; }
+}

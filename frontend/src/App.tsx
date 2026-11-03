@@ -1,5 +1,6 @@
 import { BrowserRouter, Link, NavLink, Outlet, Route, Routes } from 'react-router-dom'
 import { ConnectionPage } from './app/ConnectionPage'
+import { BacklogPage } from './features/backlog/BacklogPage'
 
 function AppLayout() {
   return (
@@ -58,6 +59,7 @@ export default function App() {
         <Route element={<AppLayout />}>
           <Route index element={<HomePage />} />
           <Route path="connection" element={<ConnectionPage />} />
+          <Route path="projects/:projectId/backlog" element={<BacklogPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
