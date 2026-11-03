@@ -54,3 +54,21 @@ historia de backlog y se verifica en integración con sprints.
 - Servicio: RED `c22760d` → GREEN `7a30c3e`.
 - PostgreSQL: RED `5d67b72` → GREEN `2d2d806`.
 - HTTP: RED `67c86f2` → GREEN `ce6c375`.
+
+## Verificación
+
+- Suite completa `go test -race -count=1 ./...` con `DATABASE_URL`,
+  `BACKLOG_TEST_DATABASE_URL` y `SPRINTS_TEST_DATABASE_URL` configuradas;
+  ejecutada contra PostgreSQL 16 real, con esquemas de test aislados.
+- `go vet ./...` y `git diff --check`.
+- Integración HTTP/PostgreSQL persistente en los tests de backlog; el test
+  `TestPostgresCompletePersistsAndIsVisibleThroughHTTP` de sprints verifica
+  también que el listado conserva historias asignadas y completadas, con sus
+  campos y orden esperados. Commit `643f290`.
+- Aceptación de la UI existente de HU-026 en Chrome con Go/PostgreSQL reales,
+  sin mocks: vacío, rechazo de título ausente, alta mínima, listado y
+  persistencia tras recarga. También aislamiento por proyecto, orden, historias
+  asignadas/completadas, proyecto cerrado e IDs inválidos/inexistentes.
+- La aceptación de navegador se ejecutó desde un script temporal; los tests
+  Go sí quedan versionados. No se incorporó infraestructura de tests frontend,
+  que corresponde a TASK-013/TASK-015.
