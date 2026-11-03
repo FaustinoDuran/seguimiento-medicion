@@ -1,0 +1,64 @@
+#!/bin/sh
+# Hook pre-push versionado de TASK-014 (#61).
+#
+# Ejecuta la suite completa del backend antes de enviar cambios al remoto y
+# cancela el push si falla o si falta algún requisito.
+#
+# Se instala una vez por clon con ./scripts/install-hooks.sh.
+# Documentación, requisitos y diagnóstico: README, sección "Hook pre-push".
+
+set -eu
+
+fail() {
+  printf '\n[pre-push] %s\n' "$1" >&2
+  exit 1
+}
+
+repository_root=$(git rev-parse --show-toplevel 2>/dev/null) \
+  || fail "No se pudo ubicar la raíz del repositorio. Ejecutá el push desde dentro del repositorio."
+
+backend_dir="$repository_root/backend"
+[ -d "$backend_dir" ] || fail "No existe $backend_dir: el hook espera la estructura del monorepo."
+
+command -v go >/dev/null 2>&1 \
+  || fail "No se encontró 'go' en PATH. Instalá Go 1.24 (o superior) para ejecutar la suite del backend."
+
+# Sin estas variables los tests de PostgreSQL se omiten en silencio, así que el
+# hook se niega a correr una suite que no sería completa.
+missing=""
+[ -n "${DATABASE_URL:-}" ] || missing="$missing DATABASE_URL"
+[ -n "${BACKLOG_TEST_DATABASE_URL:-}" ] || missing="$missing BACKLOG_TEST_DATABASE_URL"
+[ -n "${SPRINTS_TEST_DATABASE_URL:-}" ] || missing="$missing SPRINTS_TEST_DATABASE_URL"
+
+if [ -n "$missing" ]; then
+  fail "Faltan variables de entorno para una ejecución completa:$missing
+
+Definí las tres apuntando a una base de pruebas local (nunca a producción).
+Ejemplo con el docker compose del repo:
+  export DATABASE_URL='postgres://postgres:postgres@localhost:5433/seguimiento_medicion?sslmode=disable'
+  export BACKLOG_TEST_DATABASE_URL=\"\$DATABASE_URL\"
+  export SPRINTS_TEST_DATABASE_URL=\"\$DATABASE_URL\"
+
+El push se canceló; el remoto no recibió cambios."
+fi
+
+printf '[pre-push] Suite completa del backend: go test -count=1 -race ./...\n'
+status=0
+( cd "$backend_dir" && go test -count=1 -race ./... ) || status=$?
+
+if [ "$status" -ne 0 ]; then
+  printf '\n[pre-push] La suite del backend falló (código %s). El push se canceló y el remoto no recibió cambios.\n' "$status" >&2
+  printf '[pre-push] Diagnóstico: revisá la salida de arriba. Si el error es de conexión, verificá que PostgreSQL esté levantado y que las tres variables apunten a la base de pruebas.\n' >&2
+  exit "$status"
+fi
+
+printf '[pre-push] Suite verde. El push continúa.\n'
+
+# Un hook pre-push previo se conserva como pre-push.local al instalar y se
+# ejecuta después de la suite, para no romper el trabajo de otros equipos.
+hooks_dir=$(git rev-parse --git-path hooks)
+if [ -x "$hooks_dir/pre-push.local" ]; then
+  "$hooks_dir/pre-push.local" "$@" || exit $?
+fi
+
+exit 0
