@@ -2,7 +2,7 @@
 
 - Issue: [#63](https://github.com/FaustinoDuran/seguimiento-medicion/issues/63)
 - Módulo: `backend/internal/backlog/`
-- Estado: lista para implementar
+- Estado: implementada; pendiente revisión y merge
 
 ## Objetivo
 
@@ -51,3 +51,6 @@ historia de backlog y se verifica en integración con sprints.
 - Tests: `backend/internal/backlog/{service,handler,repository_postgres}_test.go`.
 - Código: servicio, repositorio y rutas de `backend/internal/backlog/`.
 - Rama: `feat/HU-028-list-project-stories`. Commits RED/GREEN separados.
+- Servicio: RED `c22760d` → GREEN `7a30c3e`.
+- PostgreSQL: RED `5d67b72` → GREEN `2d2d806`.
+- HTTP: RED `67c86f2` → GREEN `ce6c375`.

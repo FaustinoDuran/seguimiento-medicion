@@ -17,5 +17,11 @@ Completar una fila por cada HU mergeada. La demo final se apoya en esta tabla.
 
 HU-001 a HU-010 del Sprint 1 están mergeadas en `main`. HU-011 del Sprint 2 está en revisión: el PR [#56](https://github.com/FaustinoDuran/seguimiento-medicion/pull/56) está abierto.
 
+## Historias implementadas pendientes de revisión
+
+| HU | Issue | SDD | Criterios | BDD | Tests | Código | PR | Evidencia TDD |
+|---|---|---|---|---|---|---|---|---|
+| HU-028 | [#63](https://github.com/FaustinoDuran/seguimiento-medicion/issues/63) | [SDD](sdd/HU-028-list-project-stories.md) | AC-028-01 a AC-028-05 | [feature](../features/HU-028-list-project-stories.feature) | `backend/internal/backlog/{service,handler,repository_postgres}_test.go` | `backend/internal/backlog/` | Pendiente | Servicio RED `c22760d` → GREEN `7a30c3e`; PostgreSQL RED `5d67b72` → GREEN `2d2d806`; HTTP RED `67c86f2` → GREEN `ce6c375` |
+
 Las tareas técnicas del Sprint 0 no se agregan a esta matriz porque no recorren
 SDD/BDD. Se registran como Issues `TASK-XXX` y en `docs/sprints/sprint-0.md`.
