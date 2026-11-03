@@ -1,15 +1,66 @@
 package backlog
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"strings"
 	"testing"
 
 	"github.com/go-chi/chi/v5"
 )
+
+type failingListRepository struct{ *memoryRepository }
+
+func (r failingListRepository) ListByProject(context.Context, int64) ([]Story, error) {
+	return nil, errors.New("private database detail")
+}
+
+func TestListStoriesHTTP(t *testing.T) {
+	router := storyRouter()
+	created := storyRequest(router, http.MethodPost, "/projects/1/stories", `{"identifier":"X","title":"Historia"}`)
+	if created.Code != http.StatusCreated {
+		t.Fatalf("create: %d %s", created.Code, created.Body.String())
+	}
+	var want Story
+	if err := json.Unmarshal(created.Body.Bytes(), &want); err != nil {
+		t.Fatal(err)
+	}
+	listed := storyRequest(router, http.MethodGet, "/projects/1/stories", "")
+	var body struct {
+		Stories []Story `json:"stories"`
+	}
+	if err := json.Unmarshal(listed.Body.Bytes(), &body); err != nil {
+		t.Fatalf("list: %d %s: %v", listed.Code, listed.Body.String(), err)
+	}
+	if listed.Code != http.StatusOK || !reflect.DeepEqual(body.Stories, []Story{want}) {
+		t.Fatalf("list: %d %s", listed.Code, listed.Body.String())
+	}
+	empty := storyRequest(router, http.MethodGet, "/projects/3/stories", "")
+	if empty.Code != http.StatusOK || strings.TrimSpace(empty.Body.String()) != `{"stories":[]}` {
+		t.Fatalf("closed empty project: %d %s", empty.Code, empty.Body.String())
+	}
+	for _, projectID := range []string{"abc", "0", "-1", "9223372036854775808", "99"} {
+		response := storyRequest(router, http.MethodGet, "/projects/"+projectID+"/stories", "")
+		wantStatus := http.StatusBadRequest
+		if projectID == "99" {
+			wantStatus = http.StatusNotFound
+		}
+		if response.Code != wantStatus || response.Header().Get("Content-Type") != "application/json" {
+			t.Errorf("project %s: %d %s", projectID, response.Code, response.Body.String())
+		}
+	}
+	failingRouter := chi.NewRouter()
+	Mount(failingRouter, NewService(failingListRepository{memoryRepository: newMemoryRepository()}, activeProjects()))
+	failed := storyRequest(failingRouter, http.MethodGet, "/projects/1/stories", "")
+	if failed.Code != http.StatusInternalServerError || strings.TrimSpace(failed.Body.String()) != `{"error":"internal error"}` {
+		t.Fatalf("persistence failure must be generic JSON: %d %s", failed.Code, failed.Body.String())
+	}
+}
 
 func storyRouter() http.Handler {
 	router := chi.NewRouter()
