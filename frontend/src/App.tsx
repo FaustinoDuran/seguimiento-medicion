@@ -1,6 +1,8 @@
 import { BrowserRouter, Link, NavLink, Outlet, Route, Routes } from 'react-router-dom'
 import { ConnectionPage } from './app/ConnectionPage'
 import { BacklogPage } from './features/backlog/BacklogPage'
+import { SprintDetailPage } from './features/sprints/SprintDetailPage'
+import { SprintListPage } from './features/sprints/SprintListPage'
 
 function AppLayout() {
   return (
@@ -60,6 +62,8 @@ export default function App() {
           <Route index element={<HomePage />} />
           <Route path="connection" element={<ConnectionPage />} />
           <Route path="projects/:projectId/backlog" element={<BacklogPage />} />
+          <Route path="projects/:projectId/sprints" element={<SprintListPage />} />
+          <Route path="projects/:projectId/sprints/:sprintId" element={<SprintDetailPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
