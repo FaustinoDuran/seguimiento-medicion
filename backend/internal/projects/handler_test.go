@@ -87,6 +87,50 @@ func TestAddAndListMembersHTTP(t *testing.T) {
 	}
 }
 
+func TestListProjectsHTTP(t *testing.T) {
+	router := chi.NewRouter()
+	Mount(router, NewService(newMemoryRepository()))
+
+	empty := httptest.NewRequest(http.MethodGet, "/projects", nil)
+	emptyRecorder := httptest.NewRecorder()
+	router.ServeHTTP(emptyRecorder, empty)
+	if emptyRecorder.Code != http.StatusOK {
+		t.Fatalf("empty status: got %d want %d body %s", emptyRecorder.Code, http.StatusOK, emptyRecorder.Body.String())
+	}
+	if strings.TrimSpace(emptyRecorder.Body.String()) != "[]" {
+		t.Fatalf("empty body: got %s want []", emptyRecorder.Body.String())
+	}
+
+	create := httptest.NewRequest(http.MethodPost, "/projects", strings.NewReader(`{
+		"name": "TP Integrador",
+		"start_date": "2026-10-26",
+		"end_date": "2026-11-23"
+	}`))
+	createRecorder := httptest.NewRecorder()
+	router.ServeHTTP(createRecorder, create)
+	if createRecorder.Code != http.StatusCreated {
+		t.Fatalf("create status: got %d want %d body %s", createRecorder.Code, http.StatusCreated, createRecorder.Body.String())
+	}
+
+	list := httptest.NewRequest(http.MethodGet, "/projects", nil)
+	listRecorder := httptest.NewRecorder()
+	router.ServeHTTP(listRecorder, list)
+	if listRecorder.Code != http.StatusOK {
+		t.Fatalf("list status: got %d want %d body %s", listRecorder.Code, http.StatusOK, listRecorder.Body.String())
+	}
+
+	var projects []projectResponse
+	if err := json.NewDecoder(listRecorder.Body).Decode(&projects); err != nil {
+		t.Fatalf("decode list: %v", err)
+	}
+	if len(projects) != 1 || projects[0].Name != "TP Integrador" || projects[0].Status != StatusActive {
+		t.Fatalf("projects: %+v", projects)
+	}
+	if projects[0].StartDate != "2026-10-26" || projects[0].EndDate != "2026-11-23" {
+		t.Fatalf("dates: %+v", projects[0])
+	}
+}
+
 func TestCreateProjectHTTPRejectsBlankName(t *testing.T) {
 	router := chi.NewRouter()
 	Mount(router, NewService(newMemoryRepository()))

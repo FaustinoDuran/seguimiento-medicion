@@ -69,6 +69,20 @@ func (h *Handler) Create(writer http.ResponseWriter, request *http.Request) {
 	writeJSON(writer, http.StatusCreated, toResponse(project))
 }
 
+func (h *Handler) List(writer http.ResponseWriter, request *http.Request) {
+	projects, err := h.service.List(request.Context())
+	if err != nil {
+		writeServiceError(writer, err)
+		return
+	}
+
+	body := make([]projectResponse, 0, len(projects))
+	for _, project := range projects {
+		body = append(body, toResponse(project))
+	}
+	writeJSON(writer, http.StatusOK, body)
+}
+
 func (h *Handler) Get(writer http.ResponseWriter, request *http.Request) {
 	id, ok := parseProjectID(writer, request)
 	if !ok {
