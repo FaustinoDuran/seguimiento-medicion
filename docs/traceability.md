@@ -21,13 +21,13 @@ HU-001 a HU-010 del Sprint 1 están mergeadas en `main`. HU-011 del Sprint 2 est
 
 | HU | Issue | SDD | Criterios | BDD | Verificación | Código | PR | Evidencia |
 |---|---|---|---|---|---|---|---|---|
-| HU-026 | [#48](https://github.com/FaustinoDuran/seguimiento-medicion/issues/48) | [SDD](sdd/HU-026-ui-backlog.md) | AC-026-01 a AC-026-14; aceptación integrada pendiente | [feature](../features/HU-026-ui-backlog.feature) | build, lint y 17 comprobaciones de navegador con API simulada; ver SDD | `frontend/src/features/backlog/`; `frontend/src/App.tsx` | Pendiente | Spec `04bf4b0`; contrato `1783dbf`; UI `b030717`. Sin cambios Go: excepción de UI del ADR 0004 |
+| HU-026 | [#48](https://github.com/FaustinoDuran/seguimiento-medicion/issues/48) | [SDD](sdd/HU-026-ui-backlog.md) | AC-026-01 a AC-026-14; navegación de HU-024 pendiente | [feature](../features/HU-026-ui-backlog.feature) | build, lint, 17 comprobaciones simuladas y validaciones de la Issue en Chrome con Go/PostgreSQL reales; ver SDD | `frontend/src/features/backlog/`; `frontend/src/App.tsx` | [#59](https://github.com/FaustinoDuran/seguimiento-medicion/pull/59) | Spec `04bf4b0`; contrato `1783dbf`; UI `b030717`. Sin cambios Go en este PR: excepción de UI del ADR 0004 |
 
-HU-026 está implementada como presentación contra contrato. No está Done:
-falta `GET /projects/{project_id}/stories` en una HU de backend separada y la
-integración de navegación con HU-024. El listado esperado devuelve
-`{ "stories": [...] }` ordenado por `id DESC`. No se validó contra un listado
-real en Go/PostgreSQL ni se implementaron las pantallas de otra HU.
+HU-026 ya se verificó con Go/PostgreSQL reales mediante URL directa. El listado
+`GET /projects/{project_id}/stories`, con `{ "stories": [...] }` en `id DESC`,
+está implementado por separado en HU-028 #63 / PR [#64](https://github.com/FaustinoDuran/seguimiento-medicion/pull/64).
+No está Done: faltan revisión/merge de las dependencias y la navegación de
+HU-024. No se implementaron las pantallas de otra HU dentro del PR de backlog.
 
 Las tareas técnicas del Sprint 0 no se agregan a esta matriz porque no recorren
 SDD/BDD. Se registran como Issues `TASK-XXX` y en `docs/sprints/sprint-0.md`.

@@ -13,7 +13,9 @@ Abrir la dirección que informa Vite (por defecto `http://localhost:5173`).
 - `/projects/:projectId/backlog`: formulario y listado del backlog (HU-026).
   Requiere `GET /projects/:projectId` y `POST /projects/:projectId/stories`.
   El listado espera `GET /projects/:projectId/stories` con `{ "stories": [...] }`,
-  ordenado por `id DESC`; este endpoint todavía no está implementado en Go.
+  ordenado por `id DESC`; el endpoint está implementado por separado en HU-028
+  ([PR #64](https://github.com/FaustinoDuran/seguimiento-medicion/pull/64)),
+  que debe integrarse antes de usar el listado desde `main`.
   Las rutas de detalle y listado de proyectos y su enlace de entrada al backlog
   se integran con HU-024; mientras tanto el backlog admite URL directa.
 - Cualquier otra ruta muestra una página de dirección no encontrada.

@@ -3,7 +3,7 @@
 - Issue: [#48](https://github.com/FaustinoDuran/seguimiento-medicion/issues/48)
 - Módulo Go existente: `backend/internal/backlog/`
 - Presentación prevista: `frontend/src/features/backlog/`
-- Estado: UI implementada contra contrato; integración y aceptación pendientes
+- Estado: UI verificada con API real; dependencias pendientes de merge y navegación de HU-024
 
 ## Objetivo
 
@@ -46,17 +46,18 @@ resultados y errores de la API.
   implementación. La aceptación integrada sigue dependiendo de HU-024 y del
   listado de backend.
 - Depende de HU-024 ([#46](https://github.com/FaustinoDuran/seguimiento-medicion/issues/46)).
-- Falta una HU de backend para listar historias por proyecto, con contrato y
-  criterios propios, según ADR 0004. No implementar ese comportamiento dentro
-  de esta HU de presentación.
+- El listado se implementó por separado en HU-028
+  ([#63](https://github.com/FaustinoDuran/seguimiento-medicion/issues/63)), PR
+  [#64](https://github.com/FaustinoDuran/seguimiento-medicion/pull/64), pendiente
+  revisión y merge. Este PR de presentación no incorpora código backend.
 - Creación disponible: `POST /projects/{project_id}/stories`.
 - Consulta individual disponible: `GET /projects/{project_id}/stories/{id}`.
-- El endpoint de listado está pendiente de definición en la HU de backend.
+- El endpoint de listado se definió e implementó en HU-028.
   Contrato esperado por esta UI: `GET /projects/{project_id}/stories`, respuesta
   `200` con `{ "stories": [...] }` y array vacío `[]` cuando no hay historias.
   Cada elemento conserva el esquema de historia de HU-005. Los errores usan
-  `{ "error": "..." }`, como el resto de la API. Este contrato aún no está
-  implementado en el backend.
+  `{ "error": "..." }`, como el resto de la API. El contrato se verificó
+  contra la API compilada desde la rama de HU-028 y PostgreSQL reales.
   Debe devolver todas las historias del proyecto ordenadas por `id DESC`.
   Las historias actuales no tienen `created_at`; no se incorpora ese campo
   para esta pantalla. El ID sirve como orden de altas, no como fecha real de
@@ -128,8 +129,8 @@ resultados y errores de la API.
   mínimo y opcionales, listado con historias asignadas y completadas, flujo de
   alta y recarga, carga/vacío/errores, proyectos cerrados o inexistentes y orden.
 - Entrevista cerrada con confirmación final del usuario el 2026-11-02.
-- Pendiente HU de backend para listar historias, con Issue, SDD, BDD y TDD
-  propios; el contrato debe satisfacer el orden y alcance acordados aquí.
+- Backend implementado en HU-028 #63 / PR #64, con SDD, BDD y TDD propios.
+  Pendiente su revisión y merge; el contrato coincide con el cliente existente.
 - Pendiente resolver HU-024 para completar la integración de navegación.
 - La UI ya admite acceso directo por URL. El enlace desde el detalle, el retorno
   al detalle y la vuelta al listado requieren las pantallas de HU-024. AC-026-04
@@ -144,6 +145,7 @@ arquitectura: se mantiene ADR 0004.
 - BDD: `features/HU-026-ui-backlog.feature` (diseño confirmado).
 - Código: `frontend/src/features/backlog/` y ruta en `frontend/src/App.tsx`.
 - Reglas existentes: `backend/internal/backlog/service.go` y sus tests.
+- PR de UI: [#59](https://github.com/FaustinoDuran/seguimiento-medicion/pull/59).
 
 ## Verificación de la UI
 
@@ -157,5 +159,11 @@ arquitectura: se mantiene ADR 0004.
   móvil sin desbordamiento del documento; ausencia de errores de ejecución.
 - Estas comprobaciones verifican la presentación contra el contrato esperado;
   no sustituyen la aceptación contra Go y PostgreSQL ni la navegación de HU-024.
+- Se agregó una comprobación de aceptación en Chrome, sin mocks, con la API Go
+  de HU-028 y PostgreSQL 16 en un esquema aislado: estado vacío, error de título
+  faltante, creación con datos mínimos, listado y persistencia al recargar.
+  También se verificaron aislamiento, orden e historias asignadas/completadas.
+  Las cuatro validaciones de la Issue se verificaron mediante URL directa;
+  no se implementaron pantallas de HU-024.
 - No se agregó lógica Go. Según ADR 0004, esta HU de UI no requiere commits
-  RED/GREEN en Go. El listado pendiente requiere su propia HU con TDD.
+  RED/GREEN en Go. El listado tiene su historial TDD en HU-028 / PR #64.
