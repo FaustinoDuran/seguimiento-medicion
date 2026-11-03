@@ -98,6 +98,16 @@ func TestPostgresHTTPStoryRoundTrip(t *testing.T) {
 	if found.Code != http.StatusOK || found.Body.String() != created.Body.String() {
 		t.Fatalf("get persisted story: %d %s", found.Code, found.Body.String())
 	}
+	listed := storyRequest(router, http.MethodGet, path, "")
+	var body struct {
+		Stories []Story `json:"stories"`
+	}
+	if err := json.Unmarshal(listed.Body.Bytes(), &body); err != nil {
+		t.Fatal(err)
+	}
+	if listed.Code != http.StatusOK || !reflect.DeepEqual(body.Stories, []Story{story}) {
+		t.Fatalf("list persisted story: %d %s", listed.Code, listed.Body.String())
+	}
 }
 
 func TestPostgresListStoriesPersistsScopeOrderAndFields(t *testing.T) {
