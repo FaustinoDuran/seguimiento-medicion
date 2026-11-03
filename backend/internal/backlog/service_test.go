@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"reflect"
+	"sort"
 	"testing"
 
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/projects"
@@ -34,6 +35,55 @@ func (r *memoryRepository) FindByID(_ context.Context, projectID, id int64) (Sto
 		return Story{}, ErrNotFound
 	}
 	return story, nil
+}
+
+func (r *memoryRepository) ListByProject(_ context.Context, projectID int64) ([]Story, error) {
+	stories := make([]Story, 0)
+	for _, story := range r.stories {
+		if story.ProjectID == projectID {
+			stories = append(stories, story)
+		}
+	}
+	sort.Slice(stories, func(i, j int) bool { return stories[i].ID > stories[j].ID })
+	return stories, nil
+}
+
+func TestListStoriesPreservesFieldsAndProjectScope(t *testing.T) {
+	ctx := context.Background()
+	repo := newMemoryRepository()
+	projectReader := activeProjects()
+	service := NewService(repo, projectReader)
+	points := int64(5)
+	first, err := service.Create(ctx, CreateStory{
+		ProjectID: 1, Identifier: "FIRST", Title: "Primera", Description: "Detalle",
+		Priority: PriorityHigh, StoryPoints: &points, AcceptanceCriteria: []string{"Aceptada"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := service.Create(ctx, CreateStory{ProjectID: 2, Identifier: "OTHER", Title: "Otro proyecto"}); err != nil {
+		t.Fatal(err)
+	}
+	last, err := service.Create(ctx, CreateStory{ProjectID: 1, Identifier: "LAST", Title: "Última"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	first, err = repo.MarkCompleted(ctx, 1, first.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	projectReader[1] = projects.Project{ID: 1, Status: projects.StatusClosed}
+	got, err := service.List(ctx, 1)
+	if err != nil || !reflect.DeepEqual(got, []Story{last, first}) {
+		t.Fatalf("list closed project: got %+v, %v; want last then completed first", got, err)
+	}
+	got, err = service.List(ctx, 3)
+	if err != nil || got == nil || len(got) != 0 {
+		t.Fatalf("empty project: got %+v, %v; want non-nil empty list", got, err)
+	}
+	if _, err := service.List(ctx, 99); !errors.Is(err, projects.ErrNotFound) {
+		t.Fatalf("missing project: got %v", err)
+	}
 }
 
 type projectCatalog map[int64]projects.Project
