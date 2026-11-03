@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
@@ -11,6 +11,20 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api(?=\/|$)/, ''),
       },
+    },
+  },
+  test: {
+    environment: 'jsdom',
+    environmentOptions: {
+      jsdom: { url: 'http://localhost:5173/' },
+    },
+    setupFiles: ['./src/test/setup.ts'],
+    restoreMocks: true,
+    coverage: {
+      provider: 'v8',
+      reportsDirectory: 'coverage',
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: ['src/main.tsx', 'src/test/**'],
     },
   },
 })

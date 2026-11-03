@@ -41,6 +41,44 @@ El proxy es de desarrollo. Al desplegar, el servidor debe reenviar `/api/*`
 a Go quitando el prefijo y servir `index.html` para las rutas de la SPA.
 `npm run preview` solo previsualiza el build y no reemplaza esa configuración.
 
+## Tests automatizados
+
+```bash
+npm test           # ejecución única; falla con código distinto de cero
+npm run test:watch # modo interactivo durante el desarrollo
+npm run test:coverage
+```
+
+- Los tests usan Vitest con entorno `jsdom`, React Testing Library, user-event y
+  jest-dom. No se ejecutan contra Go ni PostgreSQL; las pruebas de aceptación
+  integrada siguen siendo manuales.
+- HTTP se simula con MSW. La aplicación conserva su cliente real (`/api/*`), así
+  que las pruebas ejercitan el mismo camino que el navegador.
+- Una solicitud HTTP sin handler falla la prueba: no se toleran llamadas
+  silenciosas a servicios reales.
+- Los handlers compartidos viven en `frontend/src/test/handlers.ts`; cada prueba
+  puede sobrescribirlos con `server.use(...)`.
+- Las pruebas se guardan junto a la feature como `<archivo>.test.tsx`
+  (por ejemplo `src/app/ConnectionPage.test.tsx`).
+- Al terminar cada prueba se limpian el DOM y los handlers, así que el orden de
+  ejecución no importa.
+- GitHub Actions (`.github/workflows/frontend.yml`) corre `npm ci`, lint, build y
+  tests en cada push y pull request.
+
+Ejemplo mínimo:
+
+```tsx
+import { render, screen } from '@testing-library/react'
+import { expect, test } from 'vitest'
+import { ConnectionPage } from './ConnectionPage'
+
+test('muestra la respuesta exitosa del servicio', async () => {
+  render(<ConnectionPage />)
+  expect(await screen.findByText('El servicio responde')).toBeInTheDocument()
+})
+```
+
+
 Verificación de HU-026, cuando esté disponible el contrato de listado:
 
 1. Abrir `/projects/1/backlog` con un proyecto existente. Comprobar carga,
