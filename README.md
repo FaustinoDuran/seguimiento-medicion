@@ -138,6 +138,85 @@ Los tests de backlog y de sprints usan esquemas temporales aislados que se
 eliminan al terminar. Sin la variable de cada paquete, sus tests de PostgreSQL
 se omiten explícitamente.
 
+## Hook pre-push
+
+TASK-014 agrega un hook Git versionado que ejecuta la suite completa del backend
+antes de enviar cambios al remoto. Si un test falla o falta un requisito, el
+push se cancela y el remoto no recibe nada.
+
+### Instalación (una vez por clon)
+
+```bash
+./scripts/install-hooks.sh
+```
+
+El script es idempotente, se puede ejecutar desde cualquier directorio del repo
+y crea un symlink `.git/hooks/pre-push → .githooks/pre-push`. Si el clon ya
+tenía un `pre-push` distinto, lo conserva como `pre-push.local` y nuestro hook lo
+ejecuta después de la suite. Los demás hooks (`pre-commit`, `commit-msg`, etc.)
+no se tocan. Si el sistema no permite symlinks, se copia el archivo y hay que
+reinstalar después de cada cambio en `.githooks/`.
+
+### Qué ejecuta
+
+Desde `backend/`, independientemente del directorio desde el que invoques Git:
+
+```bash
+go test -count=1 -race ./...
+```
+
+Corre en cada push normal, incluso si solo cambió el frontend, porque el objetivo
+es que ningún push deje el backend roto. No ejecuta un `git push` propio ni
+modifica archivos.
+
+### Requisitos
+
+- Go 1.24 o superior en `PATH`.
+- PostgreSQL de pruebas accesible.
+- `DATABASE_URL`, `BACKLOG_TEST_DATABASE_URL` y `SPRINTS_TEST_DATABASE_URL`
+  exportadas en la sesión. **Sin las tres, el hook falla a propósito**: sin esas
+  variables los tests de PostgreSQL se omitirían y la suite no sería completa.
+
+```bash
+docker compose -f backend/docker-compose.yml up -d postgres
+
+export DATABASE_URL='postgres://postgres:postgres@localhost:5433/seguimiento_medicion?sslmode=disable'
+export BACKLOG_TEST_DATABASE_URL="$DATABASE_URL"
+export SPRINTS_TEST_DATABASE_URL="$DATABASE_URL"
+```
+
+Usá siempre la base de pruebas local, nunca una de producción. Los tests crean y
+eliminan sus propios esquemas temporales.
+
+### Tiempos esperables
+
+Con PostgreSQL levantado y el build en caché, unos 10 a 20 segundos. La primera
+ejecución después de un cambio grande compila de nuevo y puede tardar más.
+
+### Diagnóstico de fallos
+
+| Síntoma | Causa probable | Qué hacer |
+| --- | --- | --- |
+| `Faltan variables de entorno…` | Variables no exportadas en esta shell | Exportar las tres y reintentar |
+| `No se encontró 'go' en PATH` | Go no instalado o fuera del `PATH` | Instalar Go 1.24+ |
+| `connection refused` en los tests | PostgreSQL apagado o URL equivocada | Levantar el contenedor y revisar el puerto `5433` |
+| Un test rojo real | Cambio que rompe el backend | Corregir el código y volver a hacer push |
+
+La salida de los tests se muestra completa: el hook la conserva y propaga el
+código de error.
+
+### Límites
+
+- El hook corre localmente; GitHub Actions sigue siendo la validación del
+  servidor, pero llega **después** de recibir el push y no reemplaza este control.
+- Se puede omitir con `git push --no-verify`. El hook no es una política
+  obligatoria del servidor: no reemplaza la protección de ramas ni la revisión
+  de otra persona.
+- Los commits RED del TDD siguen siendo posibles localmente. Mientras la suite
+  esté roja, el `pre-push` impedirá publicarlos por la vía normal; entre el
+  commit RED y el GREEN, la publicación se hace cuando la suite vuelve a verde
+  (o con `--no-verify`, de forma consciente y avisando al equipo).
+
 ## Documentación del equipo
 
 - [Guía de trabajo y trazabilidad](docs/guia-de-trabajo.md) — cómo trabaja el equipo y el agente de Cursor
