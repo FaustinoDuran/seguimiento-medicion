@@ -116,14 +116,58 @@ Go y PostgreSQL.
 
 - **Aceptación integrada** con Go y PostgreSQL, y el contrato real de listado
   (`HU-028`): todas las pruebas usan MSW.
-- **Navegación** desde el detalle de proyecto al backlog (`HU-024`): hoy solo se
-  prueba el acceso por URL directa.
-- **UI de sprints** (`HU-027`): queda para una TASK propia, porque la issue #62
-  la excluye explícitamente.
+- **Navegación** desde el detalle de proyecto al backlog y a sprints (`HU-024`):
+  hoy solo se prueba el acceso por URL directa.
 - Mensajes de error de `invalid json` e `initial story status must be todo` no
   tienen prueba todavía; son rechazos de la API sin flujo propio en la UI.
 - Los **snapshots** no se usan como evidencia; se comprueba comportamiento
   visible y asociación accesible.
+
+## Matriz de escenarios: UI de sprints
+
+Corresponde a TASK-016 (#69) y a los escenarios de
+`features/HU-027-ui-sprints.feature`. Igual que en backlog, HTTP está simulado
+con MSW: estas pruebas **no** demuestran la aceptación integrada con Go y
+PostgreSQL.
+
+| AC | Escenario | Test | Archivo |
+| --- | --- | --- | --- |
+| AC-027-06 | Sprints anteriores con goal, estado y fecha | lista los sprints cerrados del proyecto con goal, estado y fecha | `SprintListPage.test.tsx` |
+| AC-027-06 | Proyecto sin sprints anteriores | muestra el vacío de sprints anteriores tras una consulta exitosa | ídem |
+| AC-027-07 | Ruta de sprints por URL directa | abre la ruta de sprints por URL directa con formulario y listado | ídem |
+| AC-027-10 | Fallo de consulta de la lista y reintento | falla la consulta de sprints, no muestra vacío falso y se recupera al reintentar | ídem |
+| AC-027-10 | Proyecto con formato inválido | muestra el error cuando el proyecto llega con un formato inválido | ídem |
+| AC-027-10 | Fecha de creación ilegible | muestra una fecha desconocida cuando el sprint no trae una fecha válida | ídem |
+| AC-027-09 | Proyecto inexistente | muestra el proyecto inexistente sin formulario de alta | ídem |
+| AC-027-01 | Crear un Sprint con goal y quedar en su detalle | crea un sprint con goal y queda en el detalle del sprint creado | ídem |
+| AC-027-01 | Alta deshabilitada mientras se procesa | deshabilita el alta y no repite el envío mientras está en curso | ídem |
+| AC-027-02 | Rechazo de goal vacío junto al campo | muestra el rechazo de goal vacío junto al campo | ídem |
+| AC-027-07 | Detalle por URL directa | abre el detalle por URL directa con goal, estado e historias | `SprintDetailPage.test.tsx` |
+| AC-027-07 | Recargar el detalle | mantiene el sprint y sus historias al recargar la pantalla | ídem |
+| AC-027-03 | Asignar una historia al Sprint | asigna una historia al sprint y deja de ofrecerla en el selector | ídem |
+| AC-027-04 | Completar una historia asignada | completa una historia asignada y la mantiene en el sprint | ídem |
+| AC-027-09 | Historia ya asignada a otro Sprint | muestra el rechazo cuando la historia ya está asignada a un sprint | ídem |
+| AC-027-09 | Sprint cerrado durante la asignación | muestra el rechazo cuando el sprint se cerró durante la asignación | ídem |
+| AC-027-05 | Cerrar el Sprint con confirmación | cierra el sprint tras confirmar y quita las acciones | ídem |
+| AC-027-05 | Cancelar el cierre | cancelar el cierre no llama al servicio | ídem |
+| AC-027-08 | Sprint cerrado de solo lectura | muestra un sprint cerrado sin asignación ni acciones | ídem |
+| AC-027-09 | Sprint inexistente o de otro proyecto | muestra el sprint no encontrado cuando pertenece a otro proyecto | ídem |
+| AC-027-10 | Sprint con formato inválido | muestra el error cuando el sprint llega con un formato inválido | ídem |
+| AC-027-10 | Conexión cortada al asignar | advierte que no pudo confirmar el resultado cuando se corta la conexión | ídem |
+| AC-027-10 | Fallo de consulta del detalle y reintento | muestra el error de consulta y se recupera al reintentar | ídem |
+| AC-027-10 | Proyecto sin historias | avisa que el proyecto no tiene historias en lugar de mostrar un selector vacío | ídem |
+| AC-027-10 | Todas las historias ya asignadas | avisa cuando todas las historias del proyecto ya están en el sprint | ídem |
+| AC-027-02, 03 | Tabla de historias del Sprint | lista las historias con identificador, título y estado | `SprintStories.test.tsx` |
+| AC-027-03, 04 | Acción de completar solo en pendientes | completa solo las historias pendientes y avisa cuál se está completando | ídem |
+| AC-027-04 | Acción en curso deshabilitada | deshabilita la acción de la historia que se está completando | ídem |
+| AC-027-08 | Sprint cerrado sin acciones | no ofrece acciones cuando el sprint no lo permite | ídem |
+| AC-027-03, 04, 05, 06 | Ciclo Scrum completo desde la UI | recorre el ciclo Scrum completo desde la interfaz | `sprintCycle.test.tsx` |
+
+### Pendiente de la UI de sprints
+
+- Aceptación integrada con Go y PostgreSQL: el ciclo completo se prueba contra un
+  backend simulado en memoria, no contra la API real.
+- Navegación hacia sprints desde otras pantallas (`HU-024`).
 
 
 
