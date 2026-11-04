@@ -336,6 +336,16 @@ func (r *memoryRepository) SaveRound(_ context.Context, round Round) (Round, err
 	return round, nil
 }
 
+func (r *memoryRepository) SaveRoundStatus(_ context.Context, round Round) (Round, error) {
+	current, ok := r.rounds[round.ID]
+	if !ok {
+		return Round{}, ErrRoundNotFound
+	}
+	current.Status = round.Status
+	r.rounds[current.ID] = current
+	return current, nil
+}
+
 func (r *memoryRepository) FindRound(_ context.Context, id int64) (Round, error) {
 	round, ok := r.rounds[id]
 	if !ok {
