@@ -77,6 +77,48 @@ func (h *Handler) CastVote(writer http.ResponseWriter, request *http.Request) {
 	})
 }
 
+func (h *Handler) Reveal(writer http.ResponseWriter, request *http.Request) {
+	projectID, ok := parseID(writer, request, "project_id")
+	if !ok {
+		return
+	}
+	roundID, ok := parseID(writer, request, "round_id")
+	if !ok {
+		return
+	}
+	var body struct {
+		MemberID int64 `json:"member_id"`
+	}
+	if err := json.NewDecoder(request.Body).Decode(&body); err != nil {
+		writeError(writer, http.StatusBadRequest, "invalid json")
+		return
+	}
+	if body.MemberID < 1 {
+		writeError(writer, http.StatusBadRequest, "member id is required")
+		return
+	}
+	view, err := h.service.Reveal(request.Context(), projectID, roundID, body.MemberID)
+	if err != nil {
+		writeServiceError(writer, err)
+		return
+	}
+	writeJSON(writer, http.StatusOK, roundResponse{
+		ID:        view.ID,
+		ProjectID: view.ProjectID,
+		StoryID:   view.StoryID,
+		Status:    view.Status,
+		Votes:     voteResponses(view.Votes),
+	})
+}
+
+func voteResponses(votes []VisibleVote) []voteResponse {
+	body := make([]voteResponse, 0, len(votes))
+	for _, vote := range votes {
+		body = append(body, voteResponse{MemberID: vote.MemberID, StoryPoints: vote.StoryPoints})
+	}
+	return body
+}
+
 func (h *Handler) View(writer http.ResponseWriter, request *http.Request) {
 	projectID, ok := parseID(writer, request, "project_id")
 	if !ok {
@@ -101,10 +143,7 @@ func (h *Handler) View(writer http.ResponseWriter, request *http.Request) {
 		ProjectID: view.ProjectID,
 		StoryID:   view.StoryID,
 		Status:    view.Status,
-		Votes:     make([]voteResponse, 0, len(view.Votes)),
-	}
-	for _, vote := range view.Votes {
-		body.Votes = append(body.Votes, voteResponse{MemberID: vote.MemberID, StoryPoints: vote.StoryPoints})
+		Votes:     voteResponses(view.Votes),
 	}
 	writeJSON(writer, http.StatusOK, body)
 }
