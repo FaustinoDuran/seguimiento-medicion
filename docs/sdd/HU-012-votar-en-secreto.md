@@ -2,7 +2,7 @@
 
 - Issue: [#21](https://github.com/FaustinoDuran/seguimiento-medicion/issues/21)
 - Módulo Go: `backend/internal/planningpoker/`
-- Estado: lista para implementar
+- Estado: implementada
 
 ## Objetivo
 
@@ -76,15 +76,15 @@ su propio puntaje. Los demás votos no traen `story_points`.
 
 ## Criterios de aceptación
 
-- [ ] AC-012-01 — Con una historia y un integrante del proyecto, se abre una ronda y el integrante emite un voto que puede ver.
-- [ ] AC-012-02 — Al consultar, el puntaje de otro integrante no viene en la respuesta.
-- [ ] AC-012-03 — El voto de un integrante no cambia el puntaje guardado de otro.
-- [ ] AC-012-04 — Un integrante puede reemplazar su propio voto mientras la ronda está abierta.
-- [ ] AC-012-05 — Si el puntaje no es un entero mayor que cero, no se guarda.
-- [ ] AC-012-06 — Si el integrante no pertenece al proyecto, no se guarda.
-- [ ] AC-012-07 — Si la historia no existe en el proyecto, no se abre la ronda.
-- [ ] AC-012-08 — Si ya hay una ronda abierta para la historia, no se abre otra.
-- [ ] AC-012-09 — Si la ronda está cerrada, no se acepta el voto.
+- [x] AC-012-01 — Con una historia y un integrante del proyecto, se abre una ronda y el integrante emite un voto que puede ver.
+- [x] AC-012-02 — Al consultar, el puntaje de otro integrante no viene en la respuesta.
+- [x] AC-012-03 — El voto de un integrante no cambia el puntaje guardado de otro.
+- [x] AC-012-04 — Un integrante puede reemplazar su propio voto mientras la ronda está abierta.
+- [x] AC-012-05 — Si el puntaje no es un entero mayor que cero, no se guarda.
+- [x] AC-012-06 — Si el integrante no pertenece al proyecto, no se guarda.
+- [x] AC-012-07 — Si la historia no existe en el proyecto, no se abre la ronda.
+- [x] AC-012-08 — Si ya hay una ronda abierta para la historia, no se abre otra.
+- [x] AC-012-09 — Si la ronda está cerrada, no se acepta el voto.
 
 ## Trazabilidad
 
