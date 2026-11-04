@@ -1,7 +1,8 @@
 # Sprint 2 — La interfaz
 
-- Estado: en curso
+- Estado: cerrado
 - Fecha de inicio: 2026-10-31
+- Fecha de fin: 2026-11-04
 - Equipo: Faustino (Agile Enabler), Valentino e Ignacio (Product Builders)
 - Alcance: [ADR 0004](../adr/0004-alcance-sprint-2.md)
 - Tablero: [Seguimiento y medición](https://github.com/users/FaustinoDuran/projects/3)
@@ -13,7 +14,7 @@ Cumplida. HU-009 ([#18](https://github.com/FaustinoDuran/seguimiento-medicion/is
 
 ## Avance
 
-Coincide con el código en `main`: TASK-010, TASK-011, HU-011, HU-023 ([#58](https://github.com/FaustinoDuran/seguimiento-medicion/pull/58)), HU-026 y HU-027 están hechas. Sigue HU-024, la pantalla de proyectos.
+Cumplido en el tablero. La pantalla de proyectos está en `main` (PR [#71](https://github.com/FaustinoDuran/seguimiento-medicion/pull/71)). La de integrantes entra a `main` con el PR [#75](https://github.com/FaustinoDuran/seguimiento-medicion/pull/75). El Sprint 3 es Planning Poker.
 
 ## Planning
 
@@ -28,8 +29,8 @@ Dueños:
 | TASK-011 Shell frontend | [#44](https://github.com/FaustinoDuran/seguimiento-medicion/issues/44) | alta | — | Ignacio | Done. PR [#55](https://github.com/FaustinoDuran/seguimiento-medicion/pull/55) |
 | HU-011 Consultar sprints anteriores | [#20](https://github.com/FaustinoDuran/seguimiento-medicion/issues/20) | media | — | Valentino | Done. PR [#56](https://github.com/FaustinoDuran/seguimiento-medicion/pull/56) |
 | HU-023 Listar proyectos | [#45](https://github.com/FaustinoDuran/seguimiento-medicion/issues/45) | alta | — | Faustino | Done. PR [#58](https://github.com/FaustinoDuran/seguimiento-medicion/pull/58) |
-| HU-024 UI proyectos | [#46](https://github.com/FaustinoDuran/seguimiento-medicion/issues/46) | alta | — | Faustino | En revisión. PR [#71](https://github.com/FaustinoDuran/seguimiento-medicion/pull/71) |
-| HU-025 UI integrantes | [#47](https://github.com/FaustinoDuran/seguimiento-medicion/issues/47) | alta | — | Faustino | Después de HU-024. Sprint ready |
+| HU-024 UI proyectos | [#46](https://github.com/FaustinoDuran/seguimiento-medicion/issues/46) | alta | — | Faustino | Done. PR [#71](https://github.com/FaustinoDuran/seguimiento-medicion/pull/71) |
+| HU-025 UI integrantes | [#47](https://github.com/FaustinoDuran/seguimiento-medicion/issues/47) | alta | — | Faustino | Done. Llega a `main` en el PR [#75](https://github.com/FaustinoDuran/seguimiento-medicion/pull/75) |
 | HU-026 UI backlog | [#48](https://github.com/FaustinoDuran/seguimiento-medicion/issues/48) | alta | — | Ignacio | Done. PR [#59](https://github.com/FaustinoDuran/seguimiento-medicion/pull/59) |
 | HU-027 UI sprints | [#49](https://github.com/FaustinoDuran/seguimiento-medicion/issues/49) | media | — | Valentino | Done. PR [#66](https://github.com/FaustinoDuran/seguimiento-medicion/pull/66) |
 
@@ -38,8 +39,8 @@ Dueños:
 1. TASK-010: Done.
 2. TASK-011 y HU-011: Done.
 3. HU-023: Done.
-4. HU-024 (UI proyectos): en revisión.
-5. HU-025.
+4. HU-024 (UI proyectos): Done.
+5. HU-025: Done. Llega a `main` en el PR [#75](https://github.com/FaustinoDuran/seguimiento-medicion/pull/75).
 6. HU-026 y HU-027: Done.
 
 ## Cómo tomar una HU
