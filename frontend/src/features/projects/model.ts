@@ -43,3 +43,10 @@ export function formatDay(value: string) {
   if (!match) return value
   return `${match[3]}/${match[2]}/${match[1]}`
 }
+
+export type Member = {
+  id: number
+  project_id: number
+  name: string
+  created_at: string
+}

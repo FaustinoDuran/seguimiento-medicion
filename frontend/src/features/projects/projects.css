@@ -33,6 +33,9 @@
 .project-facts dt { color: #53675f; font-size: 12px; margin-bottom: 6px; }
 .project-facts dd { margin: 0; font-size: 18px; }
 .project-links { display: flex; gap: 28px; }
+.project-members { margin: 12px 0 40px; }
+.project-member-list { margin: 24px 0 0; padding: 0; list-style: none; }
+.project-member-list li { padding: 14px 0; border-bottom: 1px solid #183e3626; }
 .project-empty, .project-loading { padding: 32px 0; color: #53675f; }
 .project-empty { border-top: 1px solid #183e3633; }
 .project-empty h3 { font-size: 20px; font-weight: 500; color: #183e36; margin: 0 0 12px; }
