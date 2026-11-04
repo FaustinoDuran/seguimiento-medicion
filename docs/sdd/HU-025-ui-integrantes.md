@@ -3,7 +3,7 @@
 - Issue: [#47](https://github.com/FaustinoDuran/seguimiento-medicion/issues/47)
 - Módulo Go existente: `backend/internal/projects/`
 - Presentación: `frontend/src/features/projects/`
-- Estado: lista para implementar
+- Estado: implementada
 
 ## Objetivo
 
@@ -61,10 +61,10 @@ No hay reglas nuevas. Go rechaza el nombre en blanco y el duplicado
 
 ## Criterios de aceptación
 
-- [ ] AC-025-01 — Agregar un integrante con nombre válido y verlo en el listado.
-- [ ] AC-025-02 — Mostrar el error si el nombre está en blanco.
-- [ ] AC-025-03 — Avisar si el integrante ya existe y conservar el nombre.
-- [ ] AC-025-04 — Mostrar el vacío solo cuando el listado exitoso no tiene integrantes.
+- [x] AC-025-01 — Agregar un integrante con nombre válido y verlo en el listado.
+- [x] AC-025-02 — Mostrar el error si el nombre está en blanco.
+- [x] AC-025-03 — Avisar si el integrante ya existe y conservar el nombre.
+- [x] AC-025-04 — Mostrar el vacío solo cuando el listado exitoso no tiene integrantes.
 
 ## Trazabilidad
 
