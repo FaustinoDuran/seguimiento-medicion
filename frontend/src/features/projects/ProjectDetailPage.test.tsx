@@ -24,6 +24,7 @@ test('muestra nombre, fechas y estado, y enlaza el trabajo del proyecto', async 
   const user = userEvent.setup()
   server.use(
     http.get('*/api/projects/4', () => HttpResponse.json(saved)),
+    http.get('*/api/projects/4/members', () => HttpResponse.json({ members: [] })),
     http.get('*/api/projects', () => HttpResponse.json([])),
   )
   openDetail()
