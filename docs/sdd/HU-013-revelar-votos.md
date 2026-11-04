@@ -2,7 +2,7 @@
 
 - Issue: [#22](https://github.com/FaustinoDuran/seguimiento-medicion/issues/22)
 - Módulo Go: `backend/internal/planningpoker/`
-- Estado: lista para implementar
+- Estado: implementada
 
 ## Objetivo
 
@@ -83,15 +83,15 @@ ronda `closed` devuelve todos los `story_points`. La consulta de una ronda
 
 ## Criterios de aceptación
 
-- [ ] AC-013-01 — Con una ronda abierta y votos de dos integrantes, al revelar se ven todos los puntajes.
-- [ ] AC-013-02 — Antes de revelar, la consulta de la ronda no incluye el puntaje ajeno.
-- [ ] AC-013-03 — Al revelar, la ronda queda cerrada.
-- [ ] AC-013-04 — Después de revelada, cualquier integrante del proyecto consulta y ve todos los puntajes.
-- [ ] AC-013-05 — Si quien revela no pertenece al proyecto, no se revela.
-- [ ] AC-013-06 — Si la ronda no existe o es de otro proyecto, no se revela.
-- [ ] AC-013-07 — Si la ronda ya está cerrada, no se revela de nuevo.
-- [ ] AC-013-08 — Revelar no modifica el `story_points` de la historia.
-- [ ] AC-013-09 — Una ronda cerrada sigue rechazando votos nuevos.
+- [x] AC-013-01 — Con una ronda abierta y votos de dos integrantes, al revelar se ven todos los puntajes.
+- [x] AC-013-02 — Antes de revelar, la consulta de la ronda no incluye el puntaje ajeno.
+- [x] AC-013-03 — Al revelar, la ronda queda cerrada.
+- [x] AC-013-04 — Después de revelada, cualquier integrante del proyecto consulta y ve todos los puntajes.
+- [x] AC-013-05 — Si quien revela no pertenece al proyecto, no se revela.
+- [x] AC-013-06 — Si la ronda no existe o es de otro proyecto, no se revela.
+- [x] AC-013-07 — Si la ronda ya está cerrada, no se revela de nuevo.
+- [x] AC-013-08 — Revelar no modifica el `story_points` de la historia.
+- [x] AC-013-09 — Una ronda cerrada sigue rechazando votos nuevos.
 
 ## Trazabilidad
 
