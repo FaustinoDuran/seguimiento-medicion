@@ -21,3 +21,21 @@ export function creationError(error: unknown): CreationError {
     message: 'No pudimos confirmar si el proyecto fue creado. Revisá el listado antes de volver a enviarlo.',
   }
 }
+
+const memberErrors: Record<string, CreationError> = {
+  'member name is required': { field: 'name', message: 'Ingresá el nombre del integrante.' },
+  'member already belongs to the project': {
+    field: 'name',
+    message: 'Ese integrante ya está en el proyecto.',
+  },
+  'project not found': { message: 'Proyecto no encontrado.' },
+}
+
+export function memberCreationError(error: unknown): CreationError {
+  if (error instanceof ApiError) {
+    return memberErrors[error.message] ?? { message: 'No pudimos agregar el integrante. Volvé a intentarlo.' }
+  }
+  return {
+    message: 'No pudimos confirmar si el integrante fue agregado. Revisá el listado antes de volver a enviarlo.',
+  }
+}

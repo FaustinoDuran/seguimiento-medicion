@@ -4,6 +4,7 @@ import { ApiError } from '../../shared/api/client'
 import { getProject } from './api'
 import { formatDay, isProject, statusLabels } from './model'
 import type { Project } from './model'
+import { MemberSection } from './MemberSection'
 import './projects.css'
 
 type DetailState =
@@ -50,6 +51,7 @@ function ProjectDetail({ project }: { project: Project }) {
           <dd>{statusLabels[project.status]}</dd>
         </div>
       </dl>
+      <MemberSection projectId={project.id} />
       <nav className="project-links" aria-label="Trabajo del proyecto">
         <Link className="text-link" to={`/projects/${project.id}/backlog`}>Backlog</Link>
         <Link className="text-link" to={`/projects/${project.id}/sprints`}>Sprints</Link>
