@@ -1,6 +1,8 @@
 import { BrowserRouter, Link, NavLink, Outlet, Route, Routes } from 'react-router-dom'
 import { ConnectionPage } from './app/ConnectionPage'
 import { BacklogPage } from './features/backlog/BacklogPage'
+import { ProjectDetailPage } from './features/projects/ProjectDetailPage'
+import { ProjectsPage } from './features/projects/ProjectsPage'
 import { SprintDetailPage } from './features/sprints/SprintDetailPage'
 import { SprintListPage } from './features/sprints/SprintListPage'
 
@@ -15,6 +17,7 @@ function AppLayout() {
         </Link>
         <nav aria-label="Navegación principal">
           <NavLink to="/" end>Inicio</NavLink>
+          <NavLink to="/projects">Proyectos</NavLink>
           <NavLink to="/connection">Conexión</NavLink>
         </nav>
       </header>
@@ -34,9 +37,9 @@ function HomePage() {
       <p className="lead">Un lugar para acompañar el trabajo del equipo y seguir el avance de sus proyectos.</p>
       <div className="notice">
         <span className="section-number" aria-hidden="true">01 /</span>
-        <div><h2>Estamos preparando el espacio</h2>
-          <p>Las herramientas de proyectos, backlog y sprints estarán disponibles en próximas entregas.</p>
-          <Link className="text-link" to="/connection">Comprobar conexión <span aria-hidden="true">↗</span></Link>
+        <div><h2>Empezá por un proyecto</h2>
+          <p>Creá el proyecto y desde ahí seguí el backlog y los sprints.</p>
+          <Link className="text-link" to="/projects">Ver proyectos <span aria-hidden="true">↗</span></Link>
         </div>
       </div>
     </section>
@@ -61,6 +64,8 @@ export default function App() {
         <Route element={<AppLayout />}>
           <Route index element={<HomePage />} />
           <Route path="connection" element={<ConnectionPage />} />
+          <Route path="projects" element={<ProjectsPage />} />
+          <Route path="projects/:projectId" element={<ProjectDetailPage />} />
           <Route path="projects/:projectId/backlog" element={<BacklogPage />} />
           <Route path="projects/:projectId/sprints" element={<SprintListPage />} />
           <Route path="projects/:projectId/sprints/:sprintId" element={<SprintDetailPage />} />

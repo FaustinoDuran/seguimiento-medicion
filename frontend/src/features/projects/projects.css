@@ -1,0 +1,44 @@
+.project-page { padding: 40px 0 72px; }
+.project-page-heading { padding-top: 28px; }
+.project-page-heading h1 { font-size: clamp(38px, 5vw, 64px); }
+.project-page-heading .eyebrow { margin-bottom: 16px; }
+.project-page-heading .lead { margin: 20px 0 36px; }
+.project-form { border: 1px solid #183e3633; padding: clamp(20px, 4vw, 36px); background: #fffdf7; }
+.project-section-heading { display: flex; align-items: baseline; gap: 20px; margin-bottom: 24px; }
+.project-section-heading h2 { margin-bottom: 4px; }
+.project-section-heading p { color: #53675f; font-size: 14px; margin: 0; }
+.project-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.project-form label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+.project-form input, .project-form select {
+  display: block; box-sizing: border-box; width: 100%; border: 1px solid #75867b;
+  border-radius: 0; padding: 11px 12px; background: #fffdf7; color: #183e36; font: inherit; font-size: 15px;
+}
+.project-form :is(input, select):focus-visible { outline: 2px solid #a44721; outline-offset: 3px; }
+.project-form [aria-invalid="true"] { border-color: #a02e21; }
+.project-form-footer { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 28px; }
+.project-form-footer > span { font-size: 13px; color: #53675f; }
+.project-field-error { color: #a02e21; font-size: 13px; margin: 8px 0 0; }
+.project-alert { border-left: 3px solid #a44721; background: #f0e4d9; padding: 18px 22px; margin: 20px 0; }
+.project-alert p { margin: 0 0 16px; }
+.project-alert h1 { font-size: 32px; }
+.project-success { border-left: 3px solid #28594d; padding: 16px 22px; background: #e7ede3; margin-top: 20px; }
+.project-list { margin-top: 44px; }
+.project-table-scroll { overflow-x: auto; }
+.project-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+.project-table th, .project-table td { padding: 18px 16px; border-bottom: 1px solid #183e3626; }
+.project-table th:first-child, .project-table td:first-child { padding-left: 0; }
+.project-table thead th { font-weight: 500; color: #53675f; font-size: 12px; }
+.project-table a { color: #183e36; }
+.project-facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; margin: 0 0 36px; }
+.project-facts dt { color: #53675f; font-size: 12px; margin-bottom: 6px; }
+.project-facts dd { margin: 0; font-size: 18px; }
+.project-links { display: flex; gap: 28px; }
+.project-empty, .project-loading { padding: 32px 0; color: #53675f; }
+.project-empty { border-top: 1px solid #183e3633; }
+.project-empty h3 { font-size: 20px; font-weight: 500; color: #183e36; margin: 0 0 12px; }
+.project-empty p { margin: 0; }
+@media (max-width: 600px) {
+  .project-form-grid, .project-facts { grid-template-columns: 1fr; }
+  .project-form-footer { align-items: flex-start; flex-direction: column; }
+  .project-form-footer .button { width: 100%; }
+}
