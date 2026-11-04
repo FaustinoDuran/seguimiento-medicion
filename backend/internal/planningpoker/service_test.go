@@ -73,6 +73,103 @@ func TestCastVoteHidesTheOtherPoints(t *testing.T) {
 	}
 }
 
+func TestRevealShowsEveryVoteAndClosesRound(t *testing.T) {
+	service, repo := testService()
+	ctx := context.Background()
+	round, err := service.OpenRound(ctx, 1, 4)
+	if err != nil {
+		t.Fatalf("open: %v", err)
+	}
+	if _, err := service.CastVote(ctx, CastVote{ProjectID: 1, RoundID: round.ID, MemberID: 7, StoryPoints: 5}); err != nil {
+		t.Fatalf("vote faustino: %v", err)
+	}
+	if _, err := service.CastVote(ctx, CastVote{ProjectID: 1, RoundID: round.ID, MemberID: 8, StoryPoints: 8}); err != nil {
+		t.Fatalf("vote valentino: %v", err)
+	}
+
+	hidden, err := service.View(ctx, 1, round.ID, 7)
+	if err != nil {
+		t.Fatalf("view: %v", err)
+	}
+	if _, other := splitVotes(t, hidden.Votes, 7); other.StoryPoints != nil {
+		t.Fatalf("other points leaked before reveal: %d", *other.StoryPoints)
+	}
+
+	revealed, err := service.Reveal(ctx, 1, round.ID, 7)
+	if err != nil {
+		t.Fatalf("reveal: %v", err)
+	}
+	if revealed.Status != StatusClosed {
+		t.Fatalf("status: got %q", revealed.Status)
+	}
+	if points := pointsByMember(t, revealed.Votes); points[7] != 5 || points[8] != 8 {
+		t.Fatalf("revealed points: %+v", points)
+	}
+	if stored := repo.rounds[round.ID]; stored.Status != StatusClosed {
+		t.Fatalf("stored status: got %q", stored.Status)
+	}
+}
+
+func TestViewOfRevealedRoundShowsEveryVote(t *testing.T) {
+	service, _ := testService()
+	ctx := context.Background()
+	round, err := service.OpenRound(ctx, 1, 4)
+	if err != nil {
+		t.Fatalf("open: %v", err)
+	}
+	if _, err := service.CastVote(ctx, CastVote{ProjectID: 1, RoundID: round.ID, MemberID: 7, StoryPoints: 5}); err != nil {
+		t.Fatalf("vote faustino: %v", err)
+	}
+	if _, err := service.CastVote(ctx, CastVote{ProjectID: 1, RoundID: round.ID, MemberID: 8, StoryPoints: 8}); err != nil {
+		t.Fatalf("vote valentino: %v", err)
+	}
+	if _, err := service.Reveal(ctx, 1, round.ID, 8); err != nil {
+		t.Fatalf("reveal: %v", err)
+	}
+
+	view, err := service.View(ctx, 1, round.ID, 7)
+	if err != nil {
+		t.Fatalf("view: %v", err)
+	}
+	if points := pointsByMember(t, view.Votes); points[7] != 5 || points[8] != 8 {
+		t.Fatalf("view points: %+v", points)
+	}
+}
+
+func TestRevealRules(t *testing.T) {
+	service, _ := testService()
+	ctx := context.Background()
+	round, err := service.OpenRound(ctx, 1, 4)
+	if err != nil {
+		t.Fatalf("open: %v", err)
+	}
+
+	if _, err := service.Reveal(ctx, 1, 99, 7); !errors.Is(err, ErrRoundNotFound) {
+		t.Fatalf("missing round: got %v", err)
+	}
+	if _, err := service.Reveal(ctx, 2, round.ID, 7); !errors.Is(err, ErrRoundNotFound) {
+		t.Fatalf("other project: got %v", err)
+	}
+	if _, err := service.Reveal(ctx, 1, round.ID, 99); !errors.Is(err, ErrMemberNotFound) {
+		t.Fatalf("unknown member: got %v", err)
+	}
+
+	empty, err := service.Reveal(ctx, 1, round.ID, 7)
+	if err != nil {
+		t.Fatalf("reveal without votes: %v", err)
+	}
+	if len(empty.Votes) != 0 {
+		t.Fatalf("votes: %+v", empty.Votes)
+	}
+
+	if _, err := service.Reveal(ctx, 1, round.ID, 7); !errors.Is(err, ErrRoundClosed) {
+		t.Fatalf("second reveal: got %v", err)
+	}
+	if _, err := service.CastVote(ctx, CastVote{ProjectID: 1, RoundID: round.ID, MemberID: 7, StoryPoints: 5}); !errors.Is(err, ErrRoundClosed) {
+		t.Fatalf("vote after reveal: got %v", err)
+	}
+}
+
 func TestVoteDoesNotReplaceAnotherMembersPoints(t *testing.T) {
 	service, repo := testService()
 	ctx := context.Background()
@@ -191,6 +288,18 @@ func splitVotes(t *testing.T, votes []VisibleVote, memberID int64) (VisibleVote,
 		t.Fatalf("votes: %+v", votes)
 	}
 	return own, other
+}
+
+func pointsByMember(t *testing.T, votes []VisibleVote) map[int64]int64 {
+	t.Helper()
+	points := make(map[int64]int64, len(votes))
+	for _, vote := range votes {
+		if vote.StoryPoints == nil {
+			t.Fatalf("missing points for member %d", vote.MemberID)
+		}
+		points[vote.MemberID] = *vote.StoryPoints
+	}
+	return points
 }
 
 func pointsOf(votes []Vote, memberID int64) int64 {

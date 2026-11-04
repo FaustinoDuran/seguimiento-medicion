@@ -63,6 +63,76 @@ func TestPostgresSecretVoteHidesOtherPoints(t *testing.T) {
 	}
 }
 
+func TestPostgresRevealShowsEveryVote(t *testing.T) {
+	pool := postgresTestPool(t)
+	router := chi.NewRouter()
+	projectService := projects.NewService(projects.NewPostgresRepository(pool))
+	projects.Mount(router, projectService)
+	backlogRepo := backlog.NewPostgresRepository(pool)
+	backlog.Mount(router, backlog.NewService(backlogRepo, projectService))
+	Mount(router, NewService(
+		NewPostgresRepository(pool),
+		NewStoryLookup(backlogRepo),
+		NewMemberLookup(projects.NewPostgresRepository(pool)),
+	))
+
+	project := postJSON(t, router, "/projects", `{"name":"Poker","start_date":"2026-11-04","end_date":"2026-11-18"}`)
+	projectID := project["id"].(float64)
+	memberA := postJSON(t, router, fmt.Sprintf("/projects/%.0f/members", projectID), `{"name":"Faustino"}`)
+	memberB := postJSON(t, router, fmt.Sprintf("/projects/%.0f/members", projectID), `{"name":"Valentino"}`)
+	story := postJSON(t, router, fmt.Sprintf("/projects/%.0f/stories", projectID), `{"identifier":"HU-013","title":"Revelar"}`)
+	storyID := story["id"].(float64)
+
+	round := postJSON(t, router, fmt.Sprintf("/projects/%.0f/stories/%.0f/rounds", projectID, storyID), ``)
+	roundID := round["id"].(float64)
+	postJSON(t, router, fmt.Sprintf("/projects/%.0f/rounds/%.0f/votes", projectID, roundID),
+		fmt.Sprintf(`{"member_id":%.0f,"story_points":5}`, memberA["id"].(float64)))
+	postJSON(t, router, fmt.Sprintf("/projects/%.0f/rounds/%.0f/votes", projectID, roundID),
+		fmt.Sprintf(`{"member_id":%.0f,"story_points":8}`, memberB["id"].(float64)))
+
+	revealed := postJSONWithStatus(t, router,
+		fmt.Sprintf("/projects/%.0f/rounds/%.0f/reveal", projectID, roundID),
+		fmt.Sprintf(`{"member_id":%.0f}`, memberA["id"].(float64)), http.StatusOK)
+	if revealed["status"] != "closed" {
+		t.Fatalf("status: %+v", revealed)
+	}
+	assertRevealedPoints(t, revealed, memberA["id"].(float64), memberB["id"].(float64))
+
+	view := getJSON(t, router, fmt.Sprintf("/projects/%.0f/rounds/%.0f?member_id=%.0f", projectID, roundID, memberB["id"].(float64)))
+	assertRevealedPoints(t, view, memberA["id"].(float64), memberB["id"].(float64))
+
+	vote := request(router, http.MethodPost, fmt.Sprintf("/projects/%.0f/rounds/%.0f/votes", projectID, roundID),
+		fmt.Sprintf(`{"member_id":%.0f,"story_points":3}`, memberA["id"].(float64)))
+	if vote.Code != http.StatusConflict {
+		t.Fatalf("vote after reveal: %d %s", vote.Code, vote.Body.String())
+	}
+
+	persisted := getJSON(t, router, fmt.Sprintf("/projects/%.0f/stories/%.0f", projectID, storyID))
+	if persisted["story_points"] != nil {
+		t.Fatalf("story points written: %+v", persisted["story_points"])
+	}
+}
+
+func assertRevealedPoints(t *testing.T, body map[string]any, memberA, memberB float64) {
+	t.Helper()
+	votes, _ := body["votes"].([]any)
+	if len(votes) != 2 {
+		t.Fatalf("votes: %+v", body)
+	}
+	seen := map[float64]float64{}
+	for _, item := range votes {
+		vote := item.(map[string]any)
+		points, ok := vote["story_points"].(float64)
+		if !ok {
+			t.Fatalf("missing points: %+v", vote)
+		}
+		seen[vote["member_id"].(float64)] = points
+	}
+	if seen[memberA] != 5 || seen[memberB] != 8 {
+		t.Fatalf("points: %+v", seen)
+	}
+}
+
 func postgresTestPool(t *testing.T) *pgxpool.Pool {
 	t.Helper()
 	url := os.Getenv("DATABASE_URL")
@@ -115,9 +185,14 @@ func postgresTestPool(t *testing.T) *pgxpool.Pool {
 
 func postJSON(t *testing.T, handler http.Handler, path, body string) map[string]any {
 	t.Helper()
+	return postJSONWithStatus(t, handler, path, body, http.StatusCreated)
+}
+
+func postJSONWithStatus(t *testing.T, handler http.Handler, path, body string, want int) map[string]any {
+	t.Helper()
 	recorder := httptest.NewRecorder()
 	handler.ServeHTTP(recorder, httptest.NewRequest(http.MethodPost, path, strings.NewReader(body)))
-	if recorder.Code != http.StatusCreated {
+	if recorder.Code != want {
 		t.Fatalf("POST %s: %d %s", path, recorder.Code, recorder.Body.String())
 	}
 	var decoded map[string]any
