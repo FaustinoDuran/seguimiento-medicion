@@ -1,7 +1,8 @@
 Las migraciones de dominio viven acá. Con `DATABASE_URL`, al arrancar la API
 aplica el esquema de `projects` (`001` y `002`, `projects.EnsureSchema`), el
 de `backlog` (`003` y `006`, `backlog.EnsureSchema`) y el de `sprints` (`004` y `005`,
-`sprints.EnsureSchema`). `005` referencia `backlog_stories`, así que el esquema
+`sprints.EnsureSchema`) y el de Planning Poker (`007`,
+`planningpoker.EnsureSchema`). `005` y `007` referencian `backlog_stories`, así que el esquema
 de backlog tiene que existir antes.
 
 `006` amplía los estados de historia a `todo` y `done`. El arranque también
