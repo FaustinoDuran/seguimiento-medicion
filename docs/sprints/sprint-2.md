@@ -1,7 +1,8 @@
 # Sprint 2 — La interfaz
 
-- Estado: en curso
+- Estado: cerrado
 - Fecha de inicio: 2026-10-31
+- Fecha de fin: 2026-11-04
 - Equipo: Faustino (Agile Enabler), Valentino e Ignacio (Product Builders)
 - Alcance: [ADR 0004](../adr/0004-alcance-sprint-2.md)
 - Tablero: [Seguimiento y medición](https://github.com/users/FaustinoDuran/projects/3)
@@ -13,7 +14,7 @@ Cumplida. HU-009 ([#18](https://github.com/FaustinoDuran/seguimiento-medicion/is
 
 ## Avance
 
-Coincide con el código en `main`: TASK-010, TASK-011, HU-011, HU-023 ([#58](https://github.com/FaustinoDuran/seguimiento-medicion/pull/58)), HU-026 y HU-027 están hechas. Sigue HU-024, la pantalla de proyectos.
+Cumplido en el tablero. La pantalla de proyectos está en `main` (PR [#71](https://github.com/FaustinoDuran/seguimiento-medicion/pull/71)). La de integrantes entra a `main` con el PR [#75](https://github.com/FaustinoDuran/seguimiento-medicion/pull/75). El Sprint 3 es Planning Poker.
 
 ## Planning
 
