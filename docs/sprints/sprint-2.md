@@ -29,7 +29,7 @@ Dueños:
 | HU-011 Consultar sprints anteriores | [#20](https://github.com/FaustinoDuran/seguimiento-medicion/issues/20) | media | — | Valentino | Done. PR [#56](https://github.com/FaustinoDuran/seguimiento-medicion/pull/56) |
 | HU-023 Listar proyectos | [#45](https://github.com/FaustinoDuran/seguimiento-medicion/issues/45) | alta | — | Faustino | Done. PR [#58](https://github.com/FaustinoDuran/seguimiento-medicion/pull/58) |
 | HU-024 UI proyectos | [#46](https://github.com/FaustinoDuran/seguimiento-medicion/issues/46) | alta | — | Faustino | En revisión. PR [#71](https://github.com/FaustinoDuran/seguimiento-medicion/pull/71) |
-| HU-025 UI integrantes | [#47](https://github.com/FaustinoDuran/seguimiento-medicion/issues/47) | alta | — | Faustino | En revisión |
+| HU-025 UI integrantes | [#47](https://github.com/FaustinoDuran/seguimiento-medicion/issues/47) | alta | — | Faustino | En revisión. PR [#72](https://github.com/FaustinoDuran/seguimiento-medicion/pull/72) |
 | HU-026 UI backlog | [#48](https://github.com/FaustinoDuran/seguimiento-medicion/issues/48) | alta | — | Ignacio | Done. PR [#59](https://github.com/FaustinoDuran/seguimiento-medicion/pull/59) |
 | HU-027 UI sprints | [#49](https://github.com/FaustinoDuran/seguimiento-medicion/issues/49) | media | — | Valentino | Done. PR [#66](https://github.com/FaustinoDuran/seguimiento-medicion/pull/66) |
 
