@@ -4,6 +4,7 @@ import "context"
 
 type Repository interface {
 	SaveRound(ctx context.Context, round Round) (Round, error)
+	SaveRoundStatus(ctx context.Context, round Round) (Round, error)
 	FindRound(ctx context.Context, id int64) (Round, error)
 	FindOpenRoundByStory(ctx context.Context, storyID int64) (Round, error)
 	SaveVote(ctx context.Context, vote Vote) (Vote, error)

@@ -60,6 +60,21 @@ func (r *PostgresRepository) SaveRound(ctx context.Context, round Round) (Round,
 	return saved, err
 }
 
+func (r *PostgresRepository) SaveRoundStatus(ctx context.Context, round Round) (Round, error) {
+	const query = `
+		UPDATE planning_rounds SET status = $2
+		WHERE id = $1
+		RETURNING id, project_id, story_id, status, created_at`
+	var saved Round
+	err := r.pool.QueryRow(ctx, query, round.ID, round.Status).Scan(
+		&saved.ID, &saved.ProjectID, &saved.StoryID, &saved.Status, &saved.CreatedAt,
+	)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return Round{}, ErrRoundNotFound
+	}
+	return saved, err
+}
+
 func (r *PostgresRepository) FindRound(ctx context.Context, id int64) (Round, error) {
 	const query = `
 		SELECT id, project_id, story_id, status, created_at

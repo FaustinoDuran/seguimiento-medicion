@@ -79,11 +79,37 @@ func (s *Service) View(ctx context.Context, projectID, roundID, memberID int64) 
 	if err != nil {
 		return RoundView{}, err
 	}
+	return roundView(round, votes, memberID, round.Status == StatusClosed), nil
+}
+
+func (s *Service) Reveal(ctx context.Context, projectID, roundID, memberID int64) (RoundView, error) {
+	round, err := s.roundInProject(ctx, projectID, roundID)
+	if err != nil {
+		return RoundView{}, err
+	}
+	if _, err := s.members.Find(ctx, round.ProjectID, memberID); err != nil {
+		return RoundView{}, err
+	}
+	if round.Status != StatusOpen {
+		return RoundView{}, ErrRoundClosed
+	}
+	revealed, err := s.repo.SaveRoundStatus(ctx, Round{ID: round.ID, Status: StatusClosed})
+	if err != nil {
+		return RoundView{}, err
+	}
+	votes, err := s.repo.ListVotes(ctx, revealed.ID)
+	if err != nil {
+		return RoundView{}, err
+	}
+	return roundView(revealed, votes, memberID, true), nil
+}
+
+func roundView(round Round, votes []Vote, viewerID int64, showEveryVote bool) RoundView {
 	sort.Slice(votes, func(i, j int) bool { return votes[i].MemberID < votes[j].MemberID })
 	visible := make([]VisibleVote, 0, len(votes))
 	for _, vote := range votes {
 		item := VisibleVote{MemberID: vote.MemberID}
-		if vote.MemberID == memberID {
+		if showEveryVote || vote.MemberID == viewerID {
 			points := vote.StoryPoints
 			item.StoryPoints = &points
 		}
@@ -95,7 +121,7 @@ func (s *Service) View(ctx context.Context, projectID, roundID, memberID int64) 
 		StoryID:   round.StoryID,
 		Status:    round.Status,
 		Votes:     visible,
-	}, nil
+	}
 }
 
 func (s *Service) roundInProject(ctx context.Context, projectID, roundID int64) (Round, error) {
