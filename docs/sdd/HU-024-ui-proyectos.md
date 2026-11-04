@@ -3,7 +3,7 @@
 - Issue: [#46](https://github.com/FaustinoDuran/seguimiento-medicion/issues/46)
 - Módulo Go existente: `backend/internal/projects/`
 - Presentación: `frontend/src/features/projects/`
-- Estado: lista para implementar
+- Estado: implementada
 
 ## Objetivo
 
@@ -77,13 +77,13 @@ No hay reglas nuevas. Go recorta el nombre, rechaza el blanco, rechaza
 
 ## Criterios de aceptación
 
-- [ ] AC-024-01 — Crear un proyecto con nombre y fechas válidas desde la UI.
-- [ ] AC-024-02 — Ver el detalle con nombre, fechas y estado.
-- [ ] AC-024-03 — Ver el listado en el orden que entrega la API.
-- [ ] AC-024-04 — Mostrar el vacío solo si el listado exitoso no tiene proyectos.
-- [ ] AC-024-05 — Mostrar el error si falta el nombre, sin perder lo ingresado.
-- [ ] AC-024-06 — Mostrar el error si las fechas son inválidas.
-- [ ] AC-024-07 — Abrir backlog y sprints desde el detalle, y volver al listado.
+- [x] AC-024-01 — Crear un proyecto con nombre y fechas válidas desde la UI.
+- [x] AC-024-02 — Ver el detalle con nombre, fechas y estado.
+- [x] AC-024-03 — Ver el listado en el orden que entrega la API.
+- [x] AC-024-04 — Mostrar el vacío solo si el listado exitoso no tiene proyectos.
+- [x] AC-024-05 — Mostrar el error si falta el nombre, sin perder lo ingresado.
+- [x] AC-024-06 — Mostrar el error si las fechas son inválidas.
+- [x] AC-024-07 — Abrir backlog y sprints desde el detalle, y volver al listado.
   Un proyecto inexistente se informa.
 
 ## Trazabilidad
