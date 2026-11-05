@@ -43,15 +43,22 @@ func main() {
 		projects.Mount(router, projectService)
 		backlogRepo := backlog.NewPostgresRepository(pool)
 		backlog.Mount(router, backlog.NewService(backlogRepo, projectService))
-		sprints.Mount(router, sprints.NewService(
+		sprintService := sprints.NewService(
 			sprints.NewPostgresRepository(pool),
 			sprints.NewProjectLookup(projectRepo),
 			sprints.NewStoryLookup(backlogRepo),
-		))
-		planningpoker.Mount(router, planningpoker.NewService(
+		)
+		sprints.Mount(router, sprintService)
+		pokerService := planningpoker.NewService(
 			planningpoker.NewPostgresRepository(pool),
 			planningpoker.NewStoryLookup(backlogRepo),
 			planningpoker.NewMemberLookup(projectRepo),
+		)
+		planningpoker.Mount(router, pokerService)
+		planningpoker.MountEstimates(router, planningpoker.NewEstimationService(
+			pokerService,
+			planningpoker.NewStoryEstimates(backlogRepo),
+			sprintService,
 		))
 		log.Printf("connected to postgres")
 	}
