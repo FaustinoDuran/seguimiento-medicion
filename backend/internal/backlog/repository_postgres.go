@@ -136,3 +136,17 @@ func scanStory(row pgx.Row) (Story, error) {
 	)
 	return story, err
 }
+
+func (r *PostgresRepository) UpdateStoryPoints(
+	ctx context.Context,
+	projectID, storyID, points int64,
+) (Story, error) {
+	const query = `UPDATE backlog_stories SET story_points = $3
+ WHERE project_id = $1 AND id = $2
+ RETURNING id, project_id, identifier, title, description, priority, status, story_points, acceptance_criteria`
+	story, err := scanStory(r.pool.QueryRow(ctx, query, projectID, storyID, points))
+	if errors.Is(err, pgx.ErrNoRows) {
+		return Story{}, ErrNotFound
+	}
+	return story, err
+}
