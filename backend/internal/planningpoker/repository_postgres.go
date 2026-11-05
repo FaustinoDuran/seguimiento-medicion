@@ -136,3 +136,16 @@ func (r *PostgresRepository) ListVotes(ctx context.Context, roundID int64) ([]Vo
 	}
 	return votes, rows.Err()
 }
+
+func (r *PostgresRepository) FindLatestRoundByStory(ctx context.Context, storyID int64) (Round, error) {
+	const query = `SELECT id, project_id, story_id, status, created_at
+ FROM planning_rounds WHERE story_id = $1 ORDER BY id DESC LIMIT 1`
+	var round Round
+	err := r.pool.QueryRow(ctx, query, storyID).Scan(
+		&round.ID, &round.ProjectID, &round.StoryID, &round.Status, &round.CreatedAt,
+	)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return Round{}, ErrRoundNotFound
+	}
+	return round, err
+}

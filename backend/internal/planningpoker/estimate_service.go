@@ -1,6 +1,18 @@
 package planningpoker
 
-import "context"
+import (
+	"context"
+	"errors"
+)
+
+var (
+	ErrInvalidEstimateID = errors.New("estimate identifiers must be positive integers")
+	ErrRoundNotRevealed  = errors.New("round must be revealed")
+	ErrNoVotes           = errors.New("round has no votes")
+	ErrOutdatedRound     = errors.New("round is not the latest for this story")
+	ErrStoryCompleted    = errors.New("completed story cannot be estimated")
+	ErrStorySprintClosed = errors.New("story belongs to a closed sprint")
+)
 
 type RecordEstimate struct {
 	ProjectID   int64
@@ -43,9 +55,50 @@ func NewEstimationService(poker *Service, stories StoryEstimates, sprints StoryS
 }
 
 func (s *EstimationService) Record(ctx context.Context, input RecordEstimate) (Estimate, error) {
+	if input.StoryPoints <= 0 {
+		return Estimate{}, ErrInvalidStoryPoints
+	}
+	invalidIDs := input.ProjectID <= 0 || input.RoundID <= 0 || input.MemberID <= 0
+	if invalidIDs {
+		return Estimate{}, ErrInvalidEstimateID
+	}
 	round, err := s.poker.roundInProject(ctx, input.ProjectID, input.RoundID)
 	if err != nil {
 		return Estimate{}, err
+	}
+	if _, err := s.poker.members.Find(ctx, round.ProjectID, input.MemberID); err != nil {
+		return Estimate{}, err
+	}
+	story, err := s.stories.FindEstimate(ctx, round.ProjectID, round.StoryID)
+	if err != nil {
+		return Estimate{}, err
+	}
+	if round.Status != StatusClosed {
+		return Estimate{}, ErrRoundNotRevealed
+	}
+	votes, err := s.poker.repo.ListVotes(ctx, round.ID)
+	if err != nil {
+		return Estimate{}, err
+	}
+	if len(votes) == 0 {
+		return Estimate{}, ErrNoVotes
+	}
+	latest, err := s.poker.repo.FindLatestRoundByStory(ctx, round.StoryID)
+	if err != nil {
+		return Estimate{}, err
+	}
+	if latest.ID != round.ID {
+		return Estimate{}, ErrOutdatedRound
+	}
+	if story.Status == "done" {
+		return Estimate{}, ErrStoryCompleted
+	}
+	closed, err := s.sprints.IsStorySprintClosed(ctx, round.StoryID)
+	if err != nil {
+		return Estimate{}, err
+	}
+	if closed {
+		return Estimate{}, ErrStorySprintClosed
 	}
 	if err := s.stories.SaveEstimate(ctx, round.ProjectID, round.StoryID, input.StoryPoints); err != nil {
 		return Estimate{}, err
