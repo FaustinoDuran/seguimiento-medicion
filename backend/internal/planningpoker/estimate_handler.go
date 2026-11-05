@@ -9,14 +9,14 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-type EstimateHandler struct{ service *EstimationService }
+type estimateHandler struct{ service *EstimationService }
 
 func MountEstimates(router chi.Router, service *EstimationService) {
-	handler := &EstimateHandler{service: service}
+	handler := &estimateHandler{service: service}
 	router.Post("/projects/{project_id}/rounds/{round_id}/estimate", handler.Record)
 }
 
-func (h *EstimateHandler) Record(writer http.ResponseWriter, request *http.Request) {
+func (h *estimateHandler) Record(writer http.ResponseWriter, request *http.Request) {
 	projectID, ok := parseID(writer, request, "project_id")
 	if !ok {
 		return

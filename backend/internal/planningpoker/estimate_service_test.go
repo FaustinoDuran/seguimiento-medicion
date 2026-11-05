@@ -41,7 +41,12 @@ func TestEstimateSavesChosenPointsAndPreservesVotes(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = poker.CastVote(ctx, CastVote{ProjectID: 1, RoundID: round.ID, MemberID: 7, StoryPoints: 5})
+	_, err = poker.CastVote(ctx, CastVote{
+		ProjectID:   1,
+		RoundID:     round.ID,
+		MemberID:    7,
+		StoryPoints: 5,
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -51,7 +56,12 @@ func TestEstimateSavesChosenPointsAndPreservesVotes(t *testing.T) {
 	stories := &memoryEstimates{story: StoryEstimate{ID: 4, ProjectID: 1, Status: "todo"}}
 	service := NewEstimationService(poker, stories, &memoryStorySprints{})
 	for _, points := range []int64{13, 8, 8} {
-		got, err := service.Record(ctx, RecordEstimate{ProjectID: 1, RoundID: round.ID, MemberID: 8, StoryPoints: points})
+		got, err := service.Record(ctx, RecordEstimate{
+			ProjectID:   1,
+			RoundID:     round.ID,
+			MemberID:    8,
+			StoryPoints: points,
+		})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -75,51 +85,141 @@ func TestEstimateRejectsInvalidAgreementWithoutChangingStory(t *testing.T) {
 		change func(*Service, *memoryRepository, *memoryEstimates, *memoryStorySprints, *RecordEstimate)
 		want   error
 	}{
-		{name: "zero points", change: func(_ *Service, _ *memoryRepository, _ *memoryEstimates, _ *memoryStorySprints, in *RecordEstimate) {
+		{name: "zero points", change: func(
+			_ *Service,
+			_ *memoryRepository,
+			_ *memoryEstimates,
+			_ *memoryStorySprints,
+			in *RecordEstimate,
+		) {
 			in.StoryPoints = 0
 		}, want: ErrInvalidStoryPoints},
-		{name: "negative points", change: func(_ *Service, _ *memoryRepository, _ *memoryEstimates, _ *memoryStorySprints, in *RecordEstimate) {
+		{name: "negative points", change: func(
+			_ *Service,
+			_ *memoryRepository,
+			_ *memoryEstimates,
+			_ *memoryStorySprints,
+			in *RecordEstimate,
+		) {
 			in.StoryPoints = -1
 		}, want: ErrInvalidStoryPoints},
-		{name: "invalid member id", change: func(_ *Service, _ *memoryRepository, _ *memoryEstimates, _ *memoryStorySprints, in *RecordEstimate) {
+		{name: "invalid member id", change: func(
+			_ *Service,
+			_ *memoryRepository,
+			_ *memoryEstimates,
+			_ *memoryStorySprints,
+			in *RecordEstimate,
+		) {
 			in.MemberID = 0
 		}, want: ErrInvalidEstimateID},
-		{name: "invalid project id", change: func(_ *Service, _ *memoryRepository, _ *memoryEstimates, _ *memoryStorySprints, in *RecordEstimate) {
+		{name: "invalid project id", change: func(
+			_ *Service,
+			_ *memoryRepository,
+			_ *memoryEstimates,
+			_ *memoryStorySprints,
+			in *RecordEstimate,
+		) {
 			in.ProjectID = 0
 		}, want: ErrInvalidEstimateID},
-		{name: "invalid round id", change: func(_ *Service, _ *memoryRepository, _ *memoryEstimates, _ *memoryStorySprints, in *RecordEstimate) {
+		{name: "invalid round id", change: func(
+			_ *Service,
+			_ *memoryRepository,
+			_ *memoryEstimates,
+			_ *memoryStorySprints,
+			in *RecordEstimate,
+		) {
 			in.RoundID = -1
 		}, want: ErrInvalidEstimateID},
-		{name: "missing round", change: func(_ *Service, _ *memoryRepository, _ *memoryEstimates, _ *memoryStorySprints, in *RecordEstimate) {
+		{name: "missing round", change: func(
+			_ *Service,
+			_ *memoryRepository,
+			_ *memoryEstimates,
+			_ *memoryStorySprints,
+			in *RecordEstimate,
+		) {
 			in.RoundID = 99
 		}, want: ErrRoundNotFound},
-		{name: "other project", change: func(_ *Service, _ *memoryRepository, _ *memoryEstimates, _ *memoryStorySprints, in *RecordEstimate) {
+		{name: "other project", change: func(
+			_ *Service,
+			_ *memoryRepository,
+			_ *memoryEstimates,
+			_ *memoryStorySprints,
+			in *RecordEstimate,
+		) {
 			in.ProjectID = 2
 		}, want: ErrRoundNotFound},
-		{name: "unknown member", change: func(_ *Service, _ *memoryRepository, _ *memoryEstimates, _ *memoryStorySprints, in *RecordEstimate) {
+		{name: "unknown member", change: func(
+			_ *Service,
+			_ *memoryRepository,
+			_ *memoryEstimates,
+			_ *memoryStorySprints,
+			in *RecordEstimate,
+		) {
 			in.MemberID = 99
 		}, want: ErrMemberNotFound},
-		{name: "missing story", change: func(_ *Service, _ *memoryRepository, stories *memoryEstimates, _ *memoryStorySprints, _ *RecordEstimate) {
+		{name: "missing story", change: func(
+			_ *Service,
+			_ *memoryRepository,
+			stories *memoryEstimates,
+			_ *memoryStorySprints,
+			_ *RecordEstimate,
+		) {
 			stories.story.ID = 99
 		}, want: ErrStoryNotFound},
-		{name: "open round", change: func(_ *Service, repo *memoryRepository, _ *memoryEstimates, _ *memoryStorySprints, in *RecordEstimate) {
+		{name: "open round", change: func(
+			_ *Service,
+			repo *memoryRepository,
+			_ *memoryEstimates,
+			_ *memoryStorySprints,
+			in *RecordEstimate,
+		) {
 			r := repo.rounds[in.RoundID]
 			r.Status = StatusOpen
 			repo.rounds[r.ID] = r
 		}, want: ErrRoundNotRevealed},
-		{name: "empty round", change: func(_ *Service, repo *memoryRepository, _ *memoryEstimates, _ *memoryStorySprints, in *RecordEstimate) {
+		{name: "empty round", change: func(
+			_ *Service,
+			repo *memoryRepository,
+			_ *memoryEstimates,
+			_ *memoryStorySprints,
+			in *RecordEstimate,
+		) {
 			repo.votes[in.RoundID] = []Vote{}
 		}, want: ErrNoVotes},
-		{name: "completed story", change: func(_ *Service, _ *memoryRepository, stories *memoryEstimates, _ *memoryStorySprints, _ *RecordEstimate) {
+		{name: "completed story", change: func(
+			_ *Service,
+			_ *memoryRepository,
+			stories *memoryEstimates,
+			_ *memoryStorySprints,
+			_ *RecordEstimate,
+		) {
 			stories.story.Status = "done"
 		}, want: ErrStoryCompleted},
-		{name: "closed sprint", change: func(_ *Service, _ *memoryRepository, _ *memoryEstimates, sprint *memoryStorySprints, _ *RecordEstimate) {
+		{name: "closed sprint", change: func(
+			_ *Service,
+			_ *memoryRepository,
+			_ *memoryEstimates,
+			sprint *memoryStorySprints,
+			_ *RecordEstimate,
+		) {
 			sprint.closed = true
 		}, want: ErrStorySprintClosed},
-		{name: "newer open round", change: func(poker *Service, _ *memoryRepository, _ *memoryEstimates, _ *memoryStorySprints, _ *RecordEstimate) {
+		{name: "newer open round", change: func(
+			poker *Service,
+			_ *memoryRepository,
+			_ *memoryEstimates,
+			_ *memoryStorySprints,
+			_ *RecordEstimate,
+		) {
 			_, _ = poker.OpenRound(context.Background(), 1, 4)
 		}, want: ErrOutdatedRound},
-		{name: "newer revealed round", change: func(poker *Service, _ *memoryRepository, _ *memoryEstimates, _ *memoryStorySprints, _ *RecordEstimate) {
+		{name: "newer revealed round", change: func(
+			poker *Service,
+			_ *memoryRepository,
+			_ *memoryEstimates,
+			_ *memoryStorySprints,
+			_ *RecordEstimate,
+		) {
 			r, _ := poker.OpenRound(context.Background(), 1, 4)
 			_, _ = poker.Reveal(context.Background(), 1, r.ID, 7)
 		}, want: ErrOutdatedRound},
@@ -132,16 +232,31 @@ func TestEstimateRejectsInvalidAgreementWithoutChangingStory(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if _, err := poker.CastVote(ctx, CastVote{ProjectID: 1, RoundID: r.ID, MemberID: 7, StoryPoints: 5}); err != nil {
+			if _, err := poker.CastVote(ctx, CastVote{
+				ProjectID:   1,
+				RoundID:     r.ID,
+				MemberID:    7,
+				StoryPoints: 5,
+			}); err != nil {
 				t.Fatal(err)
 			}
 			if _, err := poker.Reveal(ctx, 1, r.ID, 7); err != nil {
 				t.Fatal(err)
 			}
 			points := int64(5)
-			stories := &memoryEstimates{story: StoryEstimate{ID: 4, ProjectID: 1, Status: "todo", StoryPoints: &points}}
+			stories := &memoryEstimates{story: StoryEstimate{
+				ID:          4,
+				ProjectID:   1,
+				Status:      "todo",
+				StoryPoints: &points,
+			}}
 			sprint := &memoryStorySprints{}
-			in := RecordEstimate{ProjectID: 1, RoundID: r.ID, MemberID: 7, StoryPoints: 8}
+			in := RecordEstimate{
+				ProjectID:   1,
+				RoundID:     r.ID,
+				MemberID:    7,
+				StoryPoints: 8,
+			}
 			tc.change(poker, repo, stories, sprint, &in)
 			_, err = NewEstimationService(poker, stories, sprint).Record(ctx, in)
 			if !errors.Is(err, tc.want) {
@@ -163,7 +278,12 @@ func TestEstimatePreservesPointsOnInfrastructureFailure(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if _, err := poker.CastVote(ctx, CastVote{ProjectID: 1, RoundID: r.ID, MemberID: 7, StoryPoints: 5}); err != nil {
+			if _, err := poker.CastVote(ctx, CastVote{
+				ProjectID:   1,
+				RoundID:     r.ID,
+				MemberID:    7,
+				StoryPoints: 5,
+			}); err != nil {
 				t.Fatal(err)
 			}
 			if _, err := poker.Reveal(ctx, 1, r.ID, 7); err != nil {
@@ -171,14 +291,24 @@ func TestEstimatePreservesPointsOnInfrastructureFailure(t *testing.T) {
 			}
 			points := int64(5)
 			failure := errors.New("database unavailable")
-			stories := &memoryEstimates{story: StoryEstimate{ID: 4, ProjectID: 1, Status: "todo", StoryPoints: &points}}
+			stories := &memoryEstimates{story: StoryEstimate{
+				ID:          4,
+				ProjectID:   1,
+				Status:      "todo",
+				StoryPoints: &points,
+			}}
 			sprint := &memoryStorySprints{}
 			if stage == "save" {
 				stories.err = failure
 			} else {
 				sprint.err = failure
 			}
-			_, err = NewEstimationService(poker, stories, sprint).Record(ctx, RecordEstimate{ProjectID: 1, RoundID: r.ID, MemberID: 7, StoryPoints: 8})
+			_, err = NewEstimationService(poker, stories, sprint).Record(ctx, RecordEstimate{
+				ProjectID:   1,
+				RoundID:     r.ID,
+				MemberID:    7,
+				StoryPoints: 8,
+			})
 			if !errors.Is(err, failure) || *stories.story.StoryPoints != 5 {
 				t.Fatalf("error=%v points=%d", err, *stories.story.StoryPoints)
 			}

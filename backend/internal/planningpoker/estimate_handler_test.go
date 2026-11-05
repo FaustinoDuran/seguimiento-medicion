@@ -31,7 +31,12 @@ func TestEstimateHTTPContract(t *testing.T) {
 		{name: "trailing json", body: `{"member_id":7,"story_points":8} {}`, want: 400},
 		{name: "zero project", path: "/projects/0/rounds/1/estimate", body: `{"member_id":7,"story_points":8}`, want: 400},
 		{name: "invalid round", path: "/projects/1/rounds/no/estimate", body: `{"member_id":7,"story_points":8}`, want: 400},
-		{name: "overflow round", path: "/projects/1/rounds/9223372036854775808/estimate", body: `{"member_id":7,"story_points":8}`, want: 400},
+		{
+			name: "overflow round",
+			path: "/projects/1/rounds/9223372036854775808/estimate",
+			body: `{"member_id":7,"story_points":8}`,
+			want: 400,
+		},
 		{name: "missing round", path: "/projects/1/rounds/99/estimate", body: `{"member_id":7,"story_points":8}`, want: 404},
 		{name: "other project", path: "/projects/2/rounds/1/estimate", body: `{"member_id":7,"story_points":8}`, want: 404},
 		{name: "unknown member", body: `{"member_id":99,"story_points":8}`, want: 404},
@@ -51,14 +56,24 @@ func TestEstimateHTTPContract(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if _, err := poker.CastVote(ctx, CastVote{ProjectID: 1, RoundID: round.ID, MemberID: 7, StoryPoints: 5}); err != nil {
+			if _, err := poker.CastVote(ctx, CastVote{
+				ProjectID:   1,
+				RoundID:     round.ID,
+				MemberID:    7,
+				StoryPoints: 5,
+			}); err != nil {
 				t.Fatal(err)
 			}
 			if _, err := poker.Reveal(ctx, 1, round.ID, 7); err != nil {
 				t.Fatal(err)
 			}
 			points := int64(5)
-			stories := &memoryEstimates{story: StoryEstimate{ID: 4, ProjectID: 1, Status: "todo", StoryPoints: &points}}
+			stories := &memoryEstimates{story: StoryEstimate{
+				ID:          4,
+				ProjectID:   1,
+				Status:      "todo",
+				StoryPoints: &points,
+			}}
 			sprint := &memoryStorySprints{}
 			switch tc.condition {
 			case "missing story":
@@ -100,7 +115,9 @@ func TestEstimateHTTPContract(t *testing.T) {
 				if *stories.story.StoryPoints != 5 {
 					t.Fatal("rejection changed estimate")
 				}
-				if !strings.Contains(response.Body.String(), `"error":`) || strings.Contains(response.Body.String(), "private database") {
+				hasError := strings.Contains(response.Body.String(), `"error":`)
+				leaksDetails := strings.Contains(response.Body.String(), "private database")
+				if !hasError || leaksDetails {
 					t.Fatalf("error: %s", response.Body.String())
 				}
 			}

@@ -100,8 +100,18 @@ func (s *EstimationService) Record(ctx context.Context, input RecordEstimate) (E
 	if closed {
 		return Estimate{}, ErrStorySprintClosed
 	}
-	if err := s.stories.SaveEstimate(ctx, round.ProjectID, round.StoryID, input.StoryPoints); err != nil {
+	if err := s.stories.SaveEstimate(
+		ctx,
+		round.ProjectID,
+		round.StoryID,
+		input.StoryPoints,
+	); err != nil {
 		return Estimate{}, err
 	}
-	return Estimate{ProjectID: round.ProjectID, StoryID: round.StoryID, RoundID: round.ID, StoryPoints: input.StoryPoints}, nil
+	return Estimate{
+		ProjectID:   round.ProjectID,
+		StoryID:     round.StoryID,
+		RoundID:     round.ID,
+		StoryPoints: input.StoryPoints,
+	}, nil
 }
