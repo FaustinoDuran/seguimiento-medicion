@@ -2,7 +2,7 @@
 
 - Issue: [#24](https://github.com/FaustinoDuran/seguimiento-medicion/issues/24)
 - Módulo Go: `backend/internal/planningpoker/`
-- Estado: lista para implementar; diseño confirmado mediante grill-with-docs
+- Estado: implementada en rama; pendiente revisión y merge
 
 ## Objetivo
 
@@ -94,20 +94,33 @@ Decisiones confirmadas durante la entrevista `grill-with-docs`:
 
 ## Criterios de aceptación
 
-- [ ] AC-015-01 — Guardar un entero positivo elegido explícitamente desde una ronda revelada con al menos un voto, aunque difiera de los votos.
-- [ ] AC-015-02 — Consultar posteriormente el puntaje guardado en la historia.
-- [ ] AC-015-03 — Rechazar una ronda abierta o revelada sin votos.
-- [ ] AC-015-04 — Rechazar a quien no sea integrante del proyecto.
-- [ ] AC-015-05 — Rechazar puntajes ausentes, no enteros o no positivos.
-- [ ] AC-015-06 — Reemplazar una estimación existente y aceptar la repetición del mismo valor cuando se cumplen las condiciones del registro.
-- [ ] AC-015-07 — Rechazar una ronda anterior si existe otra más reciente, incluso abierta.
-- [ ] AC-015-08 — Rechazar historias completadas o pertenecientes a un Sprint cerrado; permitir pendientes sin Sprint o en un Sprint abierto.
-- [ ] AC-015-09 — Conservar votos, rondas y demás datos de la historia; guardar solo el puntaje actual, sin historial ni autor del acuerdo.
-- [ ] AC-015-10 — Respetar el contrato HTTP y el aislamiento entre proyectos, conservando el puntaje anterior ante errores.
+- [x] AC-015-01 — Guardar un entero positivo elegido explícitamente desde una ronda revelada con al menos un voto, aunque difiera de los votos.
+- [x] AC-015-02 — Consultar posteriormente el puntaje guardado en la historia.
+- [x] AC-015-03 — Rechazar una ronda abierta o revelada sin votos.
+- [x] AC-015-04 — Rechazar a quien no sea integrante del proyecto.
+- [x] AC-015-05 — Rechazar puntajes ausentes, no enteros o no positivos.
+- [x] AC-015-06 — Reemplazar una estimación existente y aceptar la repetición del mismo valor cuando se cumplen las condiciones del registro.
+- [x] AC-015-07 — Rechazar una ronda anterior si existe otra más reciente, incluso abierta.
+- [x] AC-015-08 — Rechazar historias completadas o pertenecientes a un Sprint cerrado; permitir pendientes sin Sprint o en un Sprint abierto.
+- [x] AC-015-09 — Conservar votos, rondas y demás datos de la historia; guardar solo el puntaje actual, sin historial ni autor del acuerdo.
+- [x] AC-015-10 — Respetar el contrato HTTP y el aislamiento entre proyectos, conservando el puntaje anterior ante errores.
 
 ## Trazabilidad
 
 - BDD: `features/HU-015-registrar-estimacion-acordada.feature`.
-- Tests y código: pendientes; no se inició la implementación.
-- Verificación prevista: tests de servicio para las reglas, tests HTTP para el
-  contrato y tests PostgreSQL para persistencia y consulta desde el backlog.
+- Servicio: `backend/internal/planningpoker/estimate_service.go` y
+  `estimate_service_test.go` (AC-015-01 y AC-015-03 a AC-015-09).
+- HTTP: `estimate_handler.go` y `estimate_handler_test.go` (AC-015-01,
+  AC-015-03 a AC-015-08 y AC-015-10); registro en `backend/cmd/api/main.go`.
+- PostgreSQL: `estimate_postgres_test.go` verifica el registro por HTTP, consulta
+  individual y listado del backlog, conservación de datos y estados de Sprint
+  (AC-015-01, AC-015-02 y AC-015-06 a AC-015-10).
+- Adaptador: `story_estimates.go`; escritura pública en
+  `backend/internal/backlog/repository_postgres.go`; consulta pública de Sprint
+  en `backend/internal/sprints/service.go`. Sin migraciones nuevas.
+- Verificación: `go test -race -count=1 ./...` con `DATABASE_URL`,
+  `BACKLOG_TEST_DATABASE_URL` y `SPRINTS_TEST_DATABASE_URL` contra PostgreSQL
+  local, y `go vet ./...`. Tras el ajuste final de legibilidad y la extensión
+  del recorrido HTTP se repitió `go test -race -count=1 ./internal/planningpoker`
+  con PostgreSQL. Las pruebas crean esquemas aislados y los eliminan al terminar.
+- Evidencia de commits RED/GREEN/REFACTOR y PR: `docs/traceability.md`.
