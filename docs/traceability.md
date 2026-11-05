@@ -22,6 +22,12 @@ HU-001 a HU-011 están mergeadas en `main`. HU-023 agrega `GET /projects`.
 
 ## HU con integración pendiente
 
+HU-015 ([#24](https://github.com/FaustinoDuran/seguimiento-medicion/issues/24)):
+[SDD](sdd/HU-015-registrar-estimacion-acordada.md), AC-015-01 a AC-015-10 y
+[BDD](../features/HU-015-registrar-estimacion-acordada.feature) preparados durante
+`grill-with-docs`. Diseño confirmado. Pendiente implementación Go,
+tests, evidencia TDD y PR. No implementada.
+
 | HU | Issue | SDD | Criterios | BDD | Verificación | Código | PR | Evidencia |
 |---|---|---|---|---|---|---|---|---|
 | HU-013 | [#22](https://github.com/FaustinoDuran/seguimiento-medicion/issues/22) | [SDD](sdd/HU-013-revelar-votos.md) | AC-013-01 a AC-013-09 | [feature](../features/HU-013-revelar-votos.feature) | `go test ./...` en `backend/` con PostgreSQL local; el test de integración revela, consulta desde otro integrante, rechaza el voto posterior y comprueba que la historia sigue sin story points | `backend/internal/planningpoker/` | [#78](https://github.com/FaustinoDuran/seguimiento-medicion/pull/78) | `docs(#22)` `20f16da` → RED `daebdbb` → GREEN `c746163` → RED `8218bd6` → GREEN `b0818a0` |
