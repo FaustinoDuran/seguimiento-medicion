@@ -107,6 +107,17 @@ func (s *Service) Reveal(ctx context.Context, projectID, roundID, memberID int64
 func roundView(round Round, votes []Vote, viewerID int64, showEveryVote bool) RoundView {
 	sort.Slice(votes, func(i, j int) bool { return votes[i].MemberID < votes[j].MemberID })
 	visible := make([]VisibleVote, 0, len(votes))
+	var hasDifferences *bool
+	if showEveryVote {
+		different := false
+		for _, vote := range votes {
+			if vote.StoryPoints != votes[0].StoryPoints {
+				different = true
+				break
+			}
+		}
+		hasDifferences = &different
+	}
 	for _, vote := range votes {
 		item := VisibleVote{MemberID: vote.MemberID}
 		if showEveryVote || vote.MemberID == viewerID {
@@ -116,11 +127,12 @@ func roundView(round Round, votes []Vote, viewerID int64, showEveryVote bool) Ro
 		visible = append(visible, item)
 	}
 	return RoundView{
-		ID:        round.ID,
-		ProjectID: round.ProjectID,
-		StoryID:   round.StoryID,
-		Status:    round.Status,
-		Votes:     visible,
+		ID:             round.ID,
+		ProjectID:      round.ProjectID,
+		StoryID:        round.StoryID,
+		Status:         round.Status,
+		Votes:          visible,
+		HasDifferences: hasDifferences,
 	}
 }
 
