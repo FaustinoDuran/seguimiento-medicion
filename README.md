@@ -116,6 +116,19 @@ La API devuelve `400` para datos inválidos, `404` para recursos inexistentes y
 `409` para identificadores duplicados, proyectos cerrados al crear o un Sprint
 ya cerrado.
 
+## Planning Poker
+
+HU-012 permite abrir rondas y votar; HU-013 revela los votos y cierra la ronda.
+HU-014 agrega `has_differences` a la respuesta de revelar y a las consultas de
+rondas cerradas: `true` si hay dos puntajes distintos; `false` con todos iguales,
+un voto o ninguno. Las rondas abiertas omiten el campo para preservar el secreto.
+
+Para repetir, usar `POST /projects/{project_id}/stories/{story_id}/rounds`
+después de revelar. Devuelve otra ronda abierta sin votos y conserva las rondas,
+votos y estimación anteriores. Repetir es voluntario, incluso si hay coincidencia.
+Solo puede existir una ronda abierta por historia. HU-015 registra manualmente
+el acuerdo desde la última ronda revelada con votos; la UI corresponde a HU-029.
+
 ## Verificación del backend
 
 HU-028 agrega `GET /projects/{project_id}/stories`: devuelve

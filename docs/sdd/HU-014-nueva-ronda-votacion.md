@@ -2,7 +2,7 @@
 
 - Issue: [#23](https://github.com/FaustinoDuran/seguimiento-medicion/issues/23)
 - Módulo Go: `backend/internal/planningpoker/`
-- Estado: lista para implementar
+- Estado: implementada en rama; pendiente revisión y merge
 
 ## Objetivo
 
@@ -66,13 +66,13 @@ fallo de infraestructura: `500` con error genérico.
 
 ## Criterios de aceptación
 
-- [ ] AC-014-01 — Revelar y consultar votos distintos informa diferencias.
-- [ ] AC-014-02 — Rondas abiertas no informan diferencias ni puntajes ajenos.
-- [ ] AC-014-03 — Votos iguales, un voto o ninguno informan ausencia de diferencias sin exigir otra ronda.
-- [ ] AC-014-04 — Se abre voluntariamente otra ronda vacía con nuevo ID conservando la anterior y su estimación.
-- [ ] AC-014-05 — Se puede repetir con diferencias, coincidencia, un voto o ninguno.
-- [ ] AC-014-06 — La nueva ronda oculta puntajes ajenos y la anterior sigue cerrada y consultable.
-- [ ] AC-014-07 — Se rechaza otra apertura mientras exista una ronda abierta y se conserva el aislamiento entre proyectos.
+- [x] AC-014-01 — Revelar y consultar votos distintos informa diferencias.
+- [x] AC-014-02 — Rondas abiertas no informan diferencias ni puntajes ajenos.
+- [x] AC-014-03 — Votos iguales, un voto o ninguno informan ausencia de diferencias sin exigir otra ronda.
+- [x] AC-014-04 — Se abre voluntariamente otra ronda vacía con nuevo ID conservando la anterior y su estimación.
+- [x] AC-014-05 — Se puede repetir con diferencias, coincidencia, un voto o ninguno.
+- [x] AC-014-06 — La nueva ronda oculta puntajes ajenos y la anterior sigue cerrada y consultable.
+- [x] AC-014-07 — Se rechaza otra apertura mientras exista una ronda abierta y se conserva el aislamiento entre proyectos.
 
 ## Trazabilidad
 
@@ -91,3 +91,16 @@ fallo de infraestructura: `500` con error genérico.
   consulta posterior de los votos anteriores y unicidad concurrente.
 - Sin promedio ni nuevas restricciones de estado. No hace falta un ADR: son
   reglas de esta HU, sin cambios de arquitectura, stack o alcance del MVP.
+
+## Evidencia de implementación
+
+- Servicio: `differences_service_test.go`, comparación al revelar/consultar,
+  casos sin votos, un voto, coincidencia, diferencias, reemplazo y nuevas rondas.
+- HTTP: `differences_handler_test.go`, presencia/ausencia del campo, booleano
+  falso explícito, apertura voluntaria y contratos de error.
+- PostgreSQL: `differences_postgres_test.go`, conservación de historia y votos,
+  aislamiento entre rondas, secreto y unicidad ante ocho aperturas concurrentes.
+- Verificado con `go test -race -count=1 ./...` y las tres variables de conexión
+  contra PostgreSQL local; `go vet ./...` y `git diff --check`.
+- SDD y BDD precedieron al código; dos ciclos RED/GREEN separados. La apertura
+  reutiliza comportamiento existente y sus pruebas de regresión pasan sin cambios SQL.
