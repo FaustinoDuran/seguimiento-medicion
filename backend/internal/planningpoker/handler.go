@@ -103,11 +103,12 @@ func (h *Handler) Reveal(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	writeJSON(writer, http.StatusOK, roundResponse{
-		ID:        view.ID,
-		ProjectID: view.ProjectID,
-		StoryID:   view.StoryID,
-		Status:    view.Status,
-		Votes:     voteResponses(view.Votes),
+		ID:             view.ID,
+		ProjectID:      view.ProjectID,
+		StoryID:        view.StoryID,
+		Status:         view.Status,
+		Votes:          voteResponses(view.Votes),
+		HasDifferences: view.HasDifferences,
 	})
 }
 
@@ -139,21 +140,23 @@ func (h *Handler) View(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	body := roundResponse{
-		ID:        view.ID,
-		ProjectID: view.ProjectID,
-		StoryID:   view.StoryID,
-		Status:    view.Status,
-		Votes:     voteResponses(view.Votes),
+		ID:             view.ID,
+		ProjectID:      view.ProjectID,
+		StoryID:        view.StoryID,
+		Status:         view.Status,
+		Votes:          voteResponses(view.Votes),
+		HasDifferences: view.HasDifferences,
 	}
 	writeJSON(writer, http.StatusOK, body)
 }
 
 type roundResponse struct {
-	ID        int64          `json:"id"`
-	ProjectID int64          `json:"project_id"`
-	StoryID   int64          `json:"story_id"`
-	Status    RoundStatus    `json:"status"`
-	Votes     []voteResponse `json:"votes"`
+	HasDifferences *bool          `json:"has_differences,omitempty"`
+	ID             int64          `json:"id"`
+	ProjectID      int64          `json:"project_id"`
+	StoryID        int64          `json:"story_id"`
+	Status         RoundStatus    `json:"status"`
+	Votes          []voteResponse `json:"votes"`
 }
 
 type voteResponse struct {
