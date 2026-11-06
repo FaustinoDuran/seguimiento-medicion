@@ -390,3 +390,16 @@ func (r *memoryRepository) ListVotes(_ context.Context, roundID int64) ([]Vote, 
 	copy(copied, found)
 	return copied, nil
 }
+
+func (r *memoryRepository) FindLatestRoundByStory(_ context.Context, storyID int64) (Round, error) {
+	var latest Round
+	for _, round := range r.rounds {
+		if round.StoryID == storyID && round.ID > latest.ID {
+			latest = round
+		}
+	}
+	if latest.ID == 0 {
+		return Round{}, ErrRoundNotFound
+	}
+	return latest, nil
+}

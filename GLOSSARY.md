@@ -26,6 +26,10 @@ _Evitar_: Historia eliminada, historia desasignada.
 **Historia sin estimar**:
 Historia de backlog que todavía no tiene story points registrados. La ausencia de estimación no equivale a cero story points.
 
+**Estimación acordada**:
+Puntaje entero positivo que un integrante registra para una historia después de discutir una ronda revelada con al menos un voto. Se elige explícitamente y puede diferir de todos los votos emitidos.
+_Evitar_: Promedio de votos, voto unánime.
+
 **Criterios de aceptación**:
 Lista de condiciones que debe satisfacer una historia de backlog. Puede estar vacía mientras la historia se detalla.
 

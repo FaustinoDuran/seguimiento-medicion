@@ -156,3 +156,18 @@ func assignedStory(sprintID int64, story StoryRef) AssignedStory {
 		Status:     story.Status,
 	}
 }
+
+func (s *Service) IsStorySprintClosed(ctx context.Context, storyID int64) (bool, error) {
+	assignment, err := s.repo.FindAssignmentByStory(ctx, storyID)
+	if errors.Is(err, errAssignmentNotFound) {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	sprint, err := s.repo.FindByID(ctx, assignment.SprintID)
+	if err != nil {
+		return false, err
+	}
+	return sprint.Status == StatusClosed, nil
+}
