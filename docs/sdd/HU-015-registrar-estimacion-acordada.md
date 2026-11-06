@@ -2,7 +2,7 @@
 
 - Issue: [#24](https://github.com/FaustinoDuran/seguimiento-medicion/issues/24)
 - Módulo Go: `backend/internal/planningpoker/`
-- Estado: implementada en rama; pendiente revisión y merge
+- Estado: implementada y mergeada en `main` (PR #79, merge `9dbc4f2`)
 
 ## Objetivo
 
