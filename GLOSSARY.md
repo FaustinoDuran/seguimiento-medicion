@@ -30,6 +30,20 @@ Historia de backlog que todavía no tiene story points registrados. La ausencia 
 Puntaje entero positivo que un integrante registra para una historia después de discutir una ronda revelada con al menos un voto. Se elige explícitamente y puede diferir de todos los votos emitidos.
 _Evitar_: Promedio de votos, voto unánime.
 
+**Ronda de votación**:
+Instancia de estimación de una historia en la que cada integrante puede emitir y reemplazar su voto hasta que se revela.
+
+**Ronda revelada**:
+Ronda cerrada cuyos votos son visibles para los integrantes del proyecto. Su cierre no implica que exista un acuerdo.
+_Evitar_: Ronda acordada.
+
+**Diferencias entre votos**:
+Existencia de al menos dos puntajes distintos entre los votos emitidos en una ronda. La ausencia de diferencias, incluso sin votos o con uno solo, no acredita un acuerdo.
+
+**Nueva ronda de votación**:
+Otra instancia de estimación de la misma historia, que comienza sin votos y conserva las rondas anteriores. Iniciarla es voluntario, incluso cuando los votos coinciden.
+_Evitar_: Reapertura de la ronda anterior, reinicio de votos.
+
 **Criterios de aceptación**:
 Lista de condiciones que debe satisfacer una historia de backlog. Puede estar vacía mientras la historia se detalla.
 

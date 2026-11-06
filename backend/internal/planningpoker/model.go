@@ -38,11 +38,12 @@ type VisibleVote struct {
 }
 
 type RoundView struct {
-	ID        int64
-	ProjectID int64
-	StoryID   int64
-	Status    RoundStatus
-	Votes     []VisibleVote
+	ID             int64
+	ProjectID      int64
+	StoryID        int64
+	Status         RoundStatus
+	Votes          []VisibleVote
+	HasDifferences *bool
 }
 
 type StoryRef struct {
