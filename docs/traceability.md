@@ -32,9 +32,10 @@ HU-013 está integrada por el merge `88f30c4` (PR #78) y HU-015 por
 
 | HU | Issue | SDD | Criterios | BDD | Tests | Código | PR | Evidencia TDD |
 |---|---|---|---|---|---|---|---|---|
-| HU-014 | [#23](https://github.com/FaustinoDuran/seguimiento-medicion/issues/23) | [SDD](sdd/HU-014-nueva-ronda-votacion.md) | AC-014-01 a AC-014-07 | [feature](../features/HU-014-nueva-ronda-votacion.feature) | `backend/internal/planningpoker/differences_{service,handler,postgres}_test.go` | `backend/internal/planningpoker/{model,service,handler}.go`; apertura y persistencia existentes | Pendiente | Spec `667a4e2`; servicio RED `69d705f` → GREEN `ff35abf`; HTTP RED `ab3c13f` → GREEN `ac0c799`; regresión PostgreSQL `1b39f2b` de apertura existente, sin cambio SQL |
+| HU-014 | [#23](https://github.com/FaustinoDuran/seguimiento-medicion/issues/23) | [SDD](sdd/HU-014-nueva-ronda-votacion.md) | AC-014-01 a AC-014-07 | [feature](../features/HU-014-nueva-ronda-votacion.feature) | `backend/internal/planningpoker/differences_{service,handler,postgres}_test.go` | `backend/internal/planningpoker/{model,service,handler}.go`; apertura y persistencia existentes | [#80](https://github.com/FaustinoDuran/seguimiento-medicion/pull/80), borrador | Spec `667a4e2`; servicio RED `69d705f` → GREEN `ff35abf`; HTTP RED `ab3c13f` → GREEN `ac0c799`; regresión PostgreSQL `1b39f2b` de apertura existente, sin cambio SQL |
 
-HU-014 está implementada en `feat/HU-014-new-voting-round`; falta revisión y merge.
+HU-014 está implementada en `feat/HU-014-new-voting-round`, PR #80 en borrador;
+falta revisión y merge.
 Verificación: `go test -race -count=1 ./...` con `DATABASE_URL`,
 `BACKLOG_TEST_DATABASE_URL` y `SPRINTS_TEST_DATABASE_URL` contra PostgreSQL local;
 `go vet ./...`; `git diff --check`. Los tests de PostgreSQL verifican el recorrido
