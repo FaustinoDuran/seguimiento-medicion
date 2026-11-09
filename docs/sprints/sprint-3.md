@@ -27,7 +27,7 @@ Dueños:
 | HU-013 Revelar votos | [#22](https://github.com/FaustinoDuran/seguimiento-medicion/issues/22) | media | — | Valentino | Done. PR #78 |
 | HU-014 Nueva ronda de votación | [#23](https://github.com/FaustinoDuran/seguimiento-medicion/issues/23) | media | — | Ignacio | Done. PR #80 |
 | HU-015 Registrar estimación acordada | [#24](https://github.com/FaustinoDuran/seguimiento-medicion/issues/24) | media | — | Ignacio | Done. PR #79 |
-| HU-029 UI Planning Poker | [#74](https://github.com/FaustinoDuran/seguimiento-medicion/issues/74) | alta | — | Faustino | In review |
+| HU-029 UI Planning Poker | [#74](https://github.com/FaustinoDuran/seguimiento-medicion/issues/74) | alta | — | Faustino | In review. PR #81 |
 
 ## Olas
 
