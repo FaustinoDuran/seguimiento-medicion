@@ -55,6 +55,7 @@ function ProjectDetail({ project }: { project: Project }) {
       <nav className="project-links" aria-label="Trabajo del proyecto">
         <Link className="text-link" to={`/projects/${project.id}/backlog`}>Backlog</Link>
         <Link className="text-link" to={`/projects/${project.id}/sprints`}>Sprints</Link>
+        <Link className="text-link" to={`/projects/${project.id}/planning`}>Planning Poker</Link>
       </nav>
     </>
   )

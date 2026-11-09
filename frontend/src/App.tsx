@@ -1,6 +1,8 @@
 import { BrowserRouter, Link, NavLink, Outlet, Route, Routes } from 'react-router-dom'
 import { ConnectionPage } from './app/ConnectionPage'
 import { BacklogPage } from './features/backlog/BacklogPage'
+import { PlanningPage } from './features/planningpoker/PlanningPage'
+import { RoundPage } from './features/planningpoker/RoundPage'
 import { ProjectDetailPage } from './features/projects/ProjectDetailPage'
 import { ProjectsPage } from './features/projects/ProjectsPage'
 import { SprintDetailPage } from './features/sprints/SprintDetailPage'
@@ -66,6 +68,8 @@ export default function App() {
           <Route path="connection" element={<ConnectionPage />} />
           <Route path="projects" element={<ProjectsPage />} />
           <Route path="projects/:projectId" element={<ProjectDetailPage />} />
+          <Route path="projects/:projectId/planning/rounds/:roundId" element={<RoundPage />} />
+          <Route path="projects/:projectId/planning" element={<PlanningPage />} />
           <Route path="projects/:projectId/backlog" element={<BacklogPage />} />
           <Route path="projects/:projectId/sprints" element={<SprintListPage />} />
           <Route path="projects/:projectId/sprints/:sprintId" element={<SprintDetailPage />} />
