@@ -3,7 +3,7 @@
 - Issue: [#74](https://github.com/FaustinoDuran/seguimiento-medicion/issues/74)
 - Módulo Go existente: `backend/internal/planningpoker/`
 - Presentación: `frontend/src/features/planningpoker/`
-- Estado: en curso
+- Estado: implementada
 
 ## Objetivo
 
@@ -89,12 +89,12 @@ Errores que la pantalla traduce:
 
 ## Criterios de aceptación
 
-- [ ] AC-029-01 — Votar y ver el puntaje propio; el de otro integrante queda oculto.
-- [ ] AC-029-02 — Revelar y ver el puntaje de todos los votos.
-- [ ] AC-029-03 — Si la API informa diferencias, abrir otra ronda vacía.
-- [ ] AC-029-04 — Si la API informa que no hay diferencias, no se exige otra ronda.
-- [ ] AC-029-05 — Guardar el story point acordado y verlo en la historia.
-- [ ] AC-029-06 — Mostrar un error en español si el voto no se puede registrar.
+- [x] AC-029-01 — Votar y ver el puntaje propio; el de otro integrante queda oculto.
+- [x] AC-029-02 — Revelar y ver el puntaje de todos los votos.
+- [x] AC-029-03 — Si la API informa diferencias, abrir otra ronda vacía.
+- [x] AC-029-04 — Si la API informa que no hay diferencias, no se exige otra ronda.
+- [x] AC-029-05 — Guardar el story point acordado y verlo en la historia.
+- [x] AC-029-06 — Mostrar un error en español si el voto no se puede registrar.
 
 ## Trazabilidad
 

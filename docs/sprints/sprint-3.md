@@ -22,12 +22,12 @@ Dueños:
 
 | Ítem | Issue | Prioridad | SP | Responsable | Orden |
 |---|---|---|---|---|---|
-| TASK-017 Alcance Sprint 3 | [#73](https://github.com/FaustinoDuran/seguimiento-medicion/issues/73) | alta | — | Faustino | Ahora. In progress |
-| HU-012 Votar en secreto | [#21](https://github.com/FaustinoDuran/seguimiento-medicion/issues/21) | alta | — | Faustino | Después del alcance. Sprint ready |
-| HU-013 Revelar votos | [#22](https://github.com/FaustinoDuran/seguimiento-medicion/issues/22) | media | — | Valentino | Después de HU-012. Sprint ready |
-| HU-014 Nueva ronda de votación | [#23](https://github.com/FaustinoDuran/seguimiento-medicion/issues/23) | media | — | Ignacio | Después de HU-013. Sprint ready |
-| HU-015 Registrar estimación acordada | [#24](https://github.com/FaustinoDuran/seguimiento-medicion/issues/24) | media | — | Ignacio | Después de HU-013. Sprint ready |
-| HU-029 UI Planning Poker | [#74](https://github.com/FaustinoDuran/seguimiento-medicion/issues/74) | alta | — | Faustino | Última, para la demo. Sprint ready |
+| TASK-017 Alcance Sprint 3 | [#73](https://github.com/FaustinoDuran/seguimiento-medicion/issues/73) | alta | — | Faustino | Done. PR #76 |
+| HU-012 Votar en secreto | [#21](https://github.com/FaustinoDuran/seguimiento-medicion/issues/21) | alta | — | Faustino | Done. PR #77 |
+| HU-013 Revelar votos | [#22](https://github.com/FaustinoDuran/seguimiento-medicion/issues/22) | media | — | Valentino | Done. PR #78 |
+| HU-014 Nueva ronda de votación | [#23](https://github.com/FaustinoDuran/seguimiento-medicion/issues/23) | media | — | Ignacio | Done. PR #80 |
+| HU-015 Registrar estimación acordada | [#24](https://github.com/FaustinoDuran/seguimiento-medicion/issues/24) | media | — | Ignacio | Done. PR #79 |
+| HU-029 UI Planning Poker | [#74](https://github.com/FaustinoDuran/seguimiento-medicion/issues/74) | alta | — | Faustino | In review |
 
 ## Olas
 
