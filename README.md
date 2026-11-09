@@ -220,8 +220,10 @@ código de error.
 
 ### Límites
 
-- El hook corre localmente; GitHub Actions sigue siendo la validación del
-  servidor, pero llega **después** de recibir el push y no reemplaza este control.
+- El hook corre localmente. GitHub Actions, en
+  [`.github/workflows/backend.yml`](.github/workflows/backend.yml), corre la
+  misma suite después de recibir el push. Llega más tarde y no reemplaza este
+  control.
 - Se puede omitir con `git push --no-verify`. El hook no es una política
   obligatoria del servidor: no reemplaza la protección de ramas ni la revisión
   de otra persona.
@@ -229,6 +231,19 @@ código de error.
   esté roja, el `pre-push` impedirá publicarlos por la vía normal; entre el
   commit RED y el GREEN, la publicación se hace cuando la suite vuelve a verde
   (o con `--no-verify`, de forma consciente y avisando al equipo).
+
+## GitHub Actions
+
+En cada push y en cada pull request corren dos checks:
+
+- Frontend: `.github/workflows/frontend.yml` hace `npm ci`, lint, build y tests.
+- Backend: `.github/workflows/backend.yml` levanta PostgreSQL 16 y, desde
+  `backend/`, ejecuta `go test -count=1 -race ./...` con `DATABASE_URL`,
+  `BACKLOG_TEST_DATABASE_URL` y `SPRINTS_TEST_DATABASE_URL`. Es el mismo
+  comando que el hook. La base existe solo durante el check y usa el usuario
+  de prueba del `docker-compose`, no una base del equipo.
+
+El hook sigue corriendo antes del push en cada clon donde esté instalado.
 
 ## Documentación del equipo
 
