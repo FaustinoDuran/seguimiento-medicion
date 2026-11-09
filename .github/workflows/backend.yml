@@ -1,0 +1,38 @@
+name: Backend
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    name: Tests con PostgreSQL
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: seguimiento_medicion
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d seguimiento_medicion"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/seguimiento_medicion?sslmode=disable
+      BACKLOG_TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/seguimiento_medicion?sslmode=disable
+      SPRINTS_TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/seguimiento_medicion?sslmode=disable
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          cache-dependency-path: backend/go.sum
+      - run: go test -count=1 -race ./...
