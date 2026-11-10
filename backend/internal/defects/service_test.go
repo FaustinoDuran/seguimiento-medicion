@@ -113,6 +113,65 @@ func validInput() RegisterInput {
 	}
 }
 
+func TestRegisterRequiresResourcesInProject(t *testing.T) {
+	cases := []struct {
+		name string
+		change func(*RegisterInput)
+		want error
+	}{
+		{name: "missing project", change: func(in *RegisterInput) { in.ProjectID = 0 }, want: ErrInvalidID},
+		{name: "negative project", change: func(in *RegisterInput) { in.ProjectID = -1 }, want: ErrInvalidID},
+		{name: "missing story", change: func(in *RegisterInput) { in.StoryID = 0 }, want: ErrInvalidID},
+		{name: "negative story", change: func(in *RegisterInput) { in.StoryID = -1 }, want: ErrInvalidID},
+		{name: "missing sprint", change: func(in *RegisterInput) { in.DetectionSprintID = 0 }, want: ErrInvalidID},
+		{name: "negative sprint", change: func(in *RegisterInput) { in.DetectionSprintID = -1 }, want: ErrInvalidID},
+		{name: "unknown story", change: func(in *RegisterInput) { in.StoryID = 99 }, want: ErrStoryNotFound},
+		{name: "foreign story", change: func(in *RegisterInput) { in.ProjectID = 2 }, want: ErrStoryNotFound},
+		{name: "unknown or foreign sprint", change: func(in *RegisterInput) { in.DetectionSprintID = 99 }, want: ErrSprintNotFound},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			service, repo := testService()
+			input := validInput()
+			tc.change(&input)
+			_, err := service.Register(context.Background(), input)
+			if !errors.Is(err, tc.want) {
+				t.Fatalf("error: got %v want %v", err, tc.want)
+			}
+			if len(repo.entries) != 0 {
+				t.Fatal("invalid reference was persisted")
+			}
+		})
+	}
+}
+
+func TestGetRequiresPositiveIDsAndProjectScope(t *testing.T) {
+	service, _ := testService()
+	ctx := context.Background()
+	saved, err := service.Register(ctx, validInput())
+	if err != nil {
+		t.Fatal(err)
+	}
+	cases := []struct {
+		projectID int64
+		id int64
+		want error
+	}{
+		{projectID: 0, id: saved.ID, want: ErrInvalidID},
+		{projectID: -1, id: saved.ID, want: ErrInvalidID},
+		{projectID: 1, id: 0, want: ErrInvalidID},
+		{projectID: 1, id: -1, want: ErrInvalidID},
+		{projectID: 2, id: saved.ID, want: ErrNotFound},
+		{projectID: 1, id: 99, want: ErrNotFound},
+	}
+	for _, tc := range cases {
+		got, err := service.Get(ctx, tc.projectID, tc.id)
+		if !errors.Is(err, tc.want) || got != (Defect{}) {
+			t.Fatalf("get(%d,%d): %+v %v; want %v", tc.projectID, tc.id, got, err, tc.want)
+		}
+	}
+}
+
 type memoryRepository struct {
 	entries map[int64]Defect
 }
