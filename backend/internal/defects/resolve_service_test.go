@@ -102,6 +102,46 @@ func TestResolveRequiresSameProjectAndSameOrLaterCreationOrder(t *testing.T) {
 	}
 }
 
+func TestResolveRetryPreservesFirstResolution(t *testing.T) {
+	service, reader, storage, original := resolutionFixture(t)
+	ctx := context.Background()
+	input := ResolveInput{ProjectID: 1, DefectID: original.ID, ResolutionSprintID: 3}
+	first, err := service.Resolve(ctx, input)
+	if err != nil {
+		t.Fatal(err)
+	}
+	storage.resolveErr = errors.New("writes unavailable")
+	repeated, err := service.Resolve(ctx, input)
+	if err != nil || !reflect.DeepEqual(first, repeated) {
+		t.Fatalf("retry: %+v %v", repeated, err)
+	}
+	input.ResolutionSprintID = 1
+	_, err = service.Resolve(ctx, input)
+	if !errors.Is(err, ErrResolutionConflict) {
+		t.Fatalf("different sprint: %v", err)
+	}
+	got, err := reader.Get(ctx, 1, original.ID)
+	if err != nil || !reflect.DeepEqual(got, first) {
+		t.Fatalf("resolution changed: %+v %v", got, err)
+	}
+}
+
+func TestResolveStorageFailureLeavesOpenDefectUnchanged(t *testing.T) {
+	service, reader, storage, original := resolutionFixture(t)
+	failure := errors.New("write failed")
+	storage.resolveErr = failure
+	_, err := service.Resolve(context.Background(), ResolveInput{
+		ProjectID: 1, DefectID: original.ID, ResolutionSprintID: 3,
+	})
+	if !errors.Is(err, failure) {
+		t.Fatalf("error: %v", err)
+	}
+	got, err := reader.Get(context.Background(), 1, original.ID)
+	if err != nil || !reflect.DeepEqual(got, original) {
+		t.Fatalf("partial change: %+v %v", got, err)
+	}
+}
+
 type resolutionMemoryRepository struct {
 	*memoryRepository
 	resolveErr error
