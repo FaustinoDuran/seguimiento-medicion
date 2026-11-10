@@ -16,3 +16,8 @@ de completar historias. No volver a aplicar `003` para actualizar el constraint:
 después de `projects`, `backlog` y `sprints`, porque los defectos referencian
 esas tres entidades. Registra descripción, severidad, estado inicial abierto
 y Sprint de detección; la resolución corresponde a HU-018.
+
+`010` agrega `resolution_sprint_id` y actualiza los constraints de `defects`
+para HU-018: abiertos sin Sprint de resolución, resueltos con uno informado.
+`defects.EnsureSchema` aplica `009` y `010` en el arranque. La actualización
+conserva defectos existentes y admite repetición con defectos ya resueltos.

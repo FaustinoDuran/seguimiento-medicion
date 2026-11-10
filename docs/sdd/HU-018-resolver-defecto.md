@@ -2,7 +2,7 @@
 
 - Issue: [#27](https://github.com/FaustinoDuran/seguimiento-medicion/issues/27)
 - Módulo Go: `backend/internal/defects/`
-- Estado: lista para implementar; contrato e interfaces de prueba confirmados
+- Estado: implementada en `feat/HU-018-resolve-defect`; pendiente de revisión y merge
 - Dependencia: HU-017, disponible en la base de `feat/HU-018-resolve-defect`.
 
 ## Objetivo
@@ -127,24 +127,24 @@ Decisiones Q1 a Q8 confirmadas durante la entrevista `grill-with-docs`:
 
 ## Criterios de aceptación
 
-- [ ] AC-018-01 — Resolver un defecto abierto con un Sprint de resolución
+- [x] AC-018-01 — Resolver un defecto abierto con un Sprint de resolución
   explícito del mismo proyecto y consultar posteriormente ambos datos.
-- [ ] AC-018-02 — Informar que el defecto no existe cuando no se encuentra
+- [x] AC-018-02 — Informar que el defecto no existe cuando no se encuentra
   en el proyecto indicado, sin modificar datos.
-- [ ] AC-018-03 — Exigir un Sprint de resolución existente y del mismo proyecto,
+- [x] AC-018-03 — Exigir un Sprint de resolución existente y del mismo proyecto,
   permitiendo que coincida o difiera del de detección y del asignado a la historia.
-- [ ] AC-018-04 — Admitir proyectos cerrados, Sprints de resolución cerrados
+- [x] AC-018-04 — Admitir proyectos cerrados, Sprints de resolución cerrados
   e historias completadas, sin reabrirlos.
-- [ ] AC-018-05 — Conservar descripción, severidad, historia y Sprint de
+- [x] AC-018-05 — Conservar descripción, severidad, historia y Sprint de
   detección; guardar estado y Sprint de resolución juntos o conservar ambos
   sin cambios ante un fallo.
-- [ ] AC-018-06 — Repetir una resolución con el mismo Sprint devuelve éxito
+- [x] AC-018-06 — Repetir una resolución con el mismo Sprint devuelve éxito
   conservando los datos existentes.
-- [ ] AC-018-07 — Rechazar el cambio a otro Sprint de resolución con `409`,
+- [x] AC-018-07 — Rechazar el cambio a otro Sprint de resolución con `409`,
   incluso ante solicitudes concurrentes, sin sobrescribir la primera resolución.
-- [ ] AC-018-08 — Permitir el mismo Sprint de detección o uno posterior según
+- [x] AC-018-08 — Permitir el mismo Sprint de detección o uno posterior según
   `created_at` y luego `id`; rechazar uno anterior sin modificar el defecto.
-- [ ] AC-018-09 — Respetar el contrato HTTP de resolución y consulta, validar
+- [x] AC-018-09 — Respetar el contrato HTTP de resolución y consulta, validar
   identificadores/JSON y responder errores de infraestructura sin detalles internos.
 
 ## Confirmación final
@@ -162,13 +162,39 @@ fueron confirmados por el usuario antes de escribir tests e implementar.
   solicitudes concurrentes y conservación de defectos de HU-017 al actualizar
   el esquema; no incluye UI.
 
-El esquema actual solo admite defectos abiertos. La implementación deberá
-ampliarlo para guardar resolución y conservar los registros existentes;
-`CREATE TABLE IF NOT EXISTS` por sí solo no actualiza ese constraint.
+La migración `010` amplía el esquema de HU-017: agrega el Sprint de resolución
+y actualiza los constraints para admitir abiertos sin resolución y resueltos
+con resolución. Conserva registros existentes y puede repetirse después de
+resolver defectos; el arranque aplica la actualización con `EnsureSchema`.
 
 ## Trazabilidad
 
 - BDD: `features/HU-018-resolver-defecto.feature`.
-- Tests previstos: `backend/internal/defects/` (pendientes).
-- Código previsto: `backend/internal/defects/` (pendiente).
-- PR y evidencia TDD: pendientes de implementación.
+- Servicio: `backend/internal/defects/resolve_service_test.go`, transición,
+  conservación de datos, IDs, pertenencia al proyecto, orden por fecha e ID,
+  reintentos, conflictos y fallos de escritura.
+- HTTP: `backend/internal/defects/resolve_handler_test.go`, resolución y
+  consulta, JSON, estados `400`/`404`/`409`/`500`, errores genéricos y rechazos
+  que conservan el defecto.
+- PostgreSQL: `backend/internal/defects/resolve_postgres_test.go`, resolución
+  persistida en proyecto/Sprint cerrados, orden y aislamiento reales, migración
+  desde `009`, fallo de escritura atómico y solicitudes concurrentes.
+- Código: `resolve_service.go`, `resolve_handler.go`, `resolve_postgres.go`,
+  modelo y adaptador de Sprint en `backend/internal/defects/`.
+- Migración: `backend/migrations/010_add_defect_resolution.sql`.
+- Bootstrap: `backend/cmd/api/main.go` monta las rutas de resolución.
+- PR y evidencia TDD: `docs/traceability.md`.
+
+## Verificación
+
+Pasaron `go test -count=1 -race ./internal/defects/`,
+`go test -count=1 -race ./...` y `go vet ./...` desde `backend/`.
+La suite completa se ejecutó con PostgreSQL local y `DATABASE_URL`,
+`BACKLOG_TEST_DATABASE_URL` y `SPRINTS_TEST_DATABASE_URL`.
+
+Las pruebas PostgreSQL de defectos usan `DEFECTS_TEST_DATABASE_URL` o
+`BACKLOG_TEST_DATABASE_URL`; sin ambas se omiten explícitamente. Crean y
+eliminan esquemas temporales aislados. El test concurrente sincroniza las
+lecturas para que ambas solicitudes observen el defecto abierto y verifica
+la respuesta y el estado final por HTTP. El Gherkin queda documentado, sin
+presentarlo como una suite Godog automatizada.
