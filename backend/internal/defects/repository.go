@@ -7,6 +7,11 @@ type Repository interface {
 	FindByID(ctx context.Context, projectID, id int64) (Defect, error)
 }
 
+type ResolutionRepository interface {
+	FindByID(ctx context.Context, projectID, id int64) (Defect, error)
+	Resolve(ctx context.Context, input ResolveInput) (Defect, error)
+}
+
 type StoryLookup interface {
 	Find(ctx context.Context, projectID, storyID int64) error
 }
