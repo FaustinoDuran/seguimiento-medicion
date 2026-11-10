@@ -115,9 +115,9 @@ func validInput() RegisterInput {
 
 func TestRegisterRequiresResourcesInProject(t *testing.T) {
 	cases := []struct {
-		name string
+		name   string
 		change func(*RegisterInput)
-		want error
+		want   error
 	}{
 		{name: "missing project", change: func(in *RegisterInput) { in.ProjectID = 0 }, want: ErrInvalidID},
 		{name: "negative project", change: func(in *RegisterInput) { in.ProjectID = -1 }, want: ErrInvalidID},
@@ -154,8 +154,8 @@ func TestGetRequiresPositiveIDsAndProjectScope(t *testing.T) {
 	}
 	cases := []struct {
 		projectID int64
-		id int64
-		want error
+		id        int64
+		want      error
 	}{
 		{projectID: 0, id: saved.ID, want: ErrInvalidID},
 		{projectID: -1, id: saved.ID, want: ErrInvalidID},

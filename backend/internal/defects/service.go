@@ -8,6 +8,7 @@ import (
 )
 
 var (
+	ErrInvalidID           = errors.New("project, story, sprint and defect ids must be positive")
 	ErrNotFound            = errors.New("defect not found")
 	ErrStoryNotFound       = errors.New("story not found")
 	ErrSprintNotFound      = errors.New("detection sprint not found")
@@ -28,6 +29,12 @@ func NewService(repo Repository, stories StoryLookup, sprints SprintLookup) *Ser
 }
 
 func (s *Service) Register(ctx context.Context, input RegisterInput) (Defect, error) {
+	invalidProject := input.ProjectID < 1
+	invalidStory := input.StoryID < 1
+	invalidSprint := input.DetectionSprintID < 1
+	if invalidProject || invalidStory || invalidSprint {
+		return Defect{}, ErrInvalidID
+	}
 	description := strings.TrimSpace(input.Description)
 	if description == "" {
 		return Defect{}, ErrDescriptionRequired
@@ -43,6 +50,12 @@ func (s *Service) Register(ctx context.Context, input RegisterInput) (Defect, er
 	if input.Status != "" && input.Status != "open" {
 		return Defect{}, ErrInvalidStatus
 	}
+	if err := s.stories.Find(ctx, input.ProjectID, input.StoryID); err != nil {
+		return Defect{}, err
+	}
+	if err := s.sprints.Find(ctx, input.ProjectID, input.DetectionSprintID); err != nil {
+		return Defect{}, err
+	}
 	return s.repo.Save(ctx, Defect{
 		ProjectID: input.ProjectID, StoryID: input.StoryID,
 		Description: description, Severity: input.Severity,
@@ -51,5 +64,8 @@ func (s *Service) Register(ctx context.Context, input RegisterInput) (Defect, er
 }
 
 func (s *Service) Get(ctx context.Context, projectID, id int64) (Defect, error) {
+	if projectID < 1 || id < 1 {
+		return Defect{}, ErrInvalidID
+	}
 	return s.repo.FindByID(ctx, projectID, id)
 }
