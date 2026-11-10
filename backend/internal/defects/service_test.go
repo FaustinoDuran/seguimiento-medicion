@@ -127,7 +127,11 @@ func TestRegisterRequiresResourcesInProject(t *testing.T) {
 		{name: "negative sprint", change: func(in *RegisterInput) { in.DetectionSprintID = -1 }, want: ErrInvalidID},
 		{name: "unknown story", change: func(in *RegisterInput) { in.StoryID = 99 }, want: ErrStoryNotFound},
 		{name: "foreign story", change: func(in *RegisterInput) { in.ProjectID = 2 }, want: ErrStoryNotFound},
-		{name: "unknown or foreign sprint", change: func(in *RegisterInput) { in.DetectionSprintID = 99 }, want: ErrSprintNotFound},
+		{
+			name:   "unknown or foreign sprint",
+			change: func(in *RegisterInput) { in.DetectionSprintID = 99 },
+			want:   ErrSprintNotFound,
+		},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -167,7 +171,14 @@ func TestGetRequiresPositiveIDsAndProjectScope(t *testing.T) {
 	for _, tc := range cases {
 		got, err := service.Get(ctx, tc.projectID, tc.id)
 		if !errors.Is(err, tc.want) || got != (Defect{}) {
-			t.Fatalf("get(%d,%d): %+v %v; want %v", tc.projectID, tc.id, got, err, tc.want)
+			t.Fatalf(
+				"get(%d,%d): %+v %v; want %v",
+				tc.projectID,
+				tc.id,
+				got,
+				err,
+				tc.want,
+			)
 		}
 	}
 }

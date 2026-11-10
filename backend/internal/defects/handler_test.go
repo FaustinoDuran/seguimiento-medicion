@@ -54,17 +54,38 @@ func TestHTTPRejectsInvalidRequestsWithoutSaving(t *testing.T) {
 	}{
 		{name: "empty description", body: `{"severity":"high","detection_sprint_id":3}`, status: 400},
 		{name: "blank description", body: `{"description":"  ","severity":"high","detection_sprint_id":3}`, status: 400},
-		{name: "long description", body: `{"description":"` + strings.Repeat("á", 2001) + `","severity":"high","detection_sprint_id":3}`, status: 400},
+		{
+			name: "long description",
+			body: `{"description":"` + strings.Repeat("á", 2001) +
+				`","severity":"high","detection_sprint_id":3}`,
+			status: 400,
+		},
 		{name: "missing severity", body: `{"description":"Error","detection_sprint_id":3}`, status: 400},
 		{name: "invalid severity", body: `{"description":"Error","severity":"urgent","detection_sprint_id":3}`, status: 400},
 		{name: "missing sprint", body: `{"description":"Error","severity":"high"}`, status: 400},
 		{name: "zero sprint", body: `{"description":"Error","severity":"high","detection_sprint_id":0}`, status: 400},
 		{name: "negative sprint", body: `{"description":"Error","severity":"high","detection_sprint_id":-3}`, status: 400},
 		{name: "fractional sprint", body: `{"description":"Error","severity":"high","detection_sprint_id":3.5}`, status: 400},
-		{name: "overflow sprint", body: `{"description":"Error","severity":"high","detection_sprint_id":9223372036854775808}`, status: 400},
-		{name: "resolved", body: `{"description":"Error","severity":"high","detection_sprint_id":3,"status":"resolved"}`, status: 400},
-		{name: "empty status", body: `{"description":"Error","severity":"high","detection_sprint_id":3,"status":""}`, status: 400},
-		{name: "null status", body: `{"description":"Error","severity":"high","detection_sprint_id":3,"status":null}`, status: 400},
+		{
+			name:   "overflow sprint",
+			body:   `{"description":"Error","severity":"high","detection_sprint_id":9223372036854775808}`,
+			status: 400,
+		},
+		{
+			name:   "resolved",
+			body:   `{"description":"Error","severity":"high","detection_sprint_id":3,"status":"resolved"}`,
+			status: 400,
+		},
+		{
+			name:   "empty status",
+			body:   `{"description":"Error","severity":"high","detection_sprint_id":3,"status":""}`,
+			status: 400,
+		},
+		{
+			name:   "null status",
+			body:   `{"description":"Error","severity":"high","detection_sprint_id":3,"status":null}`,
+			status: 400,
+		},
 		{name: "invalid JSON", body: `{`, status: 400},
 		{name: "trailing JSON", body: validBody + `{}`, status: 400},
 		{name: "trailing junk", body: validBody + `x`, status: 400},
@@ -171,6 +192,7 @@ func assertHTTPError(t *testing.T, response *httptest.ResponseRecorder, status i
 	}
 }
 
+// Calls keep the four short request arguments inline so scenarios remain easy to scan.
 func requestJSON(router http.Handler, method, path, body string) *httptest.ResponseRecorder {
 	recorder := httptest.NewRecorder()
 	request := httptest.NewRequest(method, path, strings.NewReader(body))
