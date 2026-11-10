@@ -8,6 +8,7 @@ import (
 
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/backlog"
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/config"
+	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/effort"
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/httpx"
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/planningpoker"
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/platform/postgres"
@@ -32,6 +33,9 @@ func main() {
 		if err := backlog.EnsureSchema(ctx, pool); err != nil {
 			log.Fatalf("backlog schema: %v", err)
 		}
+		if err := effort.EnsureSchema(ctx, pool); err != nil {
+			log.Fatalf("effort schema: %v", err)
+		}
 		if err := sprints.EnsureSchema(ctx, pool); err != nil {
 			log.Fatalf("sprints schema: %v", err)
 		}
@@ -43,6 +47,11 @@ func main() {
 		projects.Mount(router, projectService)
 		backlogRepo := backlog.NewPostgresRepository(pool)
 		backlog.Mount(router, backlog.NewService(backlogRepo, projectService))
+		effort.Mount(router, effort.NewService(
+			effort.NewPostgresRepository(pool),
+			effort.NewStoryLookup(backlogRepo),
+			effort.NewMemberLookup(projectRepo),
+		))
 		sprintService := sprints.NewService(
 			sprints.NewPostgresRepository(pool),
 			sprints.NewProjectLookup(projectRepo),
