@@ -64,6 +64,48 @@ func TestRegisterDescriptionRules(t *testing.T) {
 	}
 }
 
+func TestRegisterRequiresSeverityAndOpenInitialStatus(t *testing.T) {
+	cases := []struct {
+		name     string
+		severity string
+		status   string
+		err      error
+	}{
+		{name: "low", severity: "low"},
+		{name: "medium", severity: "medium"},
+		{name: "high", severity: "high"},
+		{name: "critical", severity: "critical"},
+		{name: "explicit open", severity: "high", status: "open"},
+		{name: "missing severity", err: ErrInvalidSeverity},
+		{name: "unknown severity", severity: "urgent", err: ErrInvalidSeverity},
+		{name: "severity case", severity: "HIGH", err: ErrInvalidSeverity},
+		{name: "severity spaces", severity: " high ", err: ErrInvalidSeverity},
+		{name: "resolved", severity: "high", status: "resolved", err: ErrInvalidStatus},
+		{name: "unknown status", severity: "high", status: "pending", err: ErrInvalidStatus},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			service, repo := testService()
+			input := validInput()
+			input.Severity = tc.severity
+			input.Status = tc.status
+			saved, err := service.Register(context.Background(), input)
+			if !errors.Is(err, tc.err) {
+				t.Fatalf("error: got %v want %v", err, tc.err)
+			}
+			if tc.err != nil {
+				if len(repo.entries) != 0 {
+					t.Fatal("invalid classification was persisted")
+				}
+				return
+			}
+			if saved.Severity != tc.severity || saved.Status != "open" {
+				t.Fatalf("classification: %+v", saved)
+			}
+		})
+	}
+}
+
 func validInput() RegisterInput {
 	return RegisterInput{
 		ProjectID: 1, StoryID: 4, DetectionSprintID: 3,
