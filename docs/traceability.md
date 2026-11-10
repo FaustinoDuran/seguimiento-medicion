@@ -31,6 +31,13 @@ HU-013 está integrada por el merge `88f30c4` (PR #78), HU-015 por
 
 ## HU en desarrollo o revisión
 
+HU-017 está implementada en `feat/HU-017-register-defect`, pendiente de revisión
+y merge. Su alcance es alta y consulta individual; la resolución es HU-018.
+
+| HU | Issue | SDD | Criterios | BDD | Tests | Código | PR | Evidencia TDD |
+|---|---|---|---|---|---|---|---|---|
+| HU-017 | [#26](https://github.com/FaustinoDuran/seguimiento-medicion/issues/26) | [SDD](sdd/HU-017-registrar-defecto.md) | AC-017-01 a AC-017-10 | [feature](../features/HU-017-registrar-defecto.feature) | `backend/internal/defects/{service,handler,repository_postgres}_test.go`; `go test -count=1 -race ./...` con PostgreSQL local y `go vet ./...` | `backend/internal/defects/`; migración `009`; bootstrap API | Pendiente de apertura | Spec `b17596f`; alta/consulta RED `7f040e6` → GREEN `3063d50`; descripción RED `1cc5b36` → GREEN `4db67eb`; clasificación RED `c2d68de` → GREEN `1e3932d`; referencias RED `6404a54` → GREEN `b6c3c7f`; HTTP RED `133531c` → GREEN `ade9ffa`; errores HTTP RED `c4cafba` → GREEN `57dd64e`; PostgreSQL RED `35767ab` → GREEN `6f7868b`; regresión de estados y aislamiento `4af4baf` |
+
 | HU | Issue | SDD | Criterios | BDD | Tests | Código | PR | Evidencia TDD |
 |---|---|---|---|---|---|---|---|---|
 | HU-029 | [#74](https://github.com/FaustinoDuran/seguimiento-medicion/issues/74) | [SDD](sdd/HU-029-ui-planning-poker.md) | AC-029-01 a AC-029-06 | [feature](../features/HU-029-ui-planning-poker.feature) | `npm test` y `npm run lint` en `frontend/`; voto oculto, revelado, otra ronda, acuerdo y error en español | `frontend/src/features/planningpoker/`; enlace en `ProjectDetailPage.tsx` | [#81](https://github.com/FaustinoDuran/seguimiento-medicion/pull/81) | `docs(#74)` `e536c6c` → RED `04724b0` → GREEN `bc6f229`. Sin cambios Go: las reglas siguen en HU-012 a HU-015 |

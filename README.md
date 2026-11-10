@@ -129,6 +129,28 @@ votos y estimación anteriores. Repetir es voluntario, incluso si hay coincidenc
 Solo puede existir una ronda abierta por historia. HU-015 registra manualmente
 el acuerdo desde la última ronda revelada con votos; la UI corresponde a HU-029.
 
+## Registro de defectos
+
+HU-017 agrega alta y consulta individual de defectos. Reemplazar los IDs por
+los del proyecto, la historia y el Sprint de detección:
+
+```bash
+curl -s -X POST http://localhost:8080/projects/1/stories/4/defects \
+  -H 'Content-Type: application/json' \
+  -d '{"description":"El archivo exportado sale vacío","severity":"high","detection_sprint_id":3}'
+
+curl -s http://localhost:8080/projects/1/defects/17
+```
+
+El alta devuelve `201` con el ID generado y estado `open`. La descripción se
+recorta y admite de 1 a 2000 caracteres; la severidad es obligatoria (`low`,
+`medium`, `high` o `critical`). Historia y Sprint de detección deben pertenecer
+al proyecto. Se admiten proyectos cerrados, historias completadas o sin Sprint
+y Sprints de detección cerrados o distintos del asignado a la historia.
+Repetir el alta crea otro defecto. La consulta devuelve `200`; los datos
+inválidos devuelven `400`, los recursos inexistentes o ajenos `404`, y los
+fallos internos `500` genérico. La resolución corresponde a HU-018 y la UI a HU-030.
+
 ## Verificación del backend
 
 HU-028 agrega `GET /projects/{project_id}/stories`: devuelve

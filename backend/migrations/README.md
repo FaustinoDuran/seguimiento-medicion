@@ -11,3 +11,8 @@ aplica este cambio a tablas existentes: conserva las historias y sus datos,
 y mantiene `todo` como estado inicial. La operación puede repetirse después
 de completar historias. No volver a aplicar `003` para actualizar el constraint:
 `CREATE TABLE IF NOT EXISTS` no modifica una tabla existente.
+
+`009` crea `defects` para HU-017. El arranque aplica `defects.EnsureSchema`
+después de `projects`, `backlog` y `sprints`, porque los defectos referencian
+esas tres entidades. Registra descripción, severidad, estado inicial abierto
+y Sprint de detección; la resolución corresponde a HU-018.

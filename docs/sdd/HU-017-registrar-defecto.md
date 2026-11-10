@@ -2,7 +2,7 @@
 
 - Issue: [#26](https://github.com/FaustinoDuran/seguimiento-medicion/issues/26)
 - Módulo Go: `backend/internal/defects/`
-- Estado: lista para implementar; contrato confirmado en la entrevista
+- Estado: implementada en `feat/HU-017-register-defect`; pendiente de revisión y merge
 
 ## Objetivo
 
@@ -63,7 +63,8 @@ Respuesta de alta y consulta:
 Las severidades del contrato son `low`, `medium`, `high` y `critical`,
 correspondientes a baja, media, alta y crítica. Se exige uno de esos valores
 exactos. El alta asigna `open` si se omite `status`; si se informa ese campo,
-solo se acepta `open`. No permite registrar un defecto ya resuelto.
+solo se acepta `open` (no acepta vacío ni `null`). No permite registrar un
+defecto ya resuelto.
 
 Todos los identificadores son enteros positivos dentro del rango de `int64`.
 Los errores tienen formato `{"error":"..."}`:
@@ -131,22 +132,22 @@ Decisiones confirmadas durante la entrevista `grill-with-docs`:
 
 ## Criterios de aceptación
 
-- [ ] AC-017-01 — Registrar un defecto con descripción, severidad, historia y
+- [x] AC-017-01 — Registrar un defecto con descripción, severidad, historia y
   Sprint de detección del mismo proyecto, con estado inicial abierto.
-- [ ] AC-017-02 — Consultar individualmente el defecto guardado por su ID.
-- [ ] AC-017-03 — Recortar la descripción y rechazarla si queda vacía o supera
+- [x] AC-017-02 — Consultar individualmente el defecto guardado por su ID.
+- [x] AC-017-03 — Recortar la descripción y rechazarla si queda vacía o supera
   2000 caracteres, sin crear un defecto.
-- [ ] AC-017-04 — Exigir severidad baja, media, alta o crítica.
-- [ ] AC-017-05 — Exigir un Sprint de detección explícito del mismo proyecto,
+- [x] AC-017-04 — Exigir severidad baja, media, alta o crítica.
+- [x] AC-017-05 — Exigir un Sprint de detección explícito del mismo proyecto,
   permitiendo que difiera del Sprint asignado a la historia.
-- [ ] AC-017-06 — Permitir historias completadas, Sprints de detección cerrados
+- [x] AC-017-06 — Permitir historias completadas, Sprints de detección cerrados
   y proyectos cerrados, sin reabrirlos.
-- [ ] AC-017-07 — Crear registros distintos ante altas con los mismos datos.
-- [ ] AC-017-08 — Permitir historias sin Sprint asignado cuando se indica un
+- [x] AC-017-07 — Crear registros distintos ante altas con los mismos datos.
+- [x] AC-017-08 — Permitir historias sin Sprint asignado cuando se indica un
   Sprint de detección del mismo proyecto.
-- [ ] AC-017-09 — Rechazar historia o Sprint inexistentes o ajenos al proyecto;
+- [x] AC-017-09 — Rechazar historia o Sprint inexistentes o ajenos al proyecto;
   no devolver un defecto al consultarlo bajo un proyecto distinto.
-- [ ] AC-017-10 — Respetar el contrato HTTP, rechazar datos inválidos sin crear
+- [x] AC-017-10 — Respetar el contrato HTTP, rechazar datos inválidos sin crear
   registros y responder fallos de infraestructura sin detalles internos.
 
 ## Confirmación de la entrevista
@@ -155,9 +156,9 @@ Las reglas de negocio Q1 a Q11 y el contrato completo fueron confirmados por
 el usuario antes de implementar. No se requiere un ADR: estas decisiones pertenecen a la HU y
 no cambian el stack, la arquitectura ni el alcance transversal del producto.
 
-## Interfaces propuestas para las pruebas
+## Interfaces de prueba
 
-Pendientes de confirmación específica requerida por la skill `tdd`:
+Confirmadas por el usuario antes de escribir los tests, según la skill `tdd`:
 
 - Servicio público Go (`Register` y `Get`): reglas, validaciones y aislamiento
   de proyecto sin HTTP ni base real; no demuestra serialización ni SQL.
@@ -169,6 +170,25 @@ Pendientes de confirmación específica requerida por la skill `tdd`:
 ## Trazabilidad
 
 - BDD: `features/HU-017-registrar-defecto.feature`.
-- Tests previstos: `backend/internal/defects/` (pendientes).
-- Código previsto: `backend/internal/defects/` (pendiente).
-- PR y evidencia TDD: pendientes de implementación.
+- Servicio: `backend/internal/defects/service_test.go`, alta/consulta,
+  descripción Unicode, severidad, estado inicial y referencias al proyecto.
+- HTTP: `backend/internal/defects/handler_test.go`, contrato JSON, códigos de
+  respuesta, duplicados, aislamiento y errores genéricos de infraestructura.
+- PostgreSQL: `backend/internal/defects/repository_postgres_test.go`, consulta
+  desde otra instancia del servicio, estados cerrados, historias sin Sprint,
+  detección en otro Sprint, duplicados y aislamiento real entre proyectos.
+- Código: `backend/internal/defects/`; migración `009`; registro de esquema y
+  rutas en `backend/cmd/api/main.go`.
+- Evidencia TDD y PR: `docs/traceability.md`.
+
+## Verificación
+
+Se ejecutaron `go test -count=1 -race ./internal/defects/`,
+`go test -count=1 -race ./...` y `go vet ./...` desde `backend/`, con
+PostgreSQL local para las pruebas de persistencia.
+
+La suite completa usa `DATABASE_URL`, `BACKLOG_TEST_DATABASE_URL` y
+`SPRINTS_TEST_DATABASE_URL`. Las pruebas de defectos usan
+`DEFECTS_TEST_DATABASE_URL` o, si no está definida, `BACKLOG_TEST_DATABASE_URL`;
+sin ambas, se omiten explícitamente. Cada prueba de integración crea y elimina
+un esquema temporal aislado. No hay ejecución automatizada de Gherkin con Godog.
