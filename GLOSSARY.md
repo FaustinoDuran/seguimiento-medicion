@@ -49,3 +49,14 @@ Lista de condiciones que debe satisfacer una historia de backlog. Puede estar va
 
 **Prioridad sin asignar**:
 Prioridad de una historia para la que todavía no se eligió otra prioridad. Tiene un orden inferior a la prioridad baja.
+
+**Defecto**:
+Problema detectado en el comportamiento de una historia de backlog, asociado a esa historia para seguir su calidad. Todo defecto se registra inicialmente abierto.
+
+**Severidad de un defecto**:
+Nivel de impacto de un defecto: baja, media, alta o crítica. Se elige explícitamente al registrarlo.
+_Evitar_: Prioridad de atención.
+
+**Sprint de detección**:
+Sprint en el que se encontró un defecto, indicado explícitamente al registrarlo. Pertenece al mismo proyecto que la historia afectada y puede ser distinto del Sprint al que está asignada esa historia.
+_Evitar_: Sprint actual, Sprint de resolución.
