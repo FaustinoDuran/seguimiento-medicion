@@ -2,7 +2,7 @@
 
 - Issue: [#25](https://github.com/FaustinoDuran/seguimiento-medicion/issues/25)
 - Módulo Go: `backend/internal/effort/`
-- Estado: lista para implementar
+- Estado: implementada en `feat/HU-016-registrar-esfuerzo`, pendiente de PR
 
 ## Objetivo
 
@@ -103,17 +103,21 @@ agrega ni modifica registros.
 
 ## Criterios de aceptación
 
-- [ ] AC-016-01 — Guardar integrante, fecha, actividad y horas sobre una historia del mismo proyecto, y devolver el registro con id.
-- [ ] AC-016-02 — Agregar otro registro del mismo integrante, fecha e historia.
-- [ ] AC-016-03 — Aceptar `1`, `1.5`, `1.50` y `0.01`, normalizando los ceros de cola.
-- [ ] AC-016-04 — Rechazar horas ausentes, cero, negativas, con más de dos decimales o por encima de `99999999.99`, sin persistir.
-- [ ] AC-016-05 — Rechazar actividad vacía o de más de 200 caracteres, y fecha ausente o inválida, sin persistir.
-- [ ] AC-016-06 — Rechazar integrante o historia inexistentes o de otro proyecto.
-- [ ] AC-016-07 — Aceptar el registro sobre una historia completada.
-- [ ] AC-016-08 — Respetar el contrato HTTP. Un error de infraestructura responde `500` sin detalles internos y sin agregar un registro.
+- [x] AC-016-01 — Guardar integrante, fecha, actividad y horas sobre una historia del mismo proyecto, y devolver el registro con id.
+- [x] AC-016-02 — Agregar otro registro del mismo integrante, fecha e historia.
+- [x] AC-016-03 — Aceptar `1`, `1.5`, `1.50` y `0.01`, normalizando los ceros de cola.
+- [x] AC-016-04 — Rechazar horas ausentes, cero, negativas, con más de dos decimales o por encima de `99999999.99`, sin persistir.
+- [x] AC-016-05 — Rechazar actividad vacía o de más de 200 caracteres, y fecha ausente o inválida, sin persistir.
+- [x] AC-016-06 — Rechazar integrante o historia inexistentes o de otro proyecto.
+- [x] AC-016-07 — Aceptar el registro sobre una historia completada.
+- [x] AC-016-08 — Respetar el contrato HTTP. Un error de infraestructura responde `500` sin detalles internos y sin agregar un registro.
 
 ## Trazabilidad
 
 - BDD: `features/HU-016-registrar-esfuerzo.feature`
-- Tests: `backend/internal/effort/`
-- Código: `backend/internal/effort/`
+- Servicio: `backend/internal/effort/service.go` y `service_test.go` (AC-016-01 a AC-016-06).
+- HTTP: `handler.go`, `routes.go` y `handler_test.go` (AC-016-01, AC-016-04 a AC-016-06 y AC-016-08).
+- PostgreSQL: `repository_postgres.go`, `repository_postgres_test.go` y migración `008` (AC-016-01, AC-016-02, AC-016-04, AC-016-06 y AC-016-07).
+- Adaptadores: `story_lookup.go` y `member_lookup.go`. Registro en `backend/cmd/api/main.go`.
+- Verificación: `go test -count=1 -race ./internal/effort/`, `go vet ./...` y `go test -count=1 -race ./...` con `BACKLOG_TEST_DATABASE_URL` y `SPRINTS_TEST_DATABASE_URL` contra PostgreSQL local. Las pruebas crean esquemas aislados y los eliminan al terminar.
+- Evidencia de commits RED/GREEN: `docs/traceability.md`.

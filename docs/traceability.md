@@ -34,6 +34,7 @@ HU-013 está integrada por el merge `88f30c4` (PR #78), HU-015 por
 | HU | Issue | SDD | Criterios | BDD | Tests | Código | PR | Evidencia TDD |
 |---|---|---|---|---|---|---|---|---|
 | HU-029 | [#74](https://github.com/FaustinoDuran/seguimiento-medicion/issues/74) | [SDD](sdd/HU-029-ui-planning-poker.md) | AC-029-01 a AC-029-06 | [feature](../features/HU-029-ui-planning-poker.feature) | `npm test` y `npm run lint` en `frontend/`; voto oculto, revelado, otra ronda, acuerdo y error en español | `frontend/src/features/planningpoker/`; enlace en `ProjectDetailPage.tsx` | [#81](https://github.com/FaustinoDuran/seguimiento-medicion/pull/81) | `docs(#74)` `e536c6c` → RED `04724b0` → GREEN `bc6f229`. Sin cambios Go: las reglas siguen en HU-012 a HU-015 |
+| HU-016 | [#25](https://github.com/FaustinoDuran/seguimiento-medicion/issues/25) | [SDD](sdd/HU-016-registrar-esfuerzo.md) | AC-016-01 a AC-016-08 | [feature](../features/HU-016-registrar-esfuerzo.feature) | `go test -count=1 -race ./internal/effort/` y `go test -count=1 -race ./...` con PostgreSQL local; servicio, HTTP y persistencia, incluida una historia completada | `backend/internal/effort/`; migración `008`; bootstrap en `backend/cmd/api/main.go` | — | `docs(#25)` `b251bf7` → RED `b57c58a` → GREEN `55a1939` → RED `091a655` → GREEN `d6f0159` → RED `b2f8ee2` → GREEN `6e56750` |
 
 HU-029 está en revisión. React solo presenta la API ya mergeada.
 
