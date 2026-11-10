@@ -80,10 +80,14 @@ func postgresTestPool(t *testing.T) *pgxpool.Pool {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	admin, err := pgxpool.New(ctx, url)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	t.Cleanup(admin.Close)
 	schema := pgx.Identifier{fmt.Sprintf("defects_test_%d", time.Now().UnixNano())}.Sanitize()
-	if _, err := admin.Exec(ctx, "CREATE SCHEMA "+schema); err != nil { t.Fatal(err) }
+	if _, err := admin.Exec(ctx, "CREATE SCHEMA "+schema); err != nil {
+		t.Fatal(err)
+	}
 	t.Cleanup(func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
@@ -92,15 +96,21 @@ func postgresTestPool(t *testing.T) *pgxpool.Pool {
 		}
 	})
 	cfg, err := pgxpool.ParseConfig(url)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	cfg.ConnConfig.RuntimeParams["search_path"] = schema
 	pool, err := pgxpool.NewWithConfig(ctx, cfg)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	t.Cleanup(pool.Close)
 	for _, ensure := range []func(context.Context, *pgxpool.Pool) error{
 		projects.EnsureSchema, backlog.EnsureSchema, sprints.EnsureSchema, EnsureSchema,
 	} {
-		if err := ensure(ctx, pool); err != nil { t.Fatal(err) }
+		if err := ensure(ctx, pool); err != nil {
+			t.Fatal(err)
+		}
 	}
 	return pool
 }
@@ -119,16 +129,22 @@ func seedProject(
 		Name: "Calidad", StartDate: now, EndDate: now.AddDate(0, 0, 14),
 		Status: projectStatus, CreatedAt: now,
 	})
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	story, err := backlog.NewPostgresRepository(pool).Save(ctx, backlog.Story{
 		ProjectID: project.ID, Identifier: "HU-017", Title: "Exportar archivo",
 		Status: storyStatus, Priority: backlog.PriorityUnassigned,
 		AcceptanceCriteria: []string{},
 	})
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	sprint, err := sprints.NewPostgresRepository(pool).Save(ctx, sprints.Sprint{
 		ProjectID: project.ID, Goal: "Revisar calidad", Status: sprintStatus, CreatedAt: now,
 	})
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	return project, story, sprint
 }
