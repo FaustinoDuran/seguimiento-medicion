@@ -199,6 +199,7 @@ func postgresRouter(pool *pgxpool.Pool) http.Handler {
 		NewStoryLookup(storyRepo),
 		NewSprintLookup(sprintService),
 	))
+	mountPostgresResolution(pool, router)
 	return router
 }
 
