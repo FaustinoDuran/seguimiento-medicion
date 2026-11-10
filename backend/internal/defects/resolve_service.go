@@ -6,6 +6,7 @@ import (
 )
 
 var ErrResolutionBeforeDetection = errors.New("resolution sprint precedes detection sprint")
+var ErrResolutionConflict = errors.New("defect is already resolved in another sprint")
 
 type ResolutionService struct {
 	repo    ResolutionRepository
@@ -39,6 +40,12 @@ func (s *ResolutionService) Resolve(ctx context.Context, input ResolveInput) (De
 	earlierTie := sameTime && resolution.ID < detection.ID
 	if resolution.CreatedAt.Before(detection.CreatedAt) || earlierTie {
 		return Defect{}, ErrResolutionBeforeDetection
+	}
+	if defect.Status == "resolved" {
+		if defect.ResolutionSprintID != nil && *defect.ResolutionSprintID == input.ResolutionSprintID {
+			return defect, nil
+		}
+		return Defect{}, ErrResolutionConflict
 	}
 	return s.repo.Resolve(ctx, input)
 }
