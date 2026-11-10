@@ -174,15 +174,22 @@ func TestGetRequiresPositiveIDsAndProjectScope(t *testing.T) {
 
 type memoryRepository struct {
 	entries map[int64]Defect
+	err     error
 }
 
 func (r *memoryRepository) Save(_ context.Context, defect Defect) (Defect, error) {
+	if r.err != nil {
+		return Defect{}, r.err
+	}
 	defect.ID = int64(len(r.entries) + 1)
 	r.entries[defect.ID] = defect
 	return defect, nil
 }
 
 func (r *memoryRepository) FindByID(_ context.Context, projectID, id int64) (Defect, error) {
+	if r.err != nil {
+		return Defect{}, r.err
+	}
 	defect, ok := r.entries[id]
 	if !ok || defect.ProjectID != projectID {
 		return Defect{}, ErrNotFound
