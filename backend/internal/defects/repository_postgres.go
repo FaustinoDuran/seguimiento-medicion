@@ -29,7 +29,7 @@ func NewPostgresRepository(pool *pgxpool.Pool) *PostgresRepository {
 }
 
 func EnsureSchema(ctx context.Context, pool *pgxpool.Pool) error {
-	_, err := pool.Exec(ctx, schemaSQL)
+	_, err := pool.Exec(ctx, schemaSQL+resolutionSchemaSQL)
 	return err
 }
 
@@ -37,7 +37,7 @@ func (r *PostgresRepository) Save(ctx context.Context, defect Defect) (Defect, e
 	const query = `
 		INSERT INTO defects (project_id, story_id, detection_sprint_id, description, severity, status)
 		VALUES ($1, $2, $3, $4, $5, $6)
-		RETURNING id, project_id, story_id, detection_sprint_id, description, severity, status`
+		RETURNING id, project_id, story_id, detection_sprint_id, description, severity, status, resolution_sprint_id`
 	var saved Defect
 	err := r.pool.QueryRow(
 		ctx,
@@ -56,13 +56,14 @@ func (r *PostgresRepository) Save(ctx context.Context, defect Defect) (Defect, e
 		&saved.Description,
 		&saved.Severity,
 		&saved.Status,
+		&saved.ResolutionSprintID,
 	)
 	return saved, err
 }
 
 func (r *PostgresRepository) FindByID(ctx context.Context, projectID, id int64) (Defect, error) {
 	const query = `
-		SELECT id, project_id, story_id, detection_sprint_id, description, severity, status
+		SELECT id, project_id, story_id, detection_sprint_id, description, severity, status, resolution_sprint_id
 		FROM defects
 		WHERE project_id = $1 AND id = $2`
 	var defect Defect
@@ -74,6 +75,7 @@ func (r *PostgresRepository) FindByID(ctx context.Context, projectID, id int64) 
 		&defect.Description,
 		&defect.Severity,
 		&defect.Status,
+		&defect.ResolutionSprintID,
 	)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return Defect{}, ErrNotFound

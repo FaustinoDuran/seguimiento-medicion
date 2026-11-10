@@ -65,7 +65,6 @@ func TestPostgresResolutionPersistsWithClosedProjectAndSprint(t *testing.T) {
 	}
 }
 
-func mountPostgresResolution(pool *pgxpool.Pool, router chi.Router) {
-	sprintService := sprints.NewService(sprints.NewPostgresRepository(pool), nil, nil)
+func mountPostgresResolution(pool *pgxpool.Pool, router chi.Router, sprintService *sprints.Service) {
 	MountResolution(router, NewResolutionService(NewPostgresRepository(pool), NewResolutionSprintLookup(sprintService)))
 }
