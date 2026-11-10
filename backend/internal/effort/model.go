@@ -8,6 +8,10 @@ import (
 // Hours stores an effort duration in hundredths of an hour.
 type Hours int64
 
+func (h Hours) MarshalJSON() ([]byte, error) {
+	return []byte(h.String()), nil
+}
+
 func (h Hours) String() string {
 	value := int64(h)
 	if value < 0 {
