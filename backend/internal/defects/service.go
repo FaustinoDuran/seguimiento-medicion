@@ -47,7 +47,8 @@ func (s *Service) Register(ctx context.Context, input RegisterInput) (Defect, er
 	default:
 		return Defect{}, ErrInvalidSeverity
 	}
-	if input.Status != "" && input.Status != "open" {
+	statusProvided := input.StatusProvided || input.Status != ""
+	if statusProvided && input.Status != "open" {
 		return Defect{}, ErrInvalidStatus
 	}
 	if err := s.stories.Find(ctx, input.ProjectID, input.StoryID); err != nil {

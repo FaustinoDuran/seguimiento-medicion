@@ -16,5 +16,6 @@ type RegisterInput struct {
 	Description       string
 	Severity          string
 	Status            string
+	StatusProvided    bool
 	DetectionSprintID int64
 }
