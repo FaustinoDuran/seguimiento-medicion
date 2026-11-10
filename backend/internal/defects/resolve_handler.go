@@ -2,6 +2,7 @@ package defects
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 )
 
@@ -25,8 +26,14 @@ func (h *ResolutionHandler) Resolve(writer http.ResponseWriter, request *http.Re
 	var body struct {
 		ResolutionSprintID int64 `json:"resolution_sprint_id"`
 	}
-	if err := json.NewDecoder(request.Body).Decode(&body); err != nil {
+	decoder := json.NewDecoder(request.Body)
+	if err := decoder.Decode(&body); err != nil {
 		writeError(writer, http.StatusBadRequest, "invalid json")
+		return
+	}
+	var extra json.RawMessage
+	if err := decoder.Decode(&extra); err != io.EOF {
+		writeError(writer, http.StatusBadRequest, "expected a single json object")
 		return
 	}
 	defect, err := h.service.Resolve(request.Context(), ResolveInput{
