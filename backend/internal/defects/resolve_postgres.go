@@ -1,6 +1,11 @@
 package defects
 
-import "context"
+import (
+	"context"
+	"errors"
+
+	"github.com/jackc/pgx/v5"
+)
 
 const resolutionSchemaSQL = `
 ALTER TABLE defects
@@ -20,10 +25,16 @@ ALTER TABLE defects ADD CONSTRAINT defects_resolution_check CHECK (
 func (r *PostgresRepository) Resolve(ctx context.Context, input ResolveInput) (Defect, error) {
 	const query = `
 		UPDATE defects SET status = 'resolved', resolution_sprint_id = $3
-		WHERE project_id = $1 AND id = $2
+		WHERE project_id = $1 AND id = $2 AND status = 'open'
 		RETURNING id, project_id, story_id, detection_sprint_id, description, severity, status, resolution_sprint_id`
 	var defect Defect
-	err := r.pool.QueryRow(ctx, query, input.ProjectID, input.DefectID, input.ResolutionSprintID).Scan(
+	err := r.pool.QueryRow(
+		ctx,
+		query,
+		input.ProjectID,
+		input.DefectID,
+		input.ResolutionSprintID,
+	).Scan(
 		&defect.ID,
 		&defect.ProjectID,
 		&defect.StoryID,
@@ -33,5 +44,15 @@ func (r *PostgresRepository) Resolve(ctx context.Context, input ResolveInput) (D
 		&defect.Status,
 		&defect.ResolutionSprintID,
 	)
+	if errors.Is(err, pgx.ErrNoRows) {
+		current, err := r.FindByID(ctx, input.ProjectID, input.DefectID)
+		if err != nil {
+			return Defect{}, err
+		}
+		if current.ResolutionSprintID != nil && *current.ResolutionSprintID == input.ResolutionSprintID {
+			return current, nil
+		}
+		return Defect{}, ErrResolutionConflict
+	}
 	return defect, err
 }
