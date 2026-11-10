@@ -2,6 +2,8 @@ package defects
 
 import (
 	"context"
+	"errors"
+	"strings"
 	"testing"
 )
 
@@ -22,6 +24,43 @@ func TestRegisterMakesOpenDefectRetrievable(t *testing.T) {
 	got, err := service.Get(ctx, 1, saved.ID)
 	if err != nil || got != want {
 		t.Fatalf("get: %+v, %v", got, err)
+	}
+}
+
+func TestRegisterDescriptionRules(t *testing.T) {
+	cases := []struct {
+		name string
+		text string
+		want string
+		err  error
+	}{
+		{name: "trim", text: " \n El archivo sale vacío \t ", want: "El archivo sale vacío"},
+		{name: "minimum", text: "á", want: "á"},
+		{name: "unicode limit", text: " " + strings.Repeat("á", 2000) + " ", want: strings.Repeat("á", 2000)},
+		{name: "missing", err: ErrDescriptionRequired},
+		{name: "blank", text: " \t\n ", err: ErrDescriptionRequired},
+		{name: "too long", text: strings.Repeat("á", 2001), err: ErrDescriptionTooLong},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			service, repo := testService()
+			input := validInput()
+			input.Description = tc.text
+			saved, err := service.Register(context.Background(), input)
+			if !errors.Is(err, tc.err) {
+				t.Fatalf("error: got %v want %v", err, tc.err)
+			}
+			if tc.err != nil {
+				if len(repo.entries) != 0 {
+					t.Fatal("invalid description was persisted")
+				}
+				return
+			}
+			got, err := service.Get(context.Background(), 1, saved.ID)
+			if err != nil || got.Description != tc.want {
+				t.Fatalf("description: %q, %v", got.Description, err)
+			}
+		})
 	}
 }
 
