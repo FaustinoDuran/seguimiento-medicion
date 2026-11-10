@@ -1,5 +1,7 @@
 package defects
 
+import "time"
+
 type Defect struct {
 	ID                 int64  `json:"id"`
 	ProjectID          int64  `json:"project_id"`
@@ -15,6 +17,12 @@ type ResolveInput struct {
 	ProjectID          int64
 	DefectID           int64
 	ResolutionSprintID int64
+}
+
+type SprintRef struct {
+	ID        int64
+	ProjectID int64
+	CreatedAt time.Time
 }
 
 type RegisterInput struct {

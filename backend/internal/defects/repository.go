@@ -12,6 +12,10 @@ type ResolutionRepository interface {
 	Resolve(ctx context.Context, input ResolveInput) (Defect, error)
 }
 
+type ResolutionSprintLookup interface {
+	Get(ctx context.Context, projectID, sprintID int64) (SprintRef, error)
+}
+
 type StoryLookup interface {
 	Find(ctx context.Context, projectID, storyID int64) error
 }
