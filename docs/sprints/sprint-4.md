@@ -1,6 +1,6 @@
 # Sprint 4 — Medición
 
-- Estado: planificado
+- Estado: en curso
 - Fecha de inicio: al cerrar el Sprint 3
 - Equipo: Faustino (Agile Enabler), Valentino e Ignacio (Product Builders)
 - Alcance: [ADR 0006](../adr/0006-alcance-sprint-4.md)
@@ -9,11 +9,11 @@
 
 ## Precondición (Sprint 3)
 
-Entran a `main` el Planning Poker de la UI
+Cumplida: el Planning Poker de la UI
 ([#81](https://github.com/FaustinoDuran/seguimiento-medicion/pull/81)) y el
 chequeo de backend
-([#83](https://github.com/FaustinoDuran/seguimiento-medicion/pull/83)).
-Hasta entonces nadie escribe `effort`, `defects`, `metrics` ni `reports`.
+([#83](https://github.com/FaustinoDuran/seguimiento-medicion/pull/83))
+están en `main`.
 
 ## Planning
 
@@ -24,12 +24,12 @@ Dueños:
 
 | Ítem | Issue | Prioridad | SP | Responsable | Orden |
 |---|---|---|---|---|---|
-| TASK-019 Alcance Sprint 4 | [#84](https://github.com/FaustinoDuran/seguimiento-medicion/issues/84) | alta | — | Faustino | Ahora. In review |
-| HU-016 Registrar esfuerzo | [#25](https://github.com/FaustinoDuran/seguimiento-medicion/issues/25) | media | — | Valentino | Después de la precondición. Sprint ready |
-| HU-017 Registrar defecto | [#26](https://github.com/FaustinoDuran/seguimiento-medicion/issues/26) | media | — | Ignacio | En paralelo con HU-016. Sprint ready |
-| HU-018 Resolver defecto | [#27](https://github.com/FaustinoDuran/seguimiento-medicion/issues/27) | media | — | Ignacio | Después de HU-017. Sprint ready |
-| HU-019 Consultar métricas | [#28](https://github.com/FaustinoDuran/seguimiento-medicion/issues/28) | media | — | Faustino | In review |
-| HU-030 UI esfuerzo y defectos | [#85](https://github.com/FaustinoDuran/seguimiento-medicion/issues/85) | alta | — | Valentino | Después de HU-016 y HU-018. Sprint ready |
+| TASK-019 Alcance Sprint 4 | [#84](https://github.com/FaustinoDuran/seguimiento-medicion/issues/84) | alta | — | Faustino | Done. PR [#86](https://github.com/FaustinoDuran/seguimiento-medicion/pull/86) |
+| HU-016 Registrar esfuerzo | [#25](https://github.com/FaustinoDuran/seguimiento-medicion/issues/25) | media | — | Valentino | Done. PR [#87](https://github.com/FaustinoDuran/seguimiento-medicion/pull/87) |
+| HU-017 Registrar defecto | [#26](https://github.com/FaustinoDuran/seguimiento-medicion/issues/26) | media | — | Ignacio | Done. PR [#88](https://github.com/FaustinoDuran/seguimiento-medicion/pull/88) |
+| HU-018 Resolver defecto | [#27](https://github.com/FaustinoDuran/seguimiento-medicion/issues/27) | media | — | Ignacio | Done. PR [#89](https://github.com/FaustinoDuran/seguimiento-medicion/pull/89) |
+| HU-019 Consultar métricas | [#28](https://github.com/FaustinoDuran/seguimiento-medicion/issues/28) | media | — | Faustino | In review. PR [#90](https://github.com/FaustinoDuran/seguimiento-medicion/pull/90) |
+| HU-030 UI esfuerzo y defectos | [#85](https://github.com/FaustinoDuran/seguimiento-medicion/issues/85) | alta | — | Valentino | In progress |
 | HU-020 Dashboard | [#29](https://github.com/FaustinoDuran/seguimiento-medicion/issues/29) | media | — | Faustino | Después de HU-019. Sprint ready |
 | HU-021 Reporte | [#30](https://github.com/FaustinoDuran/seguimiento-medicion/issues/30) | media | — | Ignacio | Después de HU-019. Sprint ready |
 | HU-022 PDF | [#31](https://github.com/FaustinoDuran/seguimiento-medicion/issues/31) | baja | — | Ignacio | Después de HU-021. Sprint ready |
