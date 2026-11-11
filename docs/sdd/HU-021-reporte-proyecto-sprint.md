@@ -250,3 +250,20 @@ con React y Go reales ni una validación visual manual.
 
 Los criterios marcados reflejan la evidencia automatizada local. La HU no
 está Done: faltan revisión y merge del PR del reporte. El PR #95 ya está mergeado.
+
+
+## Corrección de integración con main
+
+El check de GitHub del PR #96 falló al compilar su combinación con `main`:
+HU-030 agregó `ProjectLookup` al constructor `defects.NewService`, y el
+armado HTTP de los tests de reportes conservaba los tres argumentos anteriores.
+El check de la rama aislada pasaba; el del merge detectó la incompatibilidad.
+
+Se sincronizó `origin/main` y se reprodujo el error mediante
+`go test -count=1 ./internal/reports/` (RED `128b74f`). El test ahora
+proporciona `defects.NewProjectLookup(projectRepo)`, igual que el bootstrap
+de la API (GREEN `05aa46d`). Se mantiene el workflow y la base `main`.
+
+Después de corregir: suite completa Go con PostgreSQL y `-race`, `go vet`,
+98 tests de frontend y build verdes. El BUG-001 de métricas ya estaba
+integrado y no era la causa de este error de compilación.
