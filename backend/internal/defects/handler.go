@@ -91,6 +91,8 @@ func parseID(writer http.ResponseWriter, request *http.Request, name string) (in
 
 func writeServiceError(writer http.ResponseWriter, err error) {
 	switch {
+	case errors.Is(err, ErrResolutionBeforeDetection), errors.Is(err, ErrResolutionConflict):
+		writeError(writer, http.StatusConflict, err.Error())
 	case errors.Is(err, ErrNotFound), errors.Is(err, ErrStoryNotFound), errors.Is(err, ErrSprintNotFound):
 		writeError(writer, http.StatusNotFound, err.Error())
 	case errors.Is(err, ErrInvalidID), errors.Is(err, ErrDescriptionRequired),

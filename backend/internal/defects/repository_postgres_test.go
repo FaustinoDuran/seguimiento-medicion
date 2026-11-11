@@ -199,10 +199,19 @@ func postgresRouter(pool *pgxpool.Pool) http.Handler {
 		NewStoryLookup(storyRepo),
 		NewSprintLookup(sprintService),
 	))
+	mountPostgresResolution(pool, router, sprintService)
 	return router
 }
 
 func postgresTestPool(t *testing.T) *pgxpool.Pool {
+	t.Helper()
+	return postgresTestPoolWithDefectSchema(t, EnsureSchema)
+}
+
+func postgresTestPoolWithDefectSchema(
+	t *testing.T,
+	ensureDefects func(context.Context, *pgxpool.Pool) error,
+) *pgxpool.Pool {
 	t.Helper()
 	url := os.Getenv("DEFECTS_TEST_DATABASE_URL")
 	if url == "" {
@@ -240,7 +249,7 @@ func postgresTestPool(t *testing.T) *pgxpool.Pool {
 	}
 	t.Cleanup(pool.Close)
 	for _, ensure := range []func(context.Context, *pgxpool.Pool) error{
-		projects.EnsureSchema, backlog.EnsureSchema, sprints.EnsureSchema, EnsureSchema,
+		projects.EnsureSchema, backlog.EnsureSchema, sprints.EnsureSchema, ensureDefects,
 	} {
 		if err := ensure(ctx, pool); err != nil {
 			t.Fatal(err)

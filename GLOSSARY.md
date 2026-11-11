@@ -60,3 +60,11 @@ _Evitar_: Prioridad de atención.
 **Sprint de detección**:
 Sprint en el que se encontró un defecto, indicado explícitamente al registrarlo. Pertenece al mismo proyecto que la historia afectada y puede ser distinto del Sprint al que está asignada esa historia.
 _Evitar_: Sprint actual, Sprint de resolución.
+
+**Defecto resuelto**:
+Defecto cuyo problema el equipo considera corregido y cuya corrección queda asociada a un Sprint de resolución.
+_Evitar_: Historia completada, Sprint cerrado.
+
+**Sprint de resolución**:
+Sprint en el que se corrigió un defecto, indicado explícitamente al resolverlo. Pertenece al proyecto del defecto y puede coincidir o diferir del Sprint de detección y del asignado a la historia.
+_Evitar_: Sprint de detección, Sprint actual.
