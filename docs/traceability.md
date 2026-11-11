@@ -71,4 +71,5 @@ SDD/BDD. Se registran como Issues `TASK-XXX` y en `docs/sprints/sprint-0.md`.
 - Corrección: `backend/internal/metrics/catalog_postgres.go` carga la referencia
   nullable de resolución. Se conservan las fórmulas del servicio.
 - RED `cfa872d` → GREEN `9ee5655`; módulo metrics con `-race` verde.
-- PR: pendiente; rama independiente `fix/BUG-001-sprint-resolution-metrics`.
+- PR: [#95](https://github.com/FaustinoDuran/seguimiento-medicion/pull/95);
+  rama independiente `fix/BUG-001-sprint-resolution-metrics`.

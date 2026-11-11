@@ -153,4 +153,5 @@ defecto abierto y otro proyecto con un defecto resuelto. El test falló con
 `detected/resolved = 1/0, want 1/1` antes de corregir la lectura.
 
 RED `cfa872d` → GREEN `9ee5655`; verificación: `go test -count=1 -race
-./internal/metrics/` con PostgreSQL local. El PR es independiente de HU-021.
+./internal/metrics/` con PostgreSQL local. PR [#95](https://github.com/FaustinoDuran/seguimiento-medicion/pull/95),
+independiente de HU-021.
