@@ -47,6 +47,7 @@ func mountedRouter(t *testing.T, pool *pgxpool.Pool) http.Handler {
 		defects.NewPostgresRepository(pool),
 		defects.NewStoryLookup(backlogRepo),
 		defects.NewSprintLookup(sprintService),
+		defects.NewProjectLookup(projectRepo),
 	))
 	defects.MountResolution(router, defects.NewResolutionService(
 		defects.NewPostgresRepository(pool), defects.NewResolutionSprintLookup(sprintService),
