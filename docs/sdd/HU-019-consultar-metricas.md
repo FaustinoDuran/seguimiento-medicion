@@ -139,3 +139,19 @@ entran en el informe.
 - BDD: `features/HU-019-consultar-metricas.feature`
 - Tests: `backend/internal/metrics/{service,handler,repository_postgres}_test.go`
 - Código: `backend/internal/metrics/`
+
+## Corrección BUG-001 — Sprint de resolución
+
+Issue [#94](https://github.com/FaustinoDuran/seguimiento-medicion/issues/94),
+vinculada a AC-019-07. La lectura PostgreSQL omitía `resolution_sprint_id`
+y entregaba al servicio una referencia vacía; los resueltos por Sprint
+quedaban en cero. Se incorpora la referencia nullable sin modificar fórmulas.
+
+`TestPostgresSprintMetricsCountResolvedDefects` reproduce el fallo por HTTP
+y PostgreSQL reales. Cubre detección y resolución en Sprints distintos, un
+defecto abierto y otro proyecto con un defecto resuelto. El test falló con
+`detected/resolved = 1/0, want 1/1` antes de corregir la lectura.
+
+RED `cfa872d` → GREEN `9ee5655`; verificación: `go test -count=1 -race
+./internal/metrics/` con PostgreSQL local. PR [#95](https://github.com/FaustinoDuran/seguimiento-medicion/pull/95),
+independiente de HU-021.
