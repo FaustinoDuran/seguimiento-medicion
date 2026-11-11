@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { act, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { expect, test } from 'vitest'
@@ -93,8 +93,8 @@ test('selecciona Sprints abiertos y cerrados y descarta una respuesta anterior',
   await user.selectOptions(selector, '3')
   expect(await screen.findByText('No hay historias del alcance.')).toBeInTheDocument()
   expect(screen.getByText('No hay registros de esfuerzo.')).toBeInTheDocument()
-  expect(screen.getByText('Corregir · Abierto', { exact: false })).toBeInTheDocument()
-  releaseFirst()
+  expect(screen.getByText('Activo · Corregir · Abierto')).toBeInTheDocument()
+  await act(async () => { releaseFirst() })
   // The discarded request may settle after the selected one; it must never restore its data.
   await screen.findByText('No hay historias del alcance.')
   expect(selector).toHaveValue('3')
