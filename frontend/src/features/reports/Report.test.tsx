@@ -102,3 +102,40 @@ test('selecciona Sprints abiertos y cerrados y descarta una respuesta anterior',
   await user.selectOptions(selector, '')
   expect(await screen.findByText('Sin asignación')).toBeInTheDocument()
 })
+
+// AC-021-10, AC-021-11
+test('un fallo no se muestra como vacío y permite reintentar', async () => {
+  const user = userEvent.setup()
+  let available = false
+  server.use(http.get('*/api/projects/4/report', () => available
+    ? HttpResponse.json({ ...report, stories: [], effort: [], defects: [], available_sprints: [] })
+    : HttpResponse.json({ error: 'internal error' }, { status: 500 })))
+  open('/projects/4/report')
+  expect(await screen.findByRole('alert')).toHaveTextContent('No pudimos cargar el reporte')
+  expect(screen.queryByRole('table')).not.toBeInTheDocument()
+  expect(screen.queryByText('No hay historias del alcance.')).not.toBeInTheDocument()
+  available = true
+  await user.click(screen.getByRole('button', { name: 'Reintentar carga' }))
+  expect(await screen.findByText('No hay defectos del alcance.')).toBeInTheDocument()
+  expect(screen.getByRole('combobox', { name: 'Alcance del reporte' }).children).toHaveLength(1)
+})
+
+test('identifica proyecto y Sprint inexistentes', async () => {
+  server.use(http.get('*/api/projects/4/report', () => HttpResponse.json({ error: 'project not found' }, { status: 404 })))
+  open('/projects/4/report')
+  expect(await screen.findByRole('heading', { name: 'Proyecto o Sprint no encontrado' })).toBeInTheDocument()
+})
+
+test('rechaza una respuesta parcial sin presentarla como reporte válido', async () => {
+  server.use(http.get('*/api/projects/4/report', () => HttpResponse.json({ ...report, effort: null })))
+  open('/projects/4/report')
+  expect(await screen.findByRole('alert')).toHaveTextContent('No pudimos cargar el reporte')
+  expect(screen.queryByRole('table')).not.toBeInTheDocument()
+})
+
+test('no muestra datos de otro proyecto aunque la respuesta tenga formato válido', async () => {
+  server.use(http.get('*/api/projects/4/report', () => HttpResponse.json({ ...report, project: { ...report.project, id: 9 } })))
+  open('/projects/4/report')
+  expect(await screen.findByRole('alert')).toHaveTextContent('No pudimos cargar el reporte')
+  expect(screen.queryByRole('table')).not.toBeInTheDocument()
+})
