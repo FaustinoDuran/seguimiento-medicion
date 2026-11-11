@@ -71,6 +71,17 @@ func (r *memoryRepository) Update(_ context.Context, sprint Sprint) (Sprint, err
 	return sprint, nil
 }
 
+func (r *memoryRepository) ListByProject(_ context.Context, projectID int64) ([]Sprint, error) {
+	listed := make([]Sprint, 0)
+	for _, sprint := range r.items {
+		if sprint.ProjectID == projectID {
+			listed = append(listed, sprint)
+		}
+	}
+	sort.Slice(listed, func(i, j int) bool { return listed[i].ID < listed[j].ID })
+	return listed, nil
+}
+
 func (r *memoryRepository) ListClosedByProject(_ context.Context, projectID int64) ([]Sprint, error) {
 	listed := make([]Sprint, 0)
 	for _, sprint := range r.items {
@@ -679,5 +690,43 @@ func TestListClosedSprintRemainsQueryableWithStories(t *testing.T) {
 	assigned, err := service.ListStories(context.Background(), listed[0].ID)
 	if err != nil || len(assigned) != 1 || assigned[0].StoryID != 5 || assigned[0].Status != "done" {
 		t.Fatalf("stories: %+v, %v", assigned, err)
+	}
+}
+
+func TestListReturnsOpenAndClosedSprintsOfTheProject(t *testing.T) {
+	repo := newMemoryRepository()
+	open := saveSprint(t, repo, 7, StatusOpen)
+	closed := saveSprint(t, repo, 7, StatusClosed)
+	saveSprint(t, repo, 8, StatusOpen)
+	service := NewService(repo, newMemoryProjects(7, 8), newMemoryStories())
+
+	listed, err := service.List(context.Background(), 7)
+	if err != nil {
+		t.Fatalf("list: %v", err)
+	}
+	if len(listed) != 2 {
+		t.Fatalf("len: got %d want 2 (%+v)", len(listed), listed)
+	}
+	if listed[0].ID != open.ID || listed[0].Status != StatusOpen {
+		t.Fatalf("first: %+v", listed[0])
+	}
+	if listed[1].ID != closed.ID || listed[1].Status != StatusClosed {
+		t.Fatalf("second: %+v", listed[1])
+	}
+}
+
+func TestListRejectsMissingProject(t *testing.T) {
+	service := NewService(newMemoryRepository(), newMemoryProjects(7), newMemoryStories())
+
+	if _, err := service.List(context.Background(), 9); !errors.Is(err, ErrProjectNotFound) {
+		t.Fatalf("got %v want %v", err, ErrProjectNotFound)
+	}
+}
+
+func TestListRejectsInvalidProjectID(t *testing.T) {
+	service := NewService(newMemoryRepository(), newMemoryProjects(7), newMemoryStories())
+
+	if _, err := service.List(context.Background(), 0); !errors.Is(err, ErrProjectNotFound) {
+		t.Fatalf("got %v want %v", err, ErrProjectNotFound)
 	}
 }

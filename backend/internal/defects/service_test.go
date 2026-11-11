@@ -3,6 +3,7 @@ package defects
 import (
 	"context"
 	"errors"
+	"sort"
 	"strings"
 	"testing"
 )
@@ -208,10 +209,30 @@ func (r *memoryRepository) FindByID(_ context.Context, projectID, id int64) (Def
 	return defect, nil
 }
 
+func (r *memoryRepository) ListByProject(_ context.Context, projectID int64) ([]Defect, error) {
+	if r.err != nil {
+		return nil, r.err
+	}
+	listed := make([]Defect, 0)
+	for _, defect := range r.entries {
+		if defect.ProjectID == projectID {
+			listed = append(listed, defect)
+		}
+	}
+	sort.Slice(listed, func(i, j int) bool { return listed[i].ID > listed[j].ID })
+	return listed, nil
+}
+
 type lookupFunc func(context.Context, int64, int64) error
 
 func (f lookupFunc) Find(ctx context.Context, projectID, id int64) error {
 	return f(ctx, projectID, id)
+}
+
+type existsFunc func(context.Context, int64) error
+
+func (f existsFunc) Exists(ctx context.Context, projectID int64) error {
+	return f(ctx, projectID)
 }
 
 func testService() (*Service, *memoryRepository) {
@@ -228,5 +249,59 @@ func testService() (*Service, *memoryRepository) {
 		}
 		return nil
 	})
-	return NewService(repo, stories, sprints), repo
+	projects := existsFunc(func(_ context.Context, projectID int64) error {
+		if projectID != 1 {
+			return ErrProjectNotFound
+		}
+		return nil
+	})
+	return NewService(repo, stories, sprints, projects), repo
+}
+
+func TestListReturnsProjectDefectsNewestFirst(t *testing.T) {
+	service, repo := testService()
+	ctx := context.Background()
+	sprintID := int64(3)
+	first, err := repo.Save(ctx, Defect{
+		ProjectID: 1, StoryID: 4, Description: "Abierto",
+		Severity: "high", Status: "open", DetectionSprintID: 3,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, err := repo.Save(ctx, Defect{
+		ProjectID: 1, StoryID: 4, Description: "Resuelto",
+		Severity: "low", Status: "resolved", DetectionSprintID: 3, ResolutionSprintID: &sprintID,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := repo.Save(ctx, Defect{
+		ProjectID: 2, StoryID: 9, Description: "Ajeno",
+		Severity: "medium", Status: "open", DetectionSprintID: 8,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	listed, err := service.List(ctx, 1)
+	if err != nil {
+		t.Fatalf("list: %v", err)
+	}
+	if len(listed) != 2 {
+		t.Fatalf("len: got %d want 2 (%+v)", len(listed), listed)
+	}
+	if listed[0].ID != second.ID || listed[0].Status != "resolved" {
+		t.Fatalf("first: %+v", listed[0])
+	}
+	if listed[1].ID != first.ID || listed[1].Status != "open" {
+		t.Fatalf("second: %+v", listed[1])
+	}
+}
+
+func TestListRejectsMissingProject(t *testing.T) {
+	service, _ := testService()
+
+	if _, err := service.List(context.Background(), 9); !errors.Is(err, ErrProjectNotFound) {
+		t.Fatalf("got %v want %v", err, ErrProjectNotFound)
+	}
 }

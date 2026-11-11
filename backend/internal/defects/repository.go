@@ -5,6 +5,7 @@ import "context"
 type Repository interface {
 	Save(ctx context.Context, defect Defect) (Defect, error)
 	FindByID(ctx context.Context, projectID, id int64) (Defect, error)
+	ListByProject(ctx context.Context, projectID int64) ([]Defect, error)
 }
 
 type ResolutionRepository interface {
@@ -18,6 +19,10 @@ type ResolutionSprintLookup interface {
 
 type StoryLookup interface {
 	Find(ctx context.Context, projectID, storyID int64) error
+}
+
+type ProjectLookup interface {
+	Exists(ctx context.Context, projectID int64) error
 }
 
 type SprintLookup interface {

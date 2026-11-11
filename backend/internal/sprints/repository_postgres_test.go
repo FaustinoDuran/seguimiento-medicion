@@ -379,3 +379,56 @@ func TestPostgresCompletePersistsAndIsVisibleThroughHTTP(t *testing.T) {
 		t.Fatalf("backlog must include assigned and completed stories: %d %s", collection.Code, collection.Body.String())
 	}
 }
+
+func TestPostgresListSprintsIncludesOpenAndClosedOfTheProject(t *testing.T) {
+	pool := postgresTestPool(t)
+	ctx := context.Background()
+	projectRepo := projects.NewPostgresRepository(pool)
+	projectService := projects.NewService(projectRepo)
+	project, err := projectService.Create(ctx, projects.CreateProject{
+		Name:      "Listado completo",
+		StartDate: time.Date(2026, 10, 26, 0, 0, 0, 0, time.UTC),
+		EndDate:   time.Date(2026, 11, 23, 0, 0, 0, 0, time.UTC),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	otherProject, err := projectService.Create(ctx, projects.CreateProject{
+		Name:      "Ajeno",
+		StartDate: project.StartDate,
+		EndDate:   project.EndDate,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	service := NewService(NewPostgresRepository(pool), NewProjectLookup(projectRepo), NewStoryLookup(backlog.NewPostgresRepository(pool)))
+	first, err := service.Create(ctx, CreateSprint{ProjectID: project.ID, Goal: "Primero abierto"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, err := service.Create(ctx, CreateSprint{ProjectID: project.ID, Goal: "Segundo cerrado"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := service.Create(ctx, CreateSprint{ProjectID: otherProject.ID, Goal: "Ajeno"}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := service.Close(ctx, second.ID); err != nil {
+		t.Fatal(err)
+	}
+
+	listed, err := NewService(NewPostgresRepository(pool), NewProjectLookup(projectRepo), NewStoryLookup(backlog.NewPostgresRepository(pool))).
+		List(ctx, project.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(listed) != 2 {
+		t.Fatalf("len: got %d want 2 (%+v)", len(listed), listed)
+	}
+	if listed[0].ID != first.ID || listed[0].Status != StatusOpen {
+		t.Fatalf("first: %+v", listed[0])
+	}
+	if listed[1].ID != second.ID || listed[1].Status != StatusClosed {
+		t.Fatalf("second: %+v", listed[1])
+	}
+}

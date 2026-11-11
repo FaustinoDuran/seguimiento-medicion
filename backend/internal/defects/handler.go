@@ -80,6 +80,21 @@ func (h *Handler) Get(writer http.ResponseWriter, request *http.Request) {
 	writeJSON(writer, http.StatusOK, defect)
 }
 
+func (h *Handler) List(writer http.ResponseWriter, request *http.Request) {
+	projectID, ok := parseID(writer, request, "project_id")
+	if !ok {
+		return
+	}
+	defects, err := h.service.List(request.Context(), projectID)
+	if err != nil {
+		writeServiceError(writer, err)
+		return
+	}
+	writeJSON(writer, http.StatusOK, struct {
+		Defects []Defect `json:"defects"`
+	}{Defects: defects})
+}
+
 func parseID(writer http.ResponseWriter, request *http.Request, name string) (int64, bool) {
 	id, err := strconv.ParseInt(chi.URLParam(request, name), 10, 64)
 	if err != nil || id < 1 {
@@ -93,7 +108,8 @@ func writeServiceError(writer http.ResponseWriter, err error) {
 	switch {
 	case errors.Is(err, ErrResolutionBeforeDetection), errors.Is(err, ErrResolutionConflict):
 		writeError(writer, http.StatusConflict, err.Error())
-	case errors.Is(err, ErrNotFound), errors.Is(err, ErrStoryNotFound), errors.Is(err, ErrSprintNotFound):
+	case errors.Is(err, ErrNotFound), errors.Is(err, ErrProjectNotFound),
+		errors.Is(err, ErrStoryNotFound), errors.Is(err, ErrSprintNotFound):
 		writeError(writer, http.StatusNotFound, err.Error())
 	case errors.Is(err, ErrInvalidID), errors.Is(err, ErrDescriptionRequired),
 		errors.Is(err, ErrDescriptionTooLong), errors.Is(err, ErrInvalidSeverity), errors.Is(err, ErrInvalidStatus):
