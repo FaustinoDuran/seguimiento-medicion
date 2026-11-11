@@ -23,19 +23,59 @@ func (s *Service) ForProject(ctx context.Context, projectID int64) (Report, erro
 	if err != nil {
 		return Report{}, err
 	}
-	return build(ctx, source)
+	return build(ctx, source, nil)
 }
 
-func build(ctx context.Context, source Source) (Report, error) {
+func build(ctx context.Context, source Source, selected *Sprint) (Report, error) {
 	report := Report{
-		Project:          source.Project,
+		Project: source.Project, Sprint: selected,
 		AvailableSprints: append([]Sprint{}, source.Sprints...),
-		Stories:          append([]Story{}, source.Stories...),
-		Effort:           append([]Effort{}, source.Effort...),
-		Defects:          append([]Defect{}, source.Defects...),
+		Stories:          []Story{}, Effort: []Effort{}, Defects: []Defect{},
 	}
+	storyIDs := map[int64]bool{}
+	for _, story := range source.Stories {
+		if selected != nil && (story.SprintID == nil || *story.SprintID != selected.ID) {
+			continue
+		}
+		report.Stories = append(report.Stories, story)
+		storyIDs[story.ID] = true
+	}
+	for _, entry := range source.Effort {
+		if storyIDs[entry.StoryID] {
+			report.Effort = append(report.Effort, entry)
+		}
+	}
+	for _, defect := range source.Defects {
+		detected := selected != nil && defect.DetectionSprintID == selected.ID
+		resolved := selected != nil && defect.ResolutionSprintID != nil && *defect.ResolutionSprintID == selected.ID
+		if selected == nil || detected || resolved {
+			report.Defects = append(report.Defects, defect)
+		}
+	}
+	sort.Slice(report.AvailableSprints, func(i, j int) bool {
+		a, b := report.AvailableSprints[i], report.AvailableSprints[j]
+		if a.CreatedAt.Equal(b.CreatedAt) {
+			return a.ID < b.ID
+		}
+		return a.CreatedAt.Before(b.CreatedAt)
+	})
 	sort.Slice(report.Stories, func(i, j int) bool { return report.Stories[i].ID < report.Stories[j].ID })
-	calculated, err := metrics.NewService(sourceCatalog{source: source}).ForProject(ctx, source.Project.ID)
+	sort.Slice(report.Defects, func(i, j int) bool { return report.Defects[i].ID < report.Defects[j].ID })
+	sort.Slice(report.Effort, func(i, j int) bool {
+		a, b := report.Effort[i], report.Effort[j]
+		if a.Date == b.Date {
+			return a.ID < b.ID
+		}
+		return a.Date < b.Date
+	})
+	calculator := metrics.NewService(sourceCatalog{source: source})
+	var calculated metrics.Report
+	var err error
+	if selected == nil {
+		calculated, err = calculator.ForProject(ctx, source.Project.ID)
+	} else {
+		calculated, err = calculator.ForSprint(ctx, selected.ID)
+	}
 	if err != nil {
 		return Report{}, err
 	}
@@ -60,5 +100,14 @@ func metricFields(value metrics.Report) Metrics {
 }
 
 func (s *Service) ForSprint(ctx context.Context, projectID, sprintID int64) (Report, error) {
-	return s.ForProject(ctx, projectID)
+	source, err := s.repo.LoadProject(ctx, projectID)
+	if err != nil {
+		return Report{}, err
+	}
+	for _, sprint := range source.Sprints {
+		if sprint.ID == sprintID && sprint.ProjectID == projectID {
+			return build(ctx, source, &sprint)
+		}
+	}
+	return Report{}, ErrSprintNotFound
 }

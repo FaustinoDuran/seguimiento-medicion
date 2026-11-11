@@ -33,5 +33,16 @@ func (c sourceCatalog) Load(context.Context, int64) (metrics.Snapshot, error) {
 			snapshot.Assignments = append(snapshot.Assignments, metrics.Assignment{SprintID: *story.SprintID, StoryID: story.ID})
 		}
 	}
+	for _, entry := range c.source.Effort {
+		snapshot.Effort = append(snapshot.Effort, metrics.Effort{
+			ProjectID: entry.ProjectID, StoryID: entry.StoryID, Hours: entry.Hours,
+		})
+	}
+	for _, defect := range c.source.Defects {
+		snapshot.Defects = append(snapshot.Defects, metrics.Defect{
+			ProjectID: defect.ProjectID, Status: defect.Status,
+			DetectionSprintID: defect.DetectionSprintID, ResolutionSprintID: defect.ResolutionSprintID,
+		})
+	}
 	return snapshot, nil
 }
