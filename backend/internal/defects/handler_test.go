@@ -157,7 +157,7 @@ func TestHTTPInfrastructureErrorsAreGeneric(t *testing.T) {
 				}
 				return nil
 			})
-			service := NewService(repo, stories, sprints)
+			service := NewService(repo, stories, sprints, existsFunc(func(context.Context, int64) error { return nil }))
 			method, path, body := "GET", "/projects/1/defects/1", ""
 			if boundary != "get" {
 				method, path = "POST", "/projects/1/stories/4/defects"
@@ -211,4 +211,49 @@ func decodeDefect(t *testing.T, response *httptest.ResponseRecorder) Defect {
 		t.Fatal(err)
 	}
 	return defect
+}
+
+func TestListDefectsHTTP(t *testing.T) {
+	service, repo := testService()
+	ctx := context.Background()
+	sprintID := int64(3)
+	if _, err := repo.Save(ctx, Defect{
+		ProjectID: 1, StoryID: 4, Description: "Abierto",
+		Severity: "high", Status: "open", DetectionSprintID: 3,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := repo.Save(ctx, Defect{
+		ProjectID: 1, StoryID: 4, Description: "Resuelto",
+		Severity: "low", Status: "resolved", DetectionSprintID: 3, ResolutionSprintID: &sprintID,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := repo.Save(ctx, Defect{
+		ProjectID: 2, StoryID: 9, Description: "Ajeno",
+		Severity: "medium", Status: "open", DetectionSprintID: 8,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	router := chi.NewRouter()
+	Mount(router, service)
+
+	response := requestJSON(router, http.MethodGet, "/projects/1/defects", "")
+	if response.Code != http.StatusOK {
+		t.Fatalf("list: %d %s", response.Code, response.Body.String())
+	}
+	var body struct {
+		Defects []Defect `json:"defects"`
+	}
+	if err := json.Unmarshal(response.Body.Bytes(), &body); err != nil {
+		t.Fatal(err)
+	}
+	if len(body.Defects) != 2 || body.Defects[0].ID != 2 || body.Defects[1].ID != 1 {
+		t.Fatalf("defects: %+v", body.Defects)
+	}
+	if body.Defects[0].Status != "resolved" || body.Defects[0].ResolutionSprintID == nil {
+		t.Fatalf("resolved defect: %+v", body.Defects[0])
+	}
+	assertHTTPError(t, requestJSON(router, http.MethodGet, "/projects/9/defects", ""), http.StatusNotFound)
+	assertHTTPError(t, requestJSON(router, http.MethodGet, "/projects/abc/defects", ""), http.StatusBadRequest)
 }
