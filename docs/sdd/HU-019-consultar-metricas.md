@@ -2,7 +2,7 @@
 
 - Issue: [#28](https://github.com/FaustinoDuran/seguimiento-medicion/issues/28)
 - Módulo Go: `backend/internal/metrics/`
-- Estado: implementada; en revisión ([PR #90](https://github.com/FaustinoDuran/seguimiento-medicion/pull/90))
+- Estado: mergeada en `main` ([PR #90](https://github.com/FaustinoDuran/seguimiento-medicion/pull/90))
 
 ## Objetivo
 

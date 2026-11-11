@@ -2,7 +2,7 @@
 
 - Issue: [#26](https://github.com/FaustinoDuran/seguimiento-medicion/issues/26)
 - Módulo Go: `backend/internal/defects/`
-- Estado: implementada en `feat/HU-017-register-defect`; pendiente de revisión y merge
+- Estado: mergeada en `main` ([PR #88](https://github.com/FaustinoDuran/seguimiento-medicion/pull/88))
 
 ## Objetivo
 
