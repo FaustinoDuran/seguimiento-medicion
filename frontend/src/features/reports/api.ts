@@ -1,6 +1,13 @@
 import { apiRequest } from '../../shared/api/client'
 import { isProjectReport } from './model'
 
+export function reportPDFPath(projectId: string, sprintId: string) {
+  const path = sprintId
+    ? `/projects/${projectId}/sprints/${sprintId}/report.pdf`
+    : `/projects/${projectId}/report.pdf`
+  return `/api${path}`
+}
+
 export async function getReport(projectId: string, sprintId: string, signal: AbortSignal) {
   const path = sprintId ? `/projects/${projectId}/sprints/${sprintId}/report` as const : `/projects/${projectId}/report` as const
   const response = await apiRequest<unknown>(path, { signal })
