@@ -59,3 +59,16 @@ la evidencia histórica de tests. No se declara una nueva validación manual de 
 
 Las tareas técnicas del Sprint 0 no se agregan a esta matriz porque no recorren
 SDD/BDD. Se registran como Issues `TASK-XXX` y en `docs/sprints/sprint-0.md`.
+
+## BUG-001 — Conteo de resueltos por Sprint
+
+- Issue: [#94](https://github.com/FaustinoDuran/seguimiento-medicion/issues/94).
+- HU y criterio afectados: HU-019, AC-019-07; no cambia la regla especificada.
+- SDD y BDD: los archivos existentes de HU-019 incorporan la regresión.
+- Test: `TestPostgresSprintMetricsCountResolvedDefects` en
+  `backend/internal/metrics/repository_postgres_test.go`; observación por API
+  HTTP con PostgreSQL real y esquema aislado.
+- Corrección: `backend/internal/metrics/catalog_postgres.go` carga la referencia
+  nullable de resolución. Se conservan las fórmulas del servicio.
+- RED `cfa872d` → GREEN `9ee5655`; módulo metrics con `-race` verde.
+- PR: pendiente; rama independiente `fix/BUG-001-sprint-resolution-metrics`.
