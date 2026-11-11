@@ -59,3 +59,46 @@ test('desde el proyecto se abre un reporte con detalle y métricas', async () =>
   expect(within(defects).getByText('Alta')).toBeInTheDocument()
   expect(within(defects).getByText('Resuelto')).toBeInTheDocument()
 })
+
+// AC-021-02, AC-021-09, AC-021-10, AC-021-14
+test('selecciona Sprints abiertos y cerrados y descarta una respuesta anterior', async () => {
+  const user = userEvent.setup()
+  let releaseFirst: () => void = () => {}
+  let firstRequested: () => void = () => {}
+  const firstStarted = new Promise<void>(resolve => { firstRequested = resolve })
+  const firstResponse = new Promise<void>(resolve => { releaseFirst = resolve })
+  serveReport()
+  server.use(
+    http.get('*/api/projects/4/sprints/2/report', async () => {
+      firstRequested()
+      await firstResponse
+      return HttpResponse.json({ ...report, sprint: report.available_sprints[0] })
+    }),
+    http.get('*/api/projects/4/sprints/3/report', () => HttpResponse.json({
+      ...report,
+      sprint: report.available_sprints[1],
+      metrics: { ...report.metrics, sprint_id: 3, actual_hours: 0 },
+      stories: [], effort: [],
+    })),
+  )
+  open('/projects/4/report')
+  await screen.findByRole('table', { name: 'Historias del alcance' })
+  const selector = screen.getByRole('combobox', { name: 'Alcance del reporte' })
+  expect(within(selector).getByRole('option', { name: /Sprint 2.*Cerrado/ })).toBeInTheDocument()
+  expect(within(selector).getByRole('option', { name: /Sprint 3.*Abierto/ })).toBeInTheDocument()
+  await user.selectOptions(selector, '2')
+  await firstStarted
+  expect(screen.queryByRole('table', { name: 'Historias del alcance' })).not.toBeInTheDocument()
+  expect(screen.getByRole('status')).toHaveTextContent('Cargando reporte')
+  await user.selectOptions(selector, '3')
+  expect(await screen.findByText('No hay historias del alcance.')).toBeInTheDocument()
+  expect(screen.getByText('No hay registros de esfuerzo.')).toBeInTheDocument()
+  expect(screen.getByText('Corregir · Abierto', { exact: false })).toBeInTheDocument()
+  releaseFirst()
+  // The discarded request may settle after the selected one; it must never restore its data.
+  await screen.findByText('No hay historias del alcance.')
+  expect(selector).toHaveValue('3')
+  expect(screen.queryByText('Sin asignación')).not.toBeInTheDocument()
+  await user.selectOptions(selector, '')
+  expect(await screen.findByText('Sin asignación')).toBeInTheDocument()
+})
