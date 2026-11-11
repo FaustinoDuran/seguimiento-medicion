@@ -70,11 +70,11 @@ test('muestra el estado, las métricas de la API y un gráfico de story points',
   open('/projects/4/dashboard')
 
   expect(await screen.findByRole('heading', { level: 1, name: 'TP Integrador' })).toBeInTheDocument()
-  expect(screen.getByText('Activo')).toBeInTheDocument()
-  expect(screen.getByText('13')).toBeInTheDocument()
-  expect(screen.getByText('8')).toBeInTheDocument()
-  expect(screen.getByText('4.5')).toBeInTheDocument()
-  expect(screen.getByText('50')).toBeInTheDocument()
+  expect(screen.getAllByText('Activo').length).toBeGreaterThan(0)
+  expect(screen.getByText('Story points planificados').closest('div')).toHaveTextContent('13')
+  expect(screen.getByText('Story points completados').closest('div')).toHaveTextContent('8')
+  expect(screen.getByText('Horas reales').closest('div')).toHaveTextContent('4.5')
+  expect(screen.getByText('Historias completadas').closest('div')).toHaveTextContent('50')
   expect(screen.getByRole('img', { name: /story points planificados y completados/i })).toBeInTheDocument()
 })
 
@@ -101,12 +101,11 @@ test('informa que el proyecto no existe', async () => {
 // AC-020-06
 test('permite reintentar si fallan las métricas', async () => {
   const user = userEvent.setup()
-  let failed = true
+  let allowSuccess = false
   server.use(
     http.get('*/api/projects/4', () => HttpResponse.json(project)),
     http.get('*/api/projects/4/metrics', () => {
-      if (failed) {
-        failed = false
+      if (!allowSuccess) {
         return HttpResponse.json({ error: 'internal error' }, { status: 500 })
       }
       return HttpResponse.json(metrics)
@@ -115,6 +114,7 @@ test('permite reintentar si fallan las métricas', async () => {
   open('/projects/4/dashboard')
 
   expect(await screen.findByRole('button', { name: 'Reintentar carga' })).toBeInTheDocument()
+  allowSuccess = true
   await user.click(screen.getByRole('button', { name: 'Reintentar carga' }))
   expect(await screen.findByRole('img', { name: /story points planificados y completados/i })).toBeInTheDocument()
 })
