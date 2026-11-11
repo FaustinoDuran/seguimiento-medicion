@@ -2,6 +2,7 @@ package reports_test
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/reports"
@@ -91,5 +92,37 @@ func TestSprintReportIncludesEffortAndDetectedOrResolvedDefects(t *testing.T) {
 	}
 	if project.Metrics.ActualHours.String() != "10.51" {
 		t.Fatalf("project hours: %+v", project.Metrics)
+	}
+}
+
+func TestReportRejectsInvalidAndForeignScope(t *testing.T) {
+	unavailable := errors.New("database unavailable")
+	cases := []struct {
+		name      string
+		repo      memoryRepository
+		projectID int64
+		sprintID  int64
+		want      error
+	}{
+		{name: "invalid project", projectID: 0, want: reports.ErrInvalidID},
+		{name: "invalid sprint", projectID: 1, sprintID: -1, want: reports.ErrInvalidID},
+		{name: "missing project", projectID: 1, repo: memoryRepository{err: reports.ErrProjectNotFound}, want: reports.ErrProjectNotFound},
+		{name: "foreign project", projectID: 1, repo: memoryRepository{source: reports.Source{Project: reports.Project{ID: 2}}}, want: reports.ErrProjectNotFound},
+		{name: "missing sprint", projectID: 1, sprintID: 7, repo: memoryRepository{source: reports.Source{Project: reports.Project{ID: 1}}}, want: reports.ErrSprintNotFound},
+		{name: "load failure", projectID: 1, repo: memoryRepository{err: unavailable}, want: unavailable},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			service := reports.NewService(tc.repo)
+			var err error
+			if tc.sprintID == 0 {
+				_, err = service.ForProject(context.Background(), tc.projectID)
+			} else {
+				_, err = service.ForSprint(context.Background(), tc.projectID, tc.sprintID)
+			}
+			if !errors.Is(err, tc.want) {
+				t.Fatalf("got %v, want %v", err, tc.want)
+			}
+		})
 	}
 }
