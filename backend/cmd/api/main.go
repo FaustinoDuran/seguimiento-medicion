@@ -8,6 +8,7 @@ import (
 
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/backlog"
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/config"
+	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/defects"
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/effort"
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/httpx"
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/planningpoker"
@@ -39,6 +40,9 @@ func main() {
 		if err := sprints.EnsureSchema(ctx, pool); err != nil {
 			log.Fatalf("sprints schema: %v", err)
 		}
+		if err := defects.EnsureSchema(ctx, pool); err != nil {
+			log.Fatalf("defects schema: %v", err)
+		}
 		if err := planningpoker.EnsureSchema(ctx, pool); err != nil {
 			log.Fatalf("planning poker schema: %v", err)
 		}
@@ -58,6 +62,11 @@ func main() {
 			sprints.NewStoryLookup(backlogRepo),
 		)
 		sprints.Mount(router, sprintService)
+		defects.Mount(router, defects.NewService(
+			defects.NewPostgresRepository(pool),
+			defects.NewStoryLookup(backlogRepo),
+			defects.NewSprintLookup(sprintService),
+		))
 		pokerService := planningpoker.NewService(
 			planningpoker.NewPostgresRepository(pool),
 			planningpoker.NewStoryLookup(backlogRepo),
