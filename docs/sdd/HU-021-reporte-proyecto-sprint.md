@@ -3,7 +3,7 @@
 - Issue: [#30](https://github.com/FaustinoDuran/seguimiento-medicion/issues/30)
 - Módulo Go: `backend/internal/reports/`
 - Presentación: `frontend/src/features/reports/`
-- Estado: implementada en `feat/HU-021-project-sprint-report`; pendiente de revisión y de corregir el BUG de HU-019
+- Estado: implementada en `feat/HU-021-project-sprint-report`; pendiente de revisión y merge, con dependencia del PR #95
 - Depende de HU-019.
 
 ## Objetivo
@@ -129,22 +129,22 @@ nuevo para estas reglas de la HU.
 
 ## Hallazgo en la dependencia HU-019
 
-`backend/internal/metrics/catalog_postgres.go`, en `loadDefects`, no carga
-`resolution_sprint_id`. El servicio de métricas contempla ese dato, pero
-la lectura PostgreSQL no lo entrega, afectando el conteo de defectos
-resueltos por Sprint. Debe corregirse y verificarse antes de validar la
-consistencia entre reporte y métricas. Se acordó en Q9 una issue BUG y un
-PR separados, con test RED por API HTTP y PostgreSQL real antes de corregir.
-El código de HU-019 no se modificó en esta HU. El reporte carga su propio
-catálogo detallado, incluida la resolución, y lo adapta al servicio público
-`metrics.Service`: comparte las fórmulas y no el adaptador PostgreSQL que
-presenta el defecto. Por eso el reporte cuenta correctamente las resoluciones,
-pero puede diferir del endpoint `/metrics` de Sprint hasta corregir el BUG.
-La aceptación integrada entre ambos endpoints queda pendiente.
+La lectura de HU-019 omitía `resolution_sprint_id`. Se corrigió en
+[BUG-001 #94](https://github.com/FaustinoDuran/seguimiento-medicion/issues/94),
+[PR #95](https://github.com/FaustinoDuran/seguimiento-medicion/pull/95), con
+commits RED/GREEN separados y una prueba reproductora por HTTP/PostgreSQL.
+La corrección carga la referencia nullable y no modifica las fórmulas.
 
-La creación de la issue separada fue rechazada por GitHub con
-`403 Resource not accessible by integration`. Se dejó su texto preparado
-fuera del repositorio; el enlace a la issue está pendiente.
+HU-021 carga un catálogo detallado que adapta al servicio público
+`metrics.Service`. Una comprobación por HTTP contrasta el reporte de Sprint
+con `/metrics`: falló antes de integrar la corrección (0 resueltos frente a 1)
+y pasa después. La rama del reporte integra la rama del BUG como dependencia;
+el PR del reporte usa esa rama como base para mostrar únicamente HU-021.
+
+Orden de integración: primero PR #95 hacia `main`; luego actualizar la base
+del PR de HU-021 a `main` y comprobar que su diff conserve solo el reporte.
+La integración GitHub rechazó las escrituras con `403`; la issue y el PR se
+crearon con la autenticación local de Git, autorizada para esta tarea.
 
 ## Contrato confirmado (Q10)
 
@@ -218,7 +218,8 @@ La entrevista queda cerrada; no hay decisiones de producto pendientes.
   identificadores inválidos, códigos y errores internos genéricos.
 - PostgreSQL: `backend/internal/reports/repository_postgres_test.go`; datos
   persistidos, historia externa referenciada por un defecto, aislamiento,
-  esfuerzo posterior al cierre y lecturas concurrentes con escrituras.
+  esfuerzo posterior al cierre, lecturas concurrentes con escrituras y
+  coincidencia con el endpoint de métricas después de integrar BUG-001.
 - UI: `frontend/src/features/reports/Report.test.tsx`; navegación desde el
   proyecto, contenido, selector abierto/cerrado, carga, respuestas obsoletas,
   fallos, reintento, vacíos y rechazo de respuestas parciales o de otro alcance.
@@ -250,4 +251,4 @@ Las pruebas de UI simulan HTTP: no se declara un recorrido E2E en navegador
 con React y Go reales ni una validación visual manual.
 
 Los criterios marcados reflejan la evidencia automatizada local. La HU no
-está Done: falta la corrección separada de HU-019, revisión y merge.
+está Done: faltan revisión y merge del PR #95 y del PR del reporte.
