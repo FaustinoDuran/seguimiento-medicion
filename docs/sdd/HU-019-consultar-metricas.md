@@ -2,7 +2,7 @@
 
 - Issue: [#28](https://github.com/FaustinoDuran/seguimiento-medicion/issues/28)
 - Módulo Go: `backend/internal/metrics/`
-- Estado: lista para implementar
+- Estado: implementada en `feat/HU-019-consultar-metricas`, pendiente de PR
 
 ## Objetivo
 
@@ -123,16 +123,16 @@ entran en el informe.
 
 ## Criterios de aceptación
 
-- [ ] AC-019-01 — Devolver las métricas de un proyecto con historias estimadas, horas y defectos, calculadas en Go.
-- [ ] AC-019-02 — Devolver las métricas de un Sprint, sin mezclar historias ni defectos de otro Sprint.
-- [ ] AC-019-03 — Excluir del planificado y del completado en puntos a las historias sin estimar.
-- [ ] AC-019-04 — Calcular velocidad de proyecto como promedio de Sprints cerrados, y `0` si no hay ninguno cerrado.
-- [ ] AC-019-05 — Informar `estimated_hours` en `0` y `actual_hours` como la suma de esfuerzo del alcance.
-- [ ] AC-019-06 — Informar desviación como planificados menos completados, y el porcentaje de historias `done`.
-- [ ] AC-019-07 — Contar defectos detectados y resueltos según las fórmulas.
-- [ ] AC-019-08 — Aislar un proyecto de los datos de otro.
-- [ ] AC-019-09 — Rechazar identificadores inválidos con `400` y recursos inexistentes con `404`.
-- [ ] AC-019-10 — Respetar el contrato HTTP. Un error de infraestructura responde `500` sin detalles internos.
+- [x] AC-019-01 — Devolver las métricas de un proyecto con historias estimadas, horas y defectos, calculadas en Go.
+- [x] AC-019-02 — Devolver las métricas de un Sprint, sin mezclar historias ni defectos de otro Sprint.
+- [x] AC-019-03 — Excluir del planificado y del completado en puntos a las historias sin estimar.
+- [x] AC-019-04 — Calcular velocidad de proyecto como promedio de Sprints cerrados, y `0` si no hay ninguno cerrado.
+- [x] AC-019-05 — Informar `estimated_hours` en `0` y `actual_hours` como la suma de esfuerzo del alcance.
+- [x] AC-019-06 — Informar desviación como planificados menos completados, y el porcentaje de historias `done`.
+- [x] AC-019-07 — Contar defectos detectados y resueltos según las fórmulas.
+- [x] AC-019-08 — Aislar un proyecto de los datos de otro.
+- [x] AC-019-09 — Rechazar identificadores inválidos con `400` y recursos inexistentes con `404`.
+- [x] AC-019-10 — Respetar el contrato HTTP. Un error de infraestructura responde `500` sin detalles internos.
 
 ## Trazabilidad
 
