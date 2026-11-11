@@ -3,7 +3,7 @@
 - Issue: [#30](https://github.com/FaustinoDuran/seguimiento-medicion/issues/30)
 - Módulo Go: `backend/internal/reports/`
 - Presentación: `frontend/src/features/reports/`
-- Estado: lista para implementar; entrevista confirmada
+- Estado: implementada en `feat/HU-021-project-sprint-report`; pendiente de revisión y de corregir el BUG de HU-019
 - Depende de HU-019.
 
 ## Objetivo
@@ -89,35 +89,35 @@ abiertos o cerrados (Q7). El contrato confirmado se detalla más adelante.
 
 ## Criterios de aceptación
 
-- [ ] AC-021-01 — Consultar un reporte de proyecto por API y pantalla con
+- [x] AC-021-01 — Consultar un reporte de proyecto por API y pantalla con
   todas sus historias, incluidas las no asignadas a un Sprint.
-- [ ] AC-021-02 — Consultar un reporte de Sprint por API y pantalla con
+- [x] AC-021-02 — Consultar un reporte de Sprint por API y pantalla con
   todas sus historias asignadas, sin duplicar las completadas.
-- [ ] AC-021-03 — Mostrar estado, estimación acordada y asignación de las
+- [x] AC-021-03 — Mostrar estado, estimación acordada y asignación de las
   historias, conservando la ausencia de estimación.
-- [ ] AC-021-04 — Reflejar los datos vigentes en cada consulta, incluso
+- [x] AC-021-04 — Reflejar los datos vigentes en cada consulta, incluso
   después del cierre del Sprint.
-- [ ] AC-021-05 — Incluir los defectos detectados o resueltos en el Sprint,
+- [x] AC-021-05 — Incluir los defectos detectados o resueltos en el Sprint,
   una sola vez por defecto, aunque su historia esté asignada a otro Sprint.
 
-- [ ] AC-021-06 — Incluir todos los registros de esfuerzo del alcance con
+- [x] AC-021-06 — Incluir todos los registros de esfuerzo del alcance con
   historia, integrante, fecha, actividad y horas, sin filtro por calendario,
   y mostrar el total de horas provisto por las métricas.
-- [ ] AC-021-07 — Mostrar identificador y título de cada historia; mostrar
+- [x] AC-021-07 — Mostrar identificador y título de cada historia; mostrar
   descripción, severidad, estado e historia de cada defecto y sus Sprints
   de detección y resolución, sin ampliar el listado principal de historias.
-- [ ] AC-021-08 — Mostrar las métricas de HU-019 sin recalcular fórmulas
+- [x] AC-021-08 — Mostrar las métricas de HU-019 sin recalcular fórmulas
   en React ni inventar horas estimadas.
-- [ ] AC-021-09 — Acceder desde el detalle del proyecto, mostrar inicialmente
+- [x] AC-021-09 — Acceder desde el detalle del proyecto, mostrar inicialmente
   el proyecto y permitir seleccionar cualquiera de sus Sprints abiertos o cerrados.
-- [ ] AC-021-10 — Mostrar mensajes por sección vacía y conservar un reporte
+- [x] AC-021-10 — Mostrar mensajes por sección vacía y conservar un reporte
   sin datos como consulta válida.
-- [ ] AC-021-11 — Informar recursos inexistentes y fallos de consulta con
+- [x] AC-021-11 — Informar recursos inexistentes y fallos de consulta con
   reintento, sin presentar fallos como vacíos ni reportes parciales como válidos.
 
-- [ ] AC-021-12 — Respetar rutas, campos, orden y códigos del contrato; rechazar un Sprint ajeno al proyecto sin exponer datos.
-- [ ] AC-021-13 — Obtener detalle y métricas desde una misma lectura coherente.
-- [ ] AC-021-14 — Retirar el reporte anterior durante la carga de otro alcance e ignorar respuestas obsoletas.
+- [x] AC-021-12 — Respetar rutas, campos, orden y códigos del contrato; rechazar un Sprint ajeno al proyecto sin exponer datos.
+- [x] AC-021-13 — Obtener detalle y métricas desde una misma lectura coherente.
+- [x] AC-021-14 — Retirar el reporte anterior durante la carga de otro alcance e ignorar respuestas obsoletas.
 
 ## Decisiones confirmadas
 
@@ -135,10 +135,16 @@ la lectura PostgreSQL no lo entrega, afectando el conteo de defectos
 resueltos por Sprint. Debe corregirse y verificarse antes de validar la
 consistencia entre reporte y métricas. Se acordó en Q9 una issue BUG y un
 PR separados, con test RED por API HTTP y PostgreSQL real antes de corregir.
-Todavía no se modificó código. La creación de la issue fue rechazada por
-GitHub con `403 Resource not accessible by integration`; `gh` no está
-instalado. El cuerpo de la issue está preparado en
-`/private/tmp/HU-021-metrics-bug.md`, fuera del repositorio.
+El código de HU-019 no se modificó en esta HU. El reporte carga su propio
+catálogo detallado, incluida la resolución, y lo adapta al servicio público
+`metrics.Service`: comparte las fórmulas y no el adaptador PostgreSQL que
+presenta el defecto. Por eso el reporte cuenta correctamente las resoluciones,
+pero puede diferir del endpoint `/metrics` de Sprint hasta corregir el BUG.
+La aceptación integrada entre ambos endpoints queda pendiente.
+
+La creación de la issue separada fue rechazada por GitHub con
+`403 Resource not accessible by integration`. Se dejó su texto preparado
+fuera del repositorio; el enlace a la issue está pendiente.
 
 ## Contrato confirmado (Q10)
 
@@ -206,6 +212,42 @@ La entrevista queda cerrada; no hay decisiones de producto pendientes.
 
 - BDD: `features/HU-021-reporte-proyecto-sprint.feature`
   (decisiones confirmadas en la entrevista).
-- Tests: pendientes; aún no se inició TDD.
-- Código previsto: `backend/internal/reports/` y
-  `frontend/src/features/reports/`.
+- Servicio: `backend/internal/reports/service_test.go`; selección por alcance,
+  historias sin estimar, unión de defectos, orden, errores y valores de métricas.
+- HTTP: `backend/internal/reports/handler_test.go`; rutas, JSON, listas vacías,
+  identificadores inválidos, códigos y errores internos genéricos.
+- PostgreSQL: `backend/internal/reports/repository_postgres_test.go`; datos
+  persistidos, historia externa referenciada por un defecto, aislamiento,
+  esfuerzo posterior al cierre y lecturas concurrentes con escrituras.
+- UI: `frontend/src/features/reports/Report.test.tsx`; navegación desde el
+  proyecto, contenido, selector abierto/cerrado, carga, respuestas obsoletas,
+  fallos, reintento, vacíos y rechazo de respuestas parciales o de otro alcance.
+- Código: `backend/internal/reports/` y `frontend/src/features/reports/`.
+  Registro HTTP en `backend/cmd/api/main.go` y ruta en `frontend/src/App.tsx`.
+- Commits RED/GREEN y PR: `docs/traceability.md`.
+
+## Implementación y verificación
+
+El repositorio de reportes consulta PostgreSQL en una transacción de solo
+lectura `REPEATABLE READ`. El servicio delimita las secciones y crea un
+catálogo en memoria para que `metrics.Service` calcule sobre los mismos datos.
+No importa handlers ni repositorios PostgreSQL de otros módulos.
+
+Checks locales completados:
+
+- `go test -count=1 -race ./...` en backend con PostgreSQL local.
+- `go vet ./...`.
+- Frontend con Node 22.22.3: `npm run test:coverage` (86 tests),
+  `npm run build` y `npm run lint`.
+- Prueba concurrente: 30 altas de esfuerzo y 30 consultas de reporte;
+  cada consulta conserva la correspondencia entre registros y total.
+
+Las pruebas de PostgreSQL usan `REPORTS_TEST_DATABASE_URL`,
+`BACKLOG_TEST_DATABASE_URL` o `DATABASE_URL`, en ese orden. Si no se define
+ninguna, se omiten explícitamente. Crean y eliminan esquemas aislados.
+Los escenarios Gherkin están documentados; no se ejecutan con Godog.
+Las pruebas de UI simulan HTTP: no se declara un recorrido E2E en navegador
+con React y Go reales ni una validación visual manual.
+
+Los criterios marcados reflejan la evidencia automatizada local. La HU no
+está Done: falta la corrección separada de HU-019, revisión y merge.

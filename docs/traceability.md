@@ -45,9 +45,17 @@ sus commits desde `refs/pull/89/head` y los integra a `main` sin reescribirlos.
 
 | HU | Issue | SDD | Criterios | BDD | Tests | Código | PR | Evidencia TDD |
 |---|---|---|---|---|---|---|---|---|
+| HU-021 | [#30](https://github.com/FaustinoDuran/seguimiento-medicion/issues/30) | [SDD](sdd/HU-021-reporte-proyecto-sprint.md) | AC-021-01 a AC-021-14 | [feature](../features/HU-021-reporte-proyecto-sprint.feature) | `backend/internal/reports/{service,handler,repository_postgres}_test.go`; `frontend/src/features/reports/Report.test.tsx`; suite Go con PostgreSQL y `-race`, vet, 86 tests frontend con cobertura, build y lint | `backend/internal/reports/`; `frontend/src/features/reports/`; bootstrap y navegación | Pendiente; se prepara como borrador por BUG de HU-019 | Spec `f95cea2`; proyecto RED `43964f1` → GREEN `e3c7cd1`; alcance RED `9e6ab2e` → GREEN `79dacdf`; validación RED `33ea72e` → GREEN `9f19640`; HTTP RED `ca2dc26` → GREEN `ac460f5`; PostgreSQL RED `1bcb279` → GREEN `b0d3a4d`; UI RED `6b779aa` → GREEN `b6fdae6`; selector RED `cfa5aa0` → GREEN `45a0969`; errores UI RED `c1631eb` → GREEN `faf3086`; concurrencia `ebfcbed` |
 | HU-020 | [#29](https://github.com/FaustinoDuran/seguimiento-medicion/issues/29) | [SDD](sdd/HU-020-dashboard.md) | AC-020-01 a AC-020-06 | [feature](../features/HU-020-dashboard.feature) | `npm test` y `npm run lint` en `frontend/`; estado, métricas de la API, gráfico, vacío y reintento | `frontend/src/features/metrics/`; enlace en `ProjectDetailPage.tsx`; ruta en `App.tsx` | [#91](https://github.com/FaustinoDuran/seguimiento-medicion/pull/91) | Spec `5d8943f` → RED `1966f7c` → GREEN `b37c029`. Sin cambios Go: las reglas siguen en HU-019 |
 
 HU-020 está en revisión. React solo presenta la API ya mergeada de HU-019.
+
+HU-021 está implementada y verificada localmente, pendiente de revisión e
+integración. Reutiliza `metrics.Service` sobre el catálogo detallado de la misma
+lectura. La aceptación integrada con `/metrics` de Sprint espera la corrección
+separada de la omisión de `resolution_sprint_id` en HU-019; la creación de la
+issue BUG fue rechazada por permisos de la integración GitHub. No se declara
+la HU Done ni se modifica HU-019 dentro de este cambio.
 
 ## Corrección del estado de integración
 
