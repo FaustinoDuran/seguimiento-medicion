@@ -106,9 +106,20 @@ func TestReportRejectsInvalidAndForeignScope(t *testing.T) {
 	}{
 		{name: "invalid project", projectID: 0, want: reports.ErrInvalidID},
 		{name: "invalid sprint", projectID: 1, sprintID: -1, want: reports.ErrInvalidID},
-		{name: "missing project", projectID: 1, repo: memoryRepository{err: reports.ErrProjectNotFound}, want: reports.ErrProjectNotFound},
-		{name: "foreign project", projectID: 1, repo: memoryRepository{source: reports.Source{Project: reports.Project{ID: 2}}}, want: reports.ErrProjectNotFound},
-		{name: "missing sprint", projectID: 1, sprintID: 7, repo: memoryRepository{source: reports.Source{Project: reports.Project{ID: 1}}}, want: reports.ErrSprintNotFound},
+		{
+			name: "missing project", projectID: 1,
+			repo: memoryRepository{err: reports.ErrProjectNotFound}, want: reports.ErrProjectNotFound,
+		},
+		{
+			name: "foreign project", projectID: 1,
+			repo: memoryRepository{source: reports.Source{Project: reports.Project{ID: 2}}},
+			want: reports.ErrProjectNotFound,
+		},
+		{
+			name: "missing sprint", projectID: 1, sprintID: 7,
+			repo: memoryRepository{source: reports.Source{Project: reports.Project{ID: 1}}},
+			want: reports.ErrSprintNotFound,
+		},
 		{name: "load failure", projectID: 1, repo: memoryRepository{err: unavailable}, want: unavailable},
 	}
 	for _, tc := range cases {

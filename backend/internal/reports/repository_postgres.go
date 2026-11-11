@@ -52,7 +52,9 @@ func (r *PostgresRepository) LoadProject(ctx context.Context, projectID int64) (
 }
 
 func loadSprints(ctx context.Context, tx pgx.Tx, projectID int64) ([]Sprint, error) {
-	rows, err := tx.Query(ctx, `SELECT id, project_id, goal, status, created_at FROM sprints WHERE project_id = $1`, projectID)
+	rows, err := tx.Query(ctx, `
+ SELECT id, project_id, goal, status, created_at
+ FROM sprints WHERE project_id = $1`, projectID)
 	if err != nil {
 		return nil, err
 	}

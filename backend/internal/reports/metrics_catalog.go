@@ -2,6 +2,7 @@ package reports
 
 import (
 	"context"
+
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/metrics"
 )
 
@@ -23,7 +24,9 @@ func (c sourceCatalog) Load(context.Context, int64) (metrics.Snapshot, error) {
 		Effort: []metrics.Effort{}, Defects: []metrics.Defect{},
 	}
 	for _, sprint := range c.source.Sprints {
-		snapshot.Sprints = append(snapshot.Sprints, metrics.Sprint{ID: sprint.ID, ProjectID: sprint.ProjectID, Status: sprint.Status})
+		snapshot.Sprints = append(snapshot.Sprints, metrics.Sprint{
+			ID: sprint.ID, ProjectID: sprint.ProjectID, Status: sprint.Status,
+		})
 	}
 	for _, story := range c.source.Stories {
 		snapshot.Stories = append(snapshot.Stories, metrics.Story{

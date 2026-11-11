@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -63,7 +64,8 @@ func postgresTestPool(t *testing.T) *pgxpool.Pool {
 		url = os.Getenv("DATABASE_URL")
 	}
 	if url == "" {
-		t.Skip("REPORTS_TEST_DATABASE_URL, BACKLOG_TEST_DATABASE_URL or DATABASE_URL is required for PostgreSQL integration tests")
+		t.Skip("PostgreSQL integration tests require REPORTS_TEST_DATABASE_URL, " +
+			"BACKLOG_TEST_DATABASE_URL or DATABASE_URL")
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
@@ -121,7 +123,8 @@ func createProject(t *testing.T, router http.Handler, name string) int64 {
 
 func createMember(t *testing.T, router http.Handler, projectID int64, name string) int64 {
 	t.Helper()
-	return decodeID(t, postJSON(t, router, fmt.Sprintf("/projects/%d/members", projectID), fmt.Sprintf(`{"name":%q}`, name)))
+	path := fmt.Sprintf("/projects/%d/members", projectID)
+	return decodeID(t, postJSON(t, router, path, fmt.Sprintf(`{"name":%q}`, name)))
 }
 
 func createStory(t *testing.T, router http.Handler, projectID int64, identifier string, points int64) int64 {
@@ -133,7 +136,8 @@ func createStory(t *testing.T, router http.Handler, projectID int64, identifier 
 
 func createSprint(t *testing.T, router http.Handler, projectID int64, goal string) int64 {
 	t.Helper()
-	return decodeID(t, postJSON(t, router, fmt.Sprintf("/projects/%d/sprints", projectID), fmt.Sprintf(`{"goal":%q}`, goal)))
+	path := fmt.Sprintf("/projects/%d/sprints", projectID)
+	return decodeID(t, postJSON(t, router, path, fmt.Sprintf(`{"goal":%q}`, goal)))
 }
 
 func assignStory(t *testing.T, router http.Handler, sprintID, storyID int64) {
@@ -275,7 +279,10 @@ func TestPostgresReportReadsCurrentProjectAndSprintData(t *testing.T) {
 	}
 	firstPath := fmt.Sprintf("/projects/%d/sprints/%d/report", project, first)
 	firstReport := read(firstPath)
-	if len(firstReport.Stories) != 1 || firstReport.Metrics.ActualHours != 1.5 || firstReport.Metrics.CompletedStoryPoints != 8 {
+	wrongStoryCount := len(firstReport.Stories) != 1
+	wrongHours := firstReport.Metrics.ActualHours != 1.5
+	wrongPoints := firstReport.Metrics.CompletedStoryPoints != 8
+	if wrongStoryCount || wrongHours || wrongPoints {
 		t.Fatalf("first sprint: %+v", firstReport)
 	}
 	secondReport := read(fmt.Sprintf("/projects/%d/sprints/%d/report", project, second))
@@ -296,7 +303,61 @@ func TestPostgresReportReadsCurrentProjectAndSprintData(t *testing.T) {
 	}
 	empty := createProject(t, router, "Vacío")
 	emptyReport := read(fmt.Sprintf("/projects/%d/report", empty))
-	if emptyReport.Stories == nil || emptyReport.Effort == nil || emptyReport.Defects == nil || emptyReport.AvailableSprints == nil {
+	missingDetails := emptyReport.Stories == nil || emptyReport.Effort == nil
+	missingMetadata := emptyReport.Defects == nil || emptyReport.AvailableSprints == nil
+	if missingDetails || missingMetadata {
 		t.Fatal("empty collections must be arrays")
+	}
+}
+
+func TestPostgresReportRemainsConsistentDuringEffortWrites(t *testing.T) {
+	pool := postgresTestPool(t)
+	router := mountedRouter(t, pool)
+	project := createProject(t, router, "Lectura coherente")
+	member := createMember(t, router, project, "Ignacio")
+	story := createStory(t, router, project, "HU-A", 5)
+	effortPath := fmt.Sprintf("/projects/%d/stories/%d/effort", project, story)
+	effortBody := fmt.Sprintf(`{"member_id":%d,"date":"2026-11-10","activity":"Avanzar","hours":0.01}`, member)
+	reportPath := fmt.Sprintf("/projects/%d/report", project)
+	start := make(chan struct{})
+	done := make(chan error, 1)
+	go func() {
+		<-start
+		for range 30 {
+			response := httptest.NewRecorder()
+			router.ServeHTTP(response, httptest.NewRequest(http.MethodPost, effortPath, strings.NewReader(effortBody)))
+			if response.Code != 201 {
+				done <- fmt.Errorf("effort write: %d %s", response.Code, response.Body.String())
+				return
+			}
+		}
+		done <- nil
+	}()
+	close(start)
+	// Join the writer before the pool/schema cleanup even if a report assertion fails.
+	defer func() {
+		if err := <-done; err != nil {
+			t.Error(err)
+		}
+	}()
+	for range 30 {
+		response := getJSON(t, router, reportPath)
+		if response.Code != 200 {
+			t.Fatalf("report: %d %s", response.Code, response.Body.String())
+		}
+		var report struct {
+			Effort  []json.RawMessage `json:"effort"`
+			Metrics struct {
+				ActualHours float64 `json:"actual_hours"`
+			} `json:"metrics"`
+		}
+		if err := json.Unmarshal(response.Body.Bytes(), &report); err != nil {
+			t.Fatal(err)
+		}
+		// Each committed activity contributes exactly 0.01 hours, so either side of
+		// a concurrent write is valid, but the count and total must agree.
+		if math.Abs(report.Metrics.ActualHours-float64(len(report.Effort))/100) > 0.000001 {
+			t.Fatalf("detail has %d entries of 0.01 h but metrics have %v h", len(report.Effort), report.Metrics.ActualHours)
+		}
 	}
 }
