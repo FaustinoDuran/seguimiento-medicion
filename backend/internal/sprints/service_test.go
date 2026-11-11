@@ -71,6 +71,17 @@ func (r *memoryRepository) Update(_ context.Context, sprint Sprint) (Sprint, err
 	return sprint, nil
 }
 
+func (r *memoryRepository) ListByProject(_ context.Context, projectID int64) ([]Sprint, error) {
+	listed := make([]Sprint, 0)
+	for _, sprint := range r.items {
+		if sprint.ProjectID == projectID {
+			listed = append(listed, sprint)
+		}
+	}
+	sort.Slice(listed, func(i, j int) bool { return listed[i].ID < listed[j].ID })
+	return listed, nil
+}
+
 func (r *memoryRepository) ListClosedByProject(_ context.Context, projectID int64) ([]Sprint, error) {
 	listed := make([]Sprint, 0)
 	for _, sprint := range r.items {
