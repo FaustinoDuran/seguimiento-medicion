@@ -19,7 +19,7 @@ type Service struct{ repo Repository }
 func NewService(repo Repository) *Service { return &Service{repo: repo} }
 
 func (s *Service) ForProject(ctx context.Context, projectID int64) (Report, error) {
-	source, err := s.repo.LoadProject(ctx, projectID)
+	source, err := s.load(ctx, projectID)
 	if err != nil {
 		return Report{}, err
 	}
@@ -100,7 +100,10 @@ func metricFields(value metrics.Report) Metrics {
 }
 
 func (s *Service) ForSprint(ctx context.Context, projectID, sprintID int64) (Report, error) {
-	source, err := s.repo.LoadProject(ctx, projectID)
+	if sprintID < 1 {
+		return Report{}, ErrInvalidID
+	}
+	source, err := s.load(ctx, projectID)
 	if err != nil {
 		return Report{}, err
 	}
@@ -110,4 +113,18 @@ func (s *Service) ForSprint(ctx context.Context, projectID, sprintID int64) (Rep
 		}
 	}
 	return Report{}, ErrSprintNotFound
+}
+
+func (s *Service) load(ctx context.Context, projectID int64) (Source, error) {
+	if projectID < 1 {
+		return Source{}, ErrInvalidID
+	}
+	source, err := s.repo.LoadProject(ctx, projectID)
+	if err != nil {
+		return Source{}, err
+	}
+	if source.Project.ID != projectID {
+		return Source{}, ErrProjectNotFound
+	}
+	return source, nil
 }
