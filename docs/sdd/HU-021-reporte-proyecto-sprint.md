@@ -3,7 +3,7 @@
 - Issue: [#30](https://github.com/FaustinoDuran/seguimiento-medicion/issues/30)
 - Módulo Go: `backend/internal/reports/`
 - Presentación: `frontend/src/features/reports/`
-- Estado: implementada en `feat/HU-021-project-sprint-report`; pendiente de revisión y merge, con dependencia del PR #95
+- Estado: implementada; [PR #96 en borrador](https://github.com/FaustinoDuran/seguimiento-medicion/pull/96), con dependencia del PR #95
 - Depende de HU-019.
 
 ## Objetivo
