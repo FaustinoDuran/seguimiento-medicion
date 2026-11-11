@@ -11,6 +11,7 @@ import (
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/defects"
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/effort"
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/httpx"
+	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/metrics"
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/planningpoker"
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/platform/postgres"
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/projects"
@@ -78,6 +79,7 @@ func main() {
 			planningpoker.NewStoryEstimates(backlogRepo),
 			sprintService,
 		))
+		metrics.Mount(router, metrics.NewService(metrics.NewPostgresCatalog(pool)))
 		log.Printf("connected to postgres")
 	}
 

@@ -47,7 +47,11 @@ func TestPostgresProjectAndSprintMetrics(t *testing.T) {
 	registerEffort(t, router, other, otherStory, otherMember, "9")
 	registerDefect(t, router, other, otherStory, otherSprint)
 
-	project := decodeReport(t, getJSON(t, router, fmt.Sprintf("/projects/%d/metrics", projectID)).Body.String())
+	projectResp := getJSON(t, router, fmt.Sprintf("/projects/%d/metrics", projectID))
+	if projectResp.Code != http.StatusOK {
+		t.Fatalf("project metrics: %d %s", projectResp.Code, projectResp.Body.String())
+	}
+	project := decodeReport(t, projectResp.Body.String())
 	if project.PlannedStoryPoints != 13 || project.CompletedStoryPoints != 8 {
 		t.Fatalf("project points: %+v", project)
 	}
@@ -58,7 +62,11 @@ func TestPostgresProjectAndSprintMetrics(t *testing.T) {
 		t.Fatalf("project rest: %+v", project)
 	}
 
-	sprint := decodeReport(t, getJSON(t, router, fmt.Sprintf("/sprints/%d/metrics", sprintA)).Body.String())
+	sprintResp := getJSON(t, router, fmt.Sprintf("/sprints/%d/metrics", sprintA))
+	if sprintResp.Code != http.StatusOK {
+		t.Fatalf("sprint metrics: %d %s", sprintResp.Code, sprintResp.Body.String())
+	}
+	sprint := decodeReport(t, sprintResp.Body.String())
 	if sprint.SprintID == nil || *sprint.SprintID != sprintA || sprint.PlannedStoryPoints != 8 {
 		t.Fatalf("sprint: %+v", sprint)
 	}
