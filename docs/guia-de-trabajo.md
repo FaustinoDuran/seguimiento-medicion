@@ -143,6 +143,8 @@ rutas a Issue, SDD, criterios, BDD, tests, código, PR y commits RED/GREEN/REFAC
 ### Paso 6 — Pull Request
 
 Abrir PR usando `.github/pull_request_template.md` y escribir `Closes #37`.
+Todos los PR deben compararse contra `main`, incluso cuando tengan dependencias
+en otros PR. No usar una rama de funcionalidad o de corrección como base.
 Mover la Issue a `In review`.
 
 Otra persona revisa:

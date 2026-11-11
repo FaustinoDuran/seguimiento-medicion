@@ -15,6 +15,7 @@ import (
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/planningpoker"
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/platform/postgres"
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/projects"
+	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/reports"
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/sprints"
 )
 
@@ -85,6 +86,7 @@ func main() {
 			sprintService,
 		))
 		metrics.Mount(router, metrics.NewService(metrics.NewPostgresCatalog(pool)))
+		reports.Mount(router, reports.NewService(reports.NewPostgresRepository(pool)))
 		log.Printf("connected to postgres")
 	}
 

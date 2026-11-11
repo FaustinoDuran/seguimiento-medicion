@@ -47,10 +47,20 @@ commits desde `refs/pull/89/head` y los integró a `main` sin reescribirlos
 
 | HU | Issue | SDD | Criterios | BDD | Tests | Código | PR | Evidencia TDD |
 |---|---|---|---|---|---|---|---|---|
+| HU-021 | [#30](https://github.com/FaustinoDuran/seguimiento-medicion/issues/30) | [SDD](sdd/HU-021-reporte-proyecto-sprint.md) | AC-021-01 a AC-021-14 | [feature](../features/HU-021-reporte-proyecto-sprint.feature) | `backend/internal/reports/{service,handler,repository_postgres}_test.go`; `frontend/src/features/reports/Report.test.tsx`; suite Go con PostgreSQL y `-race`, vet, 86 tests frontend con cobertura, build y lint | `backend/internal/reports/`; `frontend/src/features/reports/`; bootstrap y navegación | [#96 contra main](https://github.com/FaustinoDuran/seguimiento-medicion/pull/96); #95 mergeado | Spec `f95cea2`; proyecto RED `43964f1` → GREEN `e3c7cd1`; alcance RED `9e6ab2e` → GREEN `79dacdf`; validación RED `33ea72e` → GREEN `9f19640`; HTTP RED `ca2dc26` → GREEN `ac460f5`; PostgreSQL RED `1bcb279` → GREEN `b0d3a4d`; UI RED `6b779aa` → GREEN `b6fdae6`; selector RED `cfa5aa0` → GREEN `45a0969`; errores UI RED `c1631eb` → GREEN `faf3086`; concurrencia `ebfcbed`; integración RED `f4fb81f` → GREEN `a19ba5d`; main actualizado RED `128b74f` → GREEN `05aa46d` |
 | HU-020 | [#29](https://github.com/FaustinoDuran/seguimiento-medicion/issues/29) | [SDD](sdd/HU-020-dashboard.md) | AC-020-01 a AC-020-06 | [feature](../features/HU-020-dashboard.feature) | `npm test` y `npm run lint` en `frontend/`; estado, métricas de la API, gráfico, vacío y reintento | `frontend/src/features/metrics/`; enlace en `ProjectDetailPage.tsx`; ruta en `App.tsx` | [#91](https://github.com/FaustinoDuran/seguimiento-medicion/pull/91) | Spec `5d8943f` → RED `1966f7c` → GREEN `b37c029`. Sin cambios Go: las reglas siguen en HU-019 |
 | HU-030 | [#85](https://github.com/FaustinoDuran/seguimiento-medicion/issues/85) | [SDD](sdd/HU-030-ui-esfuerzo-defectos.md) | AC-030-01 a AC-030-08 | [feature](../features/HU-030-ui-esfuerzo-defectos.feature) | Backend: `sprints` y `defects` con servicio, HTTP y PostgreSQL. UI: `Measurement.test.tsx`; altas, resolución, errores en español, estados vacíos y reintento | `backend/internal/sprints/` y `backend/internal/defects/`; `frontend/src/features/measurement/`, `features/effort/` y `features/defects/`; ruta en `App.tsx` | [#93](https://github.com/FaustinoDuran/seguimiento-medicion/pull/93) | Spec `9f028c8`; sprints RED `86828cc` → GREEN `4465c75`; defectos RED `8470894` → GREEN `c682d95`; UI RED `e5710a5` → GREEN `62c815a` |
 
 HU-020 está en revisión. React solo presenta la API ya mergeada de HU-019.
+
+HU-021 está implementada y verificada localmente, pendiente de revisión e
+integración. Reutiliza `metrics.Service` sobre los datos detallados de una
+misma lectura. BUG-001 (#94, PR #95) corrige la omisión de la referencia de
+resolución en la consulta de HU-019; el test de integración contrasta ambos
+endpoints y pasa con esa dependencia incorporada. El PR #95 ya está mergeado
+en `main`. El PR #96 se compara directamente contra `main` y su diff contiene
+únicamente el reporte. Todos los PR del repositorio deben usar `main` como
+base. La HU aún no está Done.
 
 ## Corrección del estado de integración
 

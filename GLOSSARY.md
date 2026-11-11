@@ -68,3 +68,11 @@ _Evitar_: Historia completada, Sprint cerrado.
 **Sprint de resolución**:
 Sprint en el que se corrigió un defecto, indicado explícitamente al resolverlo. Pertenece al proyecto del defecto y puede coincidir o diferir del Sprint de detección y del asignado a la historia.
 _Evitar_: Sprint de detección, Sprint actual.
+
+**Reporte de proyecto o Sprint**:
+Informe de las historias, estimaciones, esfuerzo, métricas y defectos de un proyecto o Sprint con los datos vigentes al consultarlo. Incluye todas las historias del proyecto o las asignadas al Sprint elegido.
+_Evitar_: Copia histórica inmutable, reporte congelado al cierre.
+
+**Defecto del reporte de Sprint**:
+Defecto detectado o resuelto en el Sprint consultado, aunque su historia esté asignada a otro Sprint. Si se detectó y resolvió en el mismo Sprint, es un único defecto del reporte.
+_Evitar_: Defecto de una historia asignada al Sprint como único criterio de inclusión.
