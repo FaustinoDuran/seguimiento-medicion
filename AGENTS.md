@@ -4,6 +4,8 @@ Repo del TP Integrador: estimación, seguimiento y métricas de proyectos de sof
 
 Antes de codear leé `docs/guia-de-trabajo.md`. Convenciones duras también están en `.cursor/rules/`.
 
+Skills de agente (TASK-012): `.cursor/skills/pre-commit/` antes de implementar o commitear, y `.cursor/skills/plan-de-accion/` cuando el pedido es un ticket. Hook mecánico: `.cursor/hooks.json` (commit/push).
+
 ## Stack (no cambiar sin ADR)
 
 - Backend: Go 1.24, chi, pgx v5.7.x, PostgreSQL.
