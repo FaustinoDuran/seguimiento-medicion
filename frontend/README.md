@@ -187,3 +187,30 @@ Verificación de HU-026, cuando esté disponible el contrato de listado:
 6. Comprobar fallos de conexión: el alta no confirmada sugiere revisar el listado
    antes de reenviar. Cambiar de proyecto no conserva el borrador anterior.
 7. Revisar la pantalla en móvil y escritorio y navegar con teclado.
+
+## Matriz de escenarios: UI de esfuerzo y defectos
+
+Corresponde a HU-030 (#85) y a los escenarios de
+`features/HU-030-ui-esfuerzo-defectos.feature`. HTTP está simulado con MSW:
+estas pruebas **no** demuestran la aceptación integrada con Go y PostgreSQL.
+
+| AC | Escenario | Test | Archivo |
+| --- | --- | --- | --- |
+| AC-030-01 | Alta de esfuerzo con integrante, fecha, actividad y horas | registra esfuerzo con integrante, fecha, actividad y horas | `Measurement.test.tsx` |
+| AC-030-04 | Horas rechazadas por Go | muestra en español el rechazo de las horas y conserva los datos | ídem |
+| AC-030-02 | Alta de defecto abierto y visible en la lista | registra un defecto y lo muestra abierto en la lista | ídem |
+| AC-030-04 | Descripción rechazada por Go | muestra en español el rechazo de la descripción | ídem |
+| AC-030-03 | Resolver un defecto abierto | resuelve un defecto con su sprint de resolución | ídem |
+| AC-030-04 | Conflicto al resolver | muestra en español el conflicto al resolver | ídem |
+| AC-030-05 | Sprints abiertos y cerrados para elegir | ofrece los sprints abiertos y cerrados del proyecto | ídem |
+| AC-030-06 | Proyecto sin defectos | muestra el estado vacío cuando no hay defectos | ídem |
+| AC-030-07 | Fallo de carga de defectos y reintento | un fallo al cargar defectos se avisa y no se muestra como vacío | ídem |
+| AC-030-07 | Faltan integrante o historia | no envía el esfuerzo sin integrante ni historia | ídem |
+| AC-030-08 | Sin cálculo de métricas en React | no calcula horas ni desviaciones en la pantalla | ídem |
+| — | Entrada desde el detalle del proyecto | muestra el enlace desde el detalle del proyecto | ídem |
+
+### Pendiente de la UI de esfuerzo y defectos
+
+- Aceptación integrada con Go y PostgreSQL: las pruebas usan HTTP simulado.
+- `GET /projects/{id}/sprints` y `GET /projects/{id}/defects` los agrega esta HU
+  en Go; el resto de la API viene de HU-016, HU-017 y HU-018.

@@ -38,14 +38,16 @@ HU-019 por `09a8f8a` (PR #90). Sus filas conservan la evidencia original de veri
 
 HU-018 (issue [#27](https://github.com/FaustinoDuran/seguimiento-medicion/issues/27))
 se mergeó como PR [#89](https://github.com/FaustinoDuran/seguimiento-medicion/pull/89)
-contra `feat/HU-017-register-defect` y quedó fuera de `main`. Este PR recupera
-sus commits desde `refs/pull/89/head` y los integra a `main` sin reescribirlos.
+contra `feat/HU-017-register-defect` y quedó fuera de `main`. El PR
+[#92](https://github.com/FaustinoDuran/seguimiento-medicion/pull/92) recupera sus
+commits desde `refs/pull/89/head` y los integra a `main` sin reescribirlos.
 
 ## HU en desarrollo o revisión
 
 | HU | Issue | SDD | Criterios | BDD | Tests | Código | PR | Evidencia TDD |
 |---|---|---|---|---|---|---|---|---|
 | HU-020 | [#29](https://github.com/FaustinoDuran/seguimiento-medicion/issues/29) | [SDD](sdd/HU-020-dashboard.md) | AC-020-01 a AC-020-06 | [feature](../features/HU-020-dashboard.feature) | `npm test` y `npm run lint` en `frontend/`; estado, métricas de la API, gráfico, vacío y reintento | `frontend/src/features/metrics/`; enlace en `ProjectDetailPage.tsx`; ruta en `App.tsx` | [#91](https://github.com/FaustinoDuran/seguimiento-medicion/pull/91) | Spec `5d8943f` → RED `1966f7c` → GREEN `b37c029`. Sin cambios Go: las reglas siguen en HU-019 |
+| HU-030 | [#85](https://github.com/FaustinoDuran/seguimiento-medicion/issues/85) | [SDD](sdd/HU-030-ui-esfuerzo-defectos.md) | AC-030-01 a AC-030-08 | [feature](../features/HU-030-ui-esfuerzo-defectos.feature) | Backend: `sprints` y `defects` con servicio, HTTP y PostgreSQL. UI: `Measurement.test.tsx`; altas, resolución, errores en español, estados vacíos y reintento | `backend/internal/sprints/` y `backend/internal/defects/`; `frontend/src/features/measurement/`, `features/effort/` y `features/defects/`; ruta en `App.tsx` | Pendiente | Spec `762f853`; sprints RED `b95da65` → GREEN `dadd52a`; defectos RED `f3b352b` → GREEN `1de1b5c`; UI RED `12c473b` → GREEN `1f1cfc5` |
 
 HU-020 está en revisión. React solo presenta la API ya mergeada de HU-019.
 
