@@ -68,6 +68,10 @@ func main() {
 			defects.NewStoryLookup(backlogRepo),
 			defects.NewSprintLookup(sprintService),
 		))
+		defects.MountResolution(router, defects.NewResolutionService(
+			defects.NewPostgresRepository(pool),
+			defects.NewResolutionSprintLookup(sprintService),
+		))
 		pokerService := planningpoker.NewService(
 			planningpoker.NewPostgresRepository(pool),
 			planningpoker.NewStoryLookup(backlogRepo),

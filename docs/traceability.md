@@ -28,6 +28,7 @@ Completar una fila por cada HU mergeada. La demo final se apoya en esta tabla.
 | HU-016 | [#25](https://github.com/FaustinoDuran/seguimiento-medicion/issues/25) | [SDD](sdd/HU-016-registrar-esfuerzo.md) | AC-016-01 a AC-016-08 | [feature](../features/HU-016-registrar-esfuerzo.feature) | `go test -count=1 -race ./internal/effort/` y `go test -count=1 -race ./...` con PostgreSQL local; servicio, HTTP y persistencia, incluida una historia completada | `backend/internal/effort/`; migración `008`; bootstrap en `backend/cmd/api/main.go` | [#87](https://github.com/FaustinoDuran/seguimiento-medicion/pull/87) | `docs(#25)` `b251bf7` → RED `b57c58a` → GREEN `55a1939` → RED `091a655` → GREEN `d6f0159` → RED `b2f8ee2` → GREEN `6e56750`. Merge `e6acb14` |
 | HU-017 | [#26](https://github.com/FaustinoDuran/seguimiento-medicion/issues/26) | [SDD](sdd/HU-017-registrar-defecto.md) | AC-017-01 a AC-017-10 | [feature](../features/HU-017-registrar-defecto.feature) | `backend/internal/defects/{service,handler,repository_postgres}_test.go`; `go test -count=1 -race ./...` con PostgreSQL local y `go vet ./...` | `backend/internal/defects/`; migración `009`; bootstrap API | [#88](https://github.com/FaustinoDuran/seguimiento-medicion/pull/88) | Spec `b17596f`; alta/consulta RED `7f040e6` → GREEN `3063d50`; descripción RED `1cc5b36` → GREEN `4db67eb`; clasificación RED `c2d68de` → GREEN `1e3932d`; referencias RED `6404a54` → GREEN `b6c3c7f`; HTTP RED `133531c` → GREEN `ade9ffa`; errores HTTP RED `c4cafba` → GREEN `57dd64e`; PostgreSQL RED `35767ab` → GREEN `6f7868b`; regresión de estados y aislamiento `4af4baf`. Merge `3ee6a0f` |
 | HU-019 | [#28](https://github.com/FaustinoDuran/seguimiento-medicion/issues/28) | [SDD](sdd/HU-019-consultar-metricas.md) | AC-019-01 a AC-019-10 | [feature](../features/HU-019-consultar-metricas.feature) | `backend/internal/metrics/{service,handler,repository_postgres}_test.go`; `go test -count=1 ./internal/metrics/` con PostgreSQL local | `backend/internal/metrics/`; bootstrap en `backend/cmd/api/main.go` | [#90](https://github.com/FaustinoDuran/seguimiento-medicion/pull/90) | Spec `e25cf27`; servicio RED `d329143` → GREEN `124b92e`; HTTP RED `01fc322` → GREEN `12f68a9`; PostgreSQL RED `d318a60` → GREEN `1465af4`. Merge `09a8f8a` |
+| HU-018 | [#27](https://github.com/FaustinoDuran/seguimiento-medicion/issues/27) | [SDD](sdd/HU-018-resolver-defecto.md) | AC-018-01 a AC-018-09 | [feature](../features/HU-018-resolver-defecto.feature) | `backend/internal/defects/resolve_{service,handler,postgres}_test.go`; suite completa con PostgreSQL y `-race`; `go vet ./...` | `backend/internal/defects/`; migración `010`; bootstrap API | [#89](https://github.com/FaustinoDuran/seguimiento-medicion/pull/89) recuperado en la rama `feat/HU-018-resolver-defecto` | Spec `5219edf`; resolución RED `94afdbb` → GREEN `978efa0`; orden/proyecto RED `c46318f` → GREEN `8223117`; reintentos RED `6e8b3a1` → GREEN `cc0983b`; HTTP RED `dd85cf9` → GREEN `4e0932a`; errores RED `89e24fe` → GREEN `de70a90`; PostgreSQL RED `beef637` → GREEN `fbfa8fc`; concurrencia RED `1f6d0cd` → GREEN `fa9b416`; migración/atomicidad `4219c5d` |
 
 HU-001 a HU-011 están mergeadas en `main`. HU-023 agrega `GET /projects`.
 HU-013 está integrada por el merge `88f30c4` (PR #78), HU-015 por
@@ -35,10 +36,10 @@ HU-013 está integrada por el merge `88f30c4` (PR #78), HU-015 por
 (PR #81), HU-016 por `e6acb14` (PR #87), HU-017 por `3ee6a0f` (PR #88) y
 HU-019 por `09a8f8a` (PR #90). Sus filas conservan la evidencia original de verificación.
 
-HU-018 (issue [#27](https://github.com/FaustinoDuran/seguimiento-medicion/issues/27),
-PR [#89](https://github.com/FaustinoDuran/seguimiento-medicion/pull/89)) quedó
-cerrada al mergear contra `feat/HU-017-register-defect`, no contra `main`. No
-entra a esta tabla hasta que la resolución esté en `main`.
+HU-018 (issue [#27](https://github.com/FaustinoDuran/seguimiento-medicion/issues/27))
+se mergeó como PR [#89](https://github.com/FaustinoDuran/seguimiento-medicion/pull/89)
+contra `feat/HU-017-register-defect` y quedó fuera de `main`. Este PR recupera
+sus commits desde `refs/pull/89/head` y los integra a `main` sin reescribirlos.
 
 ## HU en desarrollo o revisión
 

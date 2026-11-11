@@ -151,6 +151,30 @@ Repetir el alta crea otro defecto. La consulta devuelve `200`; los datos
 inválidos devuelven `400`, los recursos inexistentes o ajenos `404`, y los
 fallos internos `500` genérico. La resolución corresponde a HU-018 y la UI a HU-030.
 
+## Resolución de defectos
+
+HU-018 agrega resolución y consulta del Sprint donde se corrigió el defecto:
+
+```bash
+curl -s -X POST http://localhost:8080/projects/1/defects/17/resolve \
+  -H 'Content-Type: application/json' \
+  -d '{"resolution_sprint_id":3}'
+
+curl -s http://localhost:8080/projects/1/defects/17
+```
+
+Devuelve `200` con estado `resolved` y `resolution_sprint_id`. En defectos
+abiertos ese campo es `null`. El Sprint debe pertenecer al proyecto y ser el
+de detección o uno posterior según orden de creación (`created_at`, luego
+`id`), siguiendo HU-011; ese orden no es un calendario de ejecución.
+Se admiten proyectos/Sprints cerrados e historias completadas o sin Sprint.
+
+Repetir la misma resolución devuelve éxito. Elegir un Sprint anterior o
+cambiar el Sprint de un defecto ya resuelto devuelve `409`, sin modificarlo.
+Las solicitudes concurrentes conservan la primera resolución guardada;
+si ambas indican el mismo Sprint, ambas pueden devolver éxito. La descripción,
+severidad, historia y Sprint de detección se conservan. No se agrega reapertura.
+
 ## Verificación del backend
 
 HU-028 agrega `GET /projects/{project_id}/stories`: devuelve
