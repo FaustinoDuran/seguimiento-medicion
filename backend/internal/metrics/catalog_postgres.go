@@ -159,7 +159,7 @@ func (c *PostgresCatalog) loadEffort(ctx context.Context, projectID int64) ([]Ef
 
 func (c *PostgresCatalog) loadDefects(ctx context.Context, projectID int64) ([]Defect, error) {
 	rows, err := c.pool.Query(ctx, `
-		SELECT project_id, status, detection_sprint_id
+		SELECT project_id, status, detection_sprint_id, resolution_sprint_id
 		FROM defects
 		WHERE project_id = $1`, projectID)
 	if err != nil {
@@ -169,7 +169,9 @@ func (c *PostgresCatalog) loadDefects(ctx context.Context, projectID int64) ([]D
 	listed := make([]Defect, 0)
 	for rows.Next() {
 		var defect Defect
-		if err := rows.Scan(&defect.ProjectID, &defect.Status, &defect.DetectionSprintID); err != nil {
+		if err := rows.Scan(
+			&defect.ProjectID, &defect.Status, &defect.DetectionSprintID, &defect.ResolutionSprintID,
+		); err != nil {
 			return nil, err
 		}
 		listed = append(listed, defect)
