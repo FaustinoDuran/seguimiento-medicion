@@ -15,6 +15,7 @@ import (
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/backlog"
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/defects"
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/effort"
+	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/metrics"
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/projects"
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/reports"
 	"github.com/FaustinoDuran/seguimiento-medicion/backend/internal/sprints"
@@ -50,6 +51,7 @@ func mountedRouter(t *testing.T, pool *pgxpool.Pool) http.Handler {
 	defects.MountResolution(router, defects.NewResolutionService(
 		defects.NewPostgresRepository(pool), defects.NewResolutionSprintLookup(sprintService),
 	))
+	metrics.Mount(router, metrics.NewService(metrics.NewPostgresCatalog(pool)))
 	reports.Mount(router, reports.NewService(reports.NewPostgresRepository(pool)))
 	return router
 }
@@ -288,6 +290,21 @@ func TestPostgresReportReadsCurrentProjectAndSprintData(t *testing.T) {
 	secondReport := read(fmt.Sprintf("/projects/%d/sprints/%d/report", project, second))
 	if len(secondReport.Stories) != 0 || len(secondReport.Defects) != 1 || secondReport.Metrics.DefectsResolved != 1 {
 		t.Fatalf("resolution scope: %+v", secondReport)
+	}
+	// The report and the existing metrics endpoint must agree on persisted resolutions.
+	metricsResponse := getJSON(t, router, fmt.Sprintf("/sprints/%d/metrics", second))
+	if metricsResponse.Code != 200 {
+		t.Fatalf("metrics: %s", metricsResponse.Body.String())
+	}
+	var endpointMetrics struct {
+		DefectsResolved int64 `json:"defects_resolved"`
+	}
+	if err := json.Unmarshal(metricsResponse.Body.Bytes(), &endpointMetrics); err != nil {
+		t.Fatal(err)
+	}
+	if endpointMetrics.DefectsResolved != secondReport.Metrics.DefectsResolved {
+		t.Fatalf("metrics endpoint has %d resolved defects; report has %d",
+			endpointMetrics.DefectsResolved, secondReport.Metrics.DefectsResolved)
 	}
 	if secondReport.Defects[0].StoryIdentifier != "HU-A" || secondReport.Defects[0].StoryTitle != "HU-A" {
 		t.Fatalf("external story reference: %+v", secondReport.Defects)
