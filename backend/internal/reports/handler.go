@@ -3,6 +3,7 @@ package reports
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -13,8 +14,10 @@ type Handler struct{ service *Service }
 
 func NewHandler(service *Service) *Handler { return &Handler{service: service} }
 
-func (h *Handler) Project(w http.ResponseWriter, r *http.Request) { h.serve(w, r, false) }
-func (h *Handler) Sprint(w http.ResponseWriter, r *http.Request)  { h.serve(w, r, true) }
+func (h *Handler) Project(w http.ResponseWriter, r *http.Request)    { h.serve(w, r, false) }
+func (h *Handler) Sprint(w http.ResponseWriter, r *http.Request)     { h.serve(w, r, true) }
+func (h *Handler) ProjectPDF(w http.ResponseWriter, r *http.Request) { h.servePDF(w, r, false) }
+func (h *Handler) SprintPDF(w http.ResponseWriter, r *http.Request)  { h.servePDF(w, r, true) }
 
 func (h *Handler) serve(w http.ResponseWriter, r *http.Request, bySprint bool) {
 	projectID, err := parseID(r, "project_id")
@@ -34,17 +37,57 @@ func (h *Handler) serve(w http.ResponseWriter, r *http.Request, bySprint bool) {
 		report, err = h.service.ForProject(r.Context(), projectID)
 	}
 	if err != nil {
-		switch {
-		case errors.Is(err, ErrProjectNotFound), errors.Is(err, ErrSprintNotFound):
-			writeError(w, http.StatusNotFound, err.Error())
-		case errors.Is(err, ErrInvalidID):
-			writeError(w, http.StatusBadRequest, err.Error())
-		default:
-			writeError(w, http.StatusInternalServerError, "internal error")
-		}
+		writeServiceError(w, err)
 		return
 	}
 	writeJSON(w, http.StatusOK, report)
+}
+
+var renderReportPDF = RenderPDF
+
+func (h *Handler) servePDF(w http.ResponseWriter, r *http.Request, bySprint bool) {
+	projectID, err := parseID(r, "project_id")
+	if err != nil {
+		writeError(w, http.StatusBadRequest, ErrInvalidID.Error())
+		return
+	}
+	var report Report
+	filename := fmt.Sprintf("reporte-proyecto-%d.pdf", projectID)
+	if bySprint {
+		sprintID, parseErr := parseID(r, "sprint_id")
+		if parseErr != nil {
+			writeError(w, http.StatusBadRequest, ErrInvalidID.Error())
+			return
+		}
+		report, err = h.service.ForSprint(r.Context(), projectID, sprintID)
+		filename = fmt.Sprintf("reporte-proyecto-%d-sprint-%d.pdf", projectID, sprintID)
+	} else {
+		report, err = h.service.ForProject(r.Context(), projectID)
+	}
+	if err != nil {
+		writeServiceError(w, err)
+		return
+	}
+	file, err := renderReportPDF(report)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "internal error")
+		return
+	}
+	w.Header().Set("Content-Type", "application/pdf")
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%q", filename))
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(file)
+}
+
+func writeServiceError(w http.ResponseWriter, err error) {
+	switch {
+	case errors.Is(err, ErrProjectNotFound), errors.Is(err, ErrSprintNotFound):
+		writeError(w, http.StatusNotFound, err.Error())
+	case errors.Is(err, ErrInvalidID):
+		writeError(w, http.StatusBadRequest, err.Error())
+	default:
+		writeError(w, http.StatusInternalServerError, "internal error")
+	}
 }
 
 func parseID(r *http.Request, name string) (int64, error) {

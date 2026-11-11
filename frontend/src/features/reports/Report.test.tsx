@@ -89,6 +89,7 @@ test('selecciona Sprints abiertos y cerrados y descarta una respuesta anterior',
   await user.selectOptions(selector, '2')
   await firstStarted
   expect(screen.queryByRole('table', { name: 'Historias del alcance' })).not.toBeInTheDocument()
+  expect(screen.queryByRole('link', { name: 'Exportar PDF' })).not.toBeInTheDocument()
   expect(screen.getByRole('status')).toHaveTextContent('Cargando reporte')
   await user.selectOptions(selector, '3')
   expect(await screen.findByText('No hay historias del alcance.')).toBeInTheDocument()
@@ -112,6 +113,7 @@ test('un fallo no se muestra como vacío y permite reintentar', async () => {
     : HttpResponse.json({ error: 'internal error' }, { status: 500 })))
   open('/projects/4/report')
   expect(await screen.findByRole('alert')).toHaveTextContent('No pudimos cargar el reporte')
+  expect(screen.queryByRole('link', { name: 'Exportar PDF' })).not.toBeInTheDocument()
   expect(screen.queryByRole('table')).not.toBeInTheDocument()
   expect(screen.queryByText('No hay historias del alcance.')).not.toBeInTheDocument()
   available = true
@@ -124,6 +126,7 @@ test('identifica proyecto y Sprint inexistentes', async () => {
   server.use(http.get('*/api/projects/4/report', () => HttpResponse.json({ error: 'project not found' }, { status: 404 })))
   open('/projects/4/report')
   expect(await screen.findByRole('heading', { name: 'Proyecto o Sprint no encontrado' })).toBeInTheDocument()
+  expect(screen.queryByRole('link', { name: 'Exportar PDF' })).not.toBeInTheDocument()
 })
 
 test('rechaza una respuesta parcial sin presentarla como reporte válido', async () => {
@@ -138,4 +141,18 @@ test('no muestra datos de otro proyecto aunque la respuesta tenga formato válid
   open('/projects/4/report')
   expect(await screen.findByRole('alert')).toHaveTextContent('No pudimos cargar el reporte')
   expect(screen.queryByRole('table')).not.toBeInTheDocument()
+})
+
+test('descarga el PDF del alcance que está en pantalla', async () => {
+  const user = userEvent.setup()
+  serveReport()
+  server.use(http.get('*/api/projects/4/sprints/3/report', () => HttpResponse.json({
+    ...report,
+    sprint: report.available_sprints[1],
+    metrics: { ...report.metrics, sprint_id: 3 },
+  })))
+  open('/projects/4/report')
+  expect(await screen.findByRole('link', { name: 'Exportar PDF' })).toHaveAttribute('href', '/api/projects/4/report.pdf')
+  await user.selectOptions(screen.getByRole('combobox', { name: 'Alcance del reporte' }), '3')
+  expect(await screen.findByRole('link', { name: 'Exportar PDF' })).toHaveAttribute('href', '/api/projects/4/sprints/3/report.pdf')
 })
