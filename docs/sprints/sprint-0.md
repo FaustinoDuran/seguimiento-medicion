@@ -46,7 +46,7 @@ Ese trabajo fue retirado. TASK-006 y TASK-007 lo reintrodujeron con Issue y PR.
 
 - Project: [Seguimiento y medición](https://github.com/users/FaustinoDuran/projects/3)
 - Columnas: Backlog → Sprint ready → In progress → In review → Done
-- Campo Sprint: Sprint 0–4
+- Campo Sprint: Sprint 0–5
 
 ## Issues del Sprint 0
 
