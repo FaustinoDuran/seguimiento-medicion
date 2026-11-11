@@ -57,6 +57,7 @@ function ProjectDetail({ project }: { project: Project }) {
         <Link className="text-link" to={`/projects/${project.id}/sprints`}>Sprints</Link>
         <Link className="text-link" to={`/projects/${project.id}/planning`}>Planning Poker</Link>
         <Link className="text-link" to={`/projects/${project.id}/dashboard`}>Dashboard</Link>
+        <Link className="text-link" to={`/projects/${project.id}/report`}>Reporte</Link>
       </nav>
     </>
   )

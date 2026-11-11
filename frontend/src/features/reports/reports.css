@@ -1,0 +1,28 @@
+.report-page { padding: 40px 0 72px; }
+.report-heading { padding: 36px 0 28px; border-bottom: 2px solid #183e36; }
+.report-heading h1 { font-size: clamp(38px, 5vw, 64px); }
+.report-heading .eyebrow { margin-bottom: 14px; }
+.report-context { color: #53675f; margin: 20px 0 0; }
+.report-section-title { display: flex; align-items: baseline; gap: 20px; font-size: 22px; font-weight: 500; margin: 40px 0 20px; }
+.report-section-title > span { color: #a44721; font-size: 12px; letter-spacing: .12em; }
+.report-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; border-top: 1px solid #183e3633; }
+.report-metrics > div { padding: 22px 20px 22px 0; border-bottom: 1px solid #183e3633; }
+.report-metrics dt { color: #53675f; font-size: 12px; }
+.report-metrics dd { margin: 10px 0 0; font: 36px Georgia, serif; font-variant-numeric: tabular-nums; }
+.report-metrics small { margin-left: 8px; font: 12px 'Avenir Next', sans-serif; color: #53675f; }
+.report-table-scroll { overflow-x: auto; border-top: 1px solid #183e36; }
+.report-table { border-collapse: collapse; width: 100%; text-align: left; font-size: 14px; }
+.report-table caption { text-align: left; padding: 14px 0; color: #53675f; font-size: 12px; }
+.report-table th, .report-table td { padding: 16px 18px 16px 0; border-bottom: 1px solid #183e3622; vertical-align: top; overflow-wrap: anywhere; min-width: 100px; }
+.report-table thead th { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: #53675f; font-weight: 600; }
+.report-table tbody th { min-width: 170px; font-weight: 400; }
+.report-code { color: #a44721; font-size: 11px; letter-spacing: .05em; }
+.report-story-title { display: block; margin-top: 5px; }
+.report-footnote { font-size: 12px; color: #53675f; margin-top: 32px; }
+.report-selector { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 28px 0 0; }
+.report-selector label { font-size: 13px; font-weight: 600; }
+.report-selector select { padding: 12px 16px; border: 1px solid #183e3655; background: transparent; color: inherit; font: inherit; max-width: 100%; }
+.report-selector select:focus-visible, .report-table-scroll:focus-visible { outline: 3px solid #a44721; outline-offset: 3px; }
+.report-alert { border-left: 3px solid #a44721; background: #f0e4d9; padding: 24px; margin-top: 24px; }
+.report-loading { padding: 32px 0; color: #53675f; }
+@media (max-width: 640px) { .report-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); } .report-metrics dd { font-size: 28px; } }

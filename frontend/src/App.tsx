@@ -1,6 +1,7 @@
 import { BrowserRouter, Link, NavLink, Outlet, Route, Routes } from 'react-router-dom'
 import { ConnectionPage } from './app/ConnectionPage'
 import { BacklogPage } from './features/backlog/BacklogPage'
+import { ReportPage } from './features/reports/ReportPage'
 import { DashboardPage } from './features/metrics/DashboardPage'
 import { PlanningPage } from './features/planningpoker/PlanningPage'
 import { RoundPage } from './features/planningpoker/RoundPage'
@@ -69,6 +70,7 @@ export default function App() {
           <Route path="connection" element={<ConnectionPage />} />
           <Route path="projects" element={<ProjectsPage />} />
           <Route path="projects/:projectId" element={<ProjectDetailPage />} />
+          <Route path="projects/:projectId/report" element={<ReportPage />} />
           <Route path="projects/:projectId/dashboard" element={<DashboardPage />} />
           <Route path="projects/:projectId/planning/rounds/:roundId" element={<RoundPage />} />
           <Route path="projects/:projectId/planning" element={<PlanningPage />} />
