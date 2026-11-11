@@ -28,9 +28,9 @@ Dueños:
 | HU-016 Registrar esfuerzo | [#25](https://github.com/FaustinoDuran/seguimiento-medicion/issues/25) | media | — | Valentino | Done. PR [#87](https://github.com/FaustinoDuran/seguimiento-medicion/pull/87) |
 | HU-017 Registrar defecto | [#26](https://github.com/FaustinoDuran/seguimiento-medicion/issues/26) | media | — | Ignacio | Done. PR [#88](https://github.com/FaustinoDuran/seguimiento-medicion/pull/88) |
 | HU-018 Resolver defecto | [#27](https://github.com/FaustinoDuran/seguimiento-medicion/issues/27) | media | — | Ignacio | Done. PR [#89](https://github.com/FaustinoDuran/seguimiento-medicion/pull/89) |
-| HU-019 Consultar métricas | [#28](https://github.com/FaustinoDuran/seguimiento-medicion/issues/28) | media | — | Faustino | In review. PR [#90](https://github.com/FaustinoDuran/seguimiento-medicion/pull/90) |
+| HU-019 Consultar métricas | [#28](https://github.com/FaustinoDuran/seguimiento-medicion/issues/28) | media | — | Faustino | Done. PR [#90](https://github.com/FaustinoDuran/seguimiento-medicion/pull/90) |
 | HU-030 UI esfuerzo y defectos | [#85](https://github.com/FaustinoDuran/seguimiento-medicion/issues/85) | alta | — | Valentino | In progress |
-| HU-020 Dashboard | [#29](https://github.com/FaustinoDuran/seguimiento-medicion/issues/29) | media | — | Faustino | Después de HU-019. Sprint ready |
+| HU-020 Dashboard | [#29](https://github.com/FaustinoDuran/seguimiento-medicion/issues/29) | media | — | Faustino | In review |
 | HU-021 Reporte | [#30](https://github.com/FaustinoDuran/seguimiento-medicion/issues/30) | media | — | Ignacio | Después de HU-019. Sprint ready |
 | HU-022 PDF | [#31](https://github.com/FaustinoDuran/seguimiento-medicion/issues/31) | baja | — | Ignacio | Después de HU-021. Sprint ready |
 

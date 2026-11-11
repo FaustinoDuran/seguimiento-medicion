@@ -3,7 +3,7 @@
 - Issue: [#29](https://github.com/FaustinoDuran/seguimiento-medicion/issues/29)
 - Módulo Go existente: `backend/internal/metrics/` y `backend/internal/projects/`
 - Presentación: `frontend/src/features/metrics/`
-- Estado: lista para implementar
+- Estado: implementada en `feat/HU-020-dashboard`, pendiente de PR
 
 ## Objetivo
 
@@ -64,12 +64,12 @@ Errores `{ "error": "..." }` se muestran en español genérico si no son 404.
 
 ## Criterios de aceptación
 
-- [ ] AC-020-01 — Desde el detalle, Dashboard abre la pantalla del proyecto.
-- [ ] AC-020-02 — Mostrar el estado del proyecto que devuelve la API.
-- [ ] AC-020-03 — Mostrar las métricas calculadas en Go, sin recalcularlas.
-- [ ] AC-020-04 — Mostrar un gráfico de story points planificados y completados.
-- [ ] AC-020-05 — Mostrar un vacío entendible cuando todos los indicadores vienen en cero.
-- [ ] AC-020-06 — Informar proyecto inexistente y permitir reintentar un fallo de carga.
+- [x] AC-020-01 — Desde el detalle, Dashboard abre la pantalla del proyecto.
+- [x] AC-020-02 — Mostrar el estado del proyecto que devuelve la API.
+- [x] AC-020-03 — Mostrar las métricas calculadas en Go, sin recalcularlas.
+- [x] AC-020-04 — Mostrar un gráfico de story points planificados y completados.
+- [x] AC-020-05 — Mostrar un vacío entendible cuando todos los indicadores vienen en cero.
+- [x] AC-020-06 — Informar proyecto inexistente y permitir reintentar un fallo de carga.
 
 ## Trazabilidad
 
