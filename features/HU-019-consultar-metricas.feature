@@ -73,3 +73,12 @@ Feature: HU-019 — Consultar métricas
     Given un proyecto existente
     When consulta las métricas del proyecto
     Then la respuesta es 200 con los campos del informe
+
+  # AC-019-07 — Regresión BUG-001 (#94)
+  Scenario: contar la resolución en un Sprint distinto del de detección
+    Given un defecto detectado en el Sprint 1 y resuelto en el Sprint 2
+    And otro defecto abierto detectado en el Sprint 2
+    When consulto las métricas del Sprint 2
+    Then hay un defecto detectado y un defecto resuelto
+    When consulto las métricas del Sprint 1
+    Then hay un defecto detectado y ningún defecto resuelto

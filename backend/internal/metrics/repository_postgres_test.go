@@ -105,6 +105,10 @@ func mountedRouter(t *testing.T, pool *pgxpool.Pool) http.Handler {
 		defects.NewSprintLookup(sprintService),
 		defects.NewProjectLookup(projectRepo),
 	))
+	defects.MountResolution(router, defects.NewResolutionService(
+		defects.NewPostgresRepository(pool),
+		defects.NewResolutionSprintLookup(sprintService),
+	))
 	Mount(router, NewService(NewPostgresCatalog(pool)))
 	return router
 }
@@ -264,4 +268,61 @@ func getJSON(t *testing.T, router http.Handler, path string) *httptest.ResponseR
 	recorder := httptest.NewRecorder()
 	router.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, path, nil))
 	return recorder
+}
+
+// BUG-001 (#94), AC-019-07: detection and resolution belong to independent Sprints.
+func TestPostgresSprintMetricsCountResolvedDefects(t *testing.T) {
+	pool := postgresTestPool(t)
+	router := mountedRouter(t, pool)
+	project := createProject(t, router, "Resoluciones")
+	story := createStory(t, router, project, "HU-A", 5)
+	detectedIn := createSprint(t, router, project, "Detectar")
+	resolvedIn := createSprint(t, router, project, "Resolver")
+	defectPath := fmt.Sprintf("/projects/%d/stories/%d/defects", project, story)
+	defectBody := fmt.Sprintf(`{"description":"Falla","severity":"high","detection_sprint_id":%d}`, detectedIn)
+	defect := decodeID(t, postJSON(t, router, defectPath, defectBody))
+	resolutionPath := fmt.Sprintf("/projects/%d/defects/%d/resolve", project, defect)
+	response := postJSON(t, router, resolutionPath, fmt.Sprintf(`{"resolution_sprint_id":%d}`, resolvedIn))
+	if response.Code != http.StatusOK {
+		t.Fatalf("resolve: %d %s", response.Code, response.Body.String())
+	}
+
+	// An open defect has a NULL resolution and must not count as resolved.
+	registerDefect(t, router, project, story, resolvedIn)
+	// Another project's resolved defect must not leak into project totals.
+	otherProject := createProject(t, router, "Ajeno")
+	otherStory := createStory(t, router, otherProject, "HU-Z", 8)
+	otherSprint := createSprint(t, router, otherProject, "Ajeno")
+	otherDefect := decodeID(t, postJSON(t, router,
+		fmt.Sprintf("/projects/%d/stories/%d/defects", otherProject, otherStory),
+		fmt.Sprintf(`{"description":"Ajeno","severity":"low","detection_sprint_id":%d}`, otherSprint)))
+	otherResolution := postJSON(t, router,
+		fmt.Sprintf("/projects/%d/defects/%d/resolve", otherProject, otherDefect),
+		fmt.Sprintf(`{"resolution_sprint_id":%d}`, otherSprint))
+	if otherResolution.Code != 200 {
+		t.Fatalf("other resolution: %s", otherResolution.Body.String())
+	}
+
+	cases := []struct {
+		path     string
+		detected int64
+		resolved int64
+	}{
+		{path: fmt.Sprintf("/sprints/%d/metrics", resolvedIn), detected: 1, resolved: 1},
+		{path: fmt.Sprintf("/sprints/%d/metrics", detectedIn), detected: 1, resolved: 0},
+		{path: fmt.Sprintf("/projects/%d/metrics", project), detected: 2, resolved: 1},
+	}
+	for _, tc := range cases {
+		t.Run(tc.path, func(t *testing.T) {
+			response := getJSON(t, router, tc.path)
+			if response.Code != 200 {
+				t.Fatalf("metrics: %d %s", response.Code, response.Body.String())
+			}
+			report := decodeReport(t, response.Body.String())
+			if report.DefectsDetected != tc.detected || report.DefectsResolved != tc.resolved {
+				t.Fatalf("detected/resolved = %d/%d, want %d/%d", report.DefectsDetected,
+					report.DefectsResolved, tc.detected, tc.resolved)
+			}
+		})
+	}
 }
