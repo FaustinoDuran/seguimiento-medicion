@@ -1,0 +1,30 @@
+.metrics-page { padding: 40px 0 72px; }
+.metrics-heading { padding-top: 28px; }
+.metrics-heading h1 { font-size: clamp(38px, 5vw, 64px); }
+.metrics-heading .lead { margin: 20px 0 36px; }
+.metrics-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin: 8px 0 36px;
+}
+.metrics-facts dt { color: #53675f; font-size: 12px; margin-bottom: 6px; }
+.metrics-facts dd { margin: 0; font-size: 22px; }
+.metrics-empty, .metrics-loading { padding: 32px 0; color: #53675f; }
+.metrics-alert { border-left: 3px solid #a44721; background: #f0e4d9; padding: 18px 22px; margin: 20px 0; }
+.metrics-chart { margin: 0; padding: 24px 0; }
+.metrics-chart figcaption { font-weight: 600; margin-bottom: 16px; }
+.metrics-bar-row {
+  display: grid;
+  grid-template-columns: 140px 1fr 48px;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.metrics-bar-track { height: 16px; background: #e7ede3; }
+.metrics-bar { height: 16px; }
+.metrics-bar-planned { background: #28594d; }
+.metrics-bar-done { background: #a44721; }
+@media (max-width: 720px) {
+  .metrics-facts, .metrics-bar-row { grid-template-columns: 1fr; }
+}

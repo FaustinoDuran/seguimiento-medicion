@@ -3,7 +3,7 @@
 - Issue: [#74](https://github.com/FaustinoDuran/seguimiento-medicion/issues/74)
 - Módulo Go existente: `backend/internal/planningpoker/`
 - Presentación: `frontend/src/features/planningpoker/`
-- Estado: implementada
+- Estado: mergeada en `main` ([PR #81](https://github.com/FaustinoDuran/seguimiento-medicion/pull/81))
 
 ## Objetivo
 

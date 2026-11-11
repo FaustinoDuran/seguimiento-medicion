@@ -1,6 +1,6 @@
 # Sprint 3 — Planning Poker
 
-- Estado: en curso
+- Estado: cerrado (HU-029 en `main`, PR [#81](https://github.com/FaustinoDuran/seguimiento-medicion/pull/81))
 - Fecha de inicio: 2026-11-04
 - Equipo: Faustino (Agile Enabler), Valentino e Ignacio (Product Builders)
 - Alcance: [ADR 0005](../adr/0005-alcance-sprint-3.md)
@@ -27,7 +27,7 @@ Dueños:
 | HU-013 Revelar votos | [#22](https://github.com/FaustinoDuran/seguimiento-medicion/issues/22) | media | — | Valentino | Done. PR #78 |
 | HU-014 Nueva ronda de votación | [#23](https://github.com/FaustinoDuran/seguimiento-medicion/issues/23) | media | — | Ignacio | Done. PR #80 |
 | HU-015 Registrar estimación acordada | [#24](https://github.com/FaustinoDuran/seguimiento-medicion/issues/24) | media | — | Ignacio | Done. PR #79 |
-| HU-029 UI Planning Poker | [#74](https://github.com/FaustinoDuran/seguimiento-medicion/issues/74) | alta | — | Faustino | In review. PR #81 |
+| HU-029 UI Planning Poker | [#74](https://github.com/FaustinoDuran/seguimiento-medicion/issues/74) | alta | — | Faustino | Done. PR [#81](https://github.com/FaustinoDuran/seguimiento-medicion/pull/81) |
 
 ## Olas
 

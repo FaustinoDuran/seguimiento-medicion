@@ -2,7 +2,7 @@
 
 - Issue: [#25](https://github.com/FaustinoDuran/seguimiento-medicion/issues/25)
 - Módulo Go: `backend/internal/effort/`
-- Estado: implementada en `feat/HU-016-registrar-esfuerzo`, pendiente de PR
+- Estado: mergeada en `main` ([PR #87](https://github.com/FaustinoDuran/seguimiento-medicion/pull/87))
 
 ## Objetivo
 
