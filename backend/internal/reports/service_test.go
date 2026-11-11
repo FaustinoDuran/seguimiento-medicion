@@ -44,3 +44,52 @@ func TestProjectReportIncludesUnassignedAndCompletedStories(t *testing.T) {
 		t.Fatalf("project scope and empty collections: %+v", report)
 	}
 }
+
+func TestSprintReportIncludesEffortAndDetectedOrResolvedDefects(t *testing.T) {
+	source := reports.Source{
+		Project: reports.Project{ID: 1, Name: "Medición"},
+		Sprints: []reports.Sprint{
+			{ID: 2, ProjectID: 1, Status: "closed"}, {ID: 3, ProjectID: 1, Status: "open"},
+		},
+		Stories: []reports.Story{
+			{ID: 1, ProjectID: 1, SprintID: id(2), StoryPoints: id(8), Status: "done"},
+			{ID: 2, ProjectID: 1, SprintID: id(3), StoryPoints: id(5), Status: "todo"},
+		},
+		Effort: []reports.Effort{
+			{ID: 2, ProjectID: 1, StoryID: 1, Date: "2030-01-01", Hours: 150},
+			{ID: 1, ProjectID: 1, StoryID: 1, Date: "2020-01-01", Hours: 1},
+			{ID: 3, ProjectID: 1, StoryID: 2, Hours: 900},
+		},
+		Defects: []reports.Defect{
+			{ID: 3, ProjectID: 1, StoryID: 2, DetectionSprintID: 2, ResolutionSprintID: id(2), Status: "resolved"},
+			{ID: 2, ProjectID: 1, StoryID: 2, DetectionSprintID: 3, ResolutionSprintID: id(2), Status: "resolved"},
+			{ID: 1, ProjectID: 1, StoryID: 2, DetectionSprintID: 2, Status: "open"},
+			{ID: 4, ProjectID: 1, StoryID: 2, DetectionSprintID: 3, Status: "open"},
+		},
+	}
+	service := reports.NewService(memoryRepository{source: source})
+	report, err := service.ForSprint(context.Background(), 1, 2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if report.Sprint == nil || report.Sprint.ID != 2 || len(report.Stories) != 1 || report.Stories[0].ID != 1 {
+		t.Fatalf("sprint stories: %+v", report)
+	}
+	if len(report.Effort) != 2 || report.Effort[0].ID != 1 || report.Metrics.ActualHours.String() != "1.51" {
+		t.Fatalf("all effort dates must count: %+v", report)
+	}
+	if len(report.Defects) != 3 || report.Defects[0].ID != 1 || report.Defects[2].ID != 3 {
+		t.Fatalf("detected/resolved union must include each defect once: %+v", report.Defects)
+	}
+	if report.Metrics.DefectsDetected != 2 || report.Metrics.DefectsResolved != 2 {
+		t.Fatalf("defect metrics: %+v", report.Metrics)
+	}
+	// Reusing a repository value must not lose the other Sprint's records.
+	project, err := service.ForProject(context.Background(), 1)
+	if err != nil || len(project.Stories) != 2 || len(project.Effort) != 3 || len(project.Defects) != 4 {
+		t.Fatalf("project after sprint: %+v, %v", project, err)
+	}
+	if project.Metrics.ActualHours.String() != "10.51" {
+		t.Fatalf("project hours: %+v", project.Metrics)
+	}
+}

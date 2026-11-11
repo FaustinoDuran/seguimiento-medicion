@@ -58,3 +58,7 @@ func metricFields(value metrics.Report) Metrics {
 		DefectsResolved:          value.DefectsResolved,
 	}
 }
+
+func (s *Service) ForSprint(ctx context.Context, projectID, sprintID int64) (Report, error) {
+	return s.ForProject(ctx, projectID)
+}
