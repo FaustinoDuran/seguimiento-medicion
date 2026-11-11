@@ -34,8 +34,14 @@ HU-013 está integrada por el merge `88f30c4` (PR #78), HU-015 por
 HU-017 está implementada en `feat/HU-017-register-defect`, pendiente de revisión
 y merge. Su alcance es alta y consulta individual; la resolución es HU-018.
 
+HU-018 está implementada en `feat/HU-018-resolve-defect`, basada en HU-017.
+Permite resolver y reintentar en el mismo Sprint; rechaza cambios a otra
+resolución y Sprints anteriores en orden de creación. Pendiente de revisión,
+integración de su dependencia y merge.
+
 | HU | Issue | SDD | Criterios | BDD | Tests | Código | PR | Evidencia TDD |
 |---|---|---|---|---|---|---|---|---|
+| HU-018 | [#27](https://github.com/FaustinoDuran/seguimiento-medicion/issues/27) | [SDD](sdd/HU-018-resolver-defecto.md) | AC-018-01 a AC-018-09 | [feature](../features/HU-018-resolver-defecto.feature) | `backend/internal/defects/resolve_{service,handler,postgres}_test.go`; suite completa con PostgreSQL y `-race`; `go vet ./...` | `backend/internal/defects/`; migración `010`; bootstrap API | Pendiente de apertura | Spec `5219edf`; resolución RED `94afdbb` → GREEN `978efa0`; orden/proyecto RED `c46318f` → GREEN `8223117`; reintentos RED `6e8b3a1` → GREEN `cc0983b`; HTTP RED `dd85cf9` → GREEN `4e0932a`; errores RED `89e24fe` → GREEN `de70a90`; PostgreSQL RED `beef637` → GREEN `fbfa8fc`; concurrencia RED `1f6d0cd` → GREEN `fa9b416`; migración/atomicidad `4219c5d` |
 | HU-017 | [#26](https://github.com/FaustinoDuran/seguimiento-medicion/issues/26) | [SDD](sdd/HU-017-registrar-defecto.md) | AC-017-01 a AC-017-10 | [feature](../features/HU-017-registrar-defecto.feature) | `backend/internal/defects/{service,handler,repository_postgres}_test.go`; `go test -count=1 -race ./...` con PostgreSQL local y `go vet ./...` | `backend/internal/defects/`; migración `009`; bootstrap API | Pendiente de apertura | Spec `b17596f`; alta/consulta RED `7f040e6` → GREEN `3063d50`; descripción RED `1cc5b36` → GREEN `4db67eb`; clasificación RED `c2d68de` → GREEN `1e3932d`; referencias RED `6404a54` → GREEN `b6c3c7f`; HTTP RED `133531c` → GREEN `ade9ffa`; errores HTTP RED `c4cafba` → GREEN `57dd64e`; PostgreSQL RED `35767ab` → GREEN `6f7868b`; regresión de estados y aislamiento `4af4baf` |
 
 | HU | Issue | SDD | Criterios | BDD | Tests | Código | PR | Evidencia TDD |
