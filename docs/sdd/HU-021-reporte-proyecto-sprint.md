@@ -3,7 +3,7 @@
 - Issue: [#30](https://github.com/FaustinoDuran/seguimiento-medicion/issues/30)
 - Módulo Go: `backend/internal/reports/`
 - Presentación: `frontend/src/features/reports/`
-- Estado: implementada; [PR #96 en borrador](https://github.com/FaustinoDuran/seguimiento-medicion/pull/96), con dependencia del PR #95
+- Estado: implementada; [PR #96 en revisión contra main](https://github.com/FaustinoDuran/seguimiento-medicion/pull/96). Dependencia PR #95 mergeada.
 - Depende de HU-019.
 
 ## Objetivo
@@ -138,11 +138,9 @@ La corrección carga la referencia nullable y no modifica las fórmulas.
 HU-021 carga un catálogo detallado que adapta al servicio público
 `metrics.Service`. Una comprobación por HTTP contrasta el reporte de Sprint
 con `/metrics`: falló antes de integrar la corrección (0 resueltos frente a 1)
-y pasa después. La rama del reporte integra la rama del BUG como dependencia;
-el PR del reporte usa esa rama como base para mostrar únicamente HU-021.
-
-Orden de integración: primero PR #95 hacia `main`; luego actualizar la base
-del PR de HU-021 a `main` y comprobar que su diff conserve solo el reporte.
+y pasa después. El PR #95 ya está mergeado en `main`. El PR #96 se compara
+directamente contra `main`, al igual que todos los PR del repositorio; su
+diff contiene únicamente los cambios del reporte.
 La integración GitHub rechazó las escrituras con `403`; la issue y el PR se
 crearon con la autenticación local de Git, autorizada para esta tarea.
 
@@ -251,4 +249,4 @@ Las pruebas de UI simulan HTTP: no se declara un recorrido E2E en navegador
 con React y Go reales ni una validación visual manual.
 
 Los criterios marcados reflejan la evidencia automatizada local. La HU no
-está Done: faltan revisión y merge del PR #95 y del PR del reporte.
+está Done: faltan revisión y merge del PR del reporte. El PR #95 ya está mergeado.
