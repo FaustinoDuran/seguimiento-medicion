@@ -454,3 +454,37 @@ func TestListClosedSprintsHTTP(t *testing.T) {
 		t.Fatalf("assigned %+v", assigned)
 	}
 }
+
+func TestListSprintsHTTP(t *testing.T) {
+	repo := newMemoryRepository()
+	open := saveSprint(t, repo, 7, StatusOpen)
+	closed := saveSprint(t, repo, 7, StatusClosed)
+	saveSprint(t, repo, 8, StatusOpen)
+	router := chi.NewRouter()
+	Mount(router, NewService(repo, newMemoryProjects(7, 8), newMemoryStories()))
+
+	response := sprintRequest(router, http.MethodGet, "/projects/7/sprints", "")
+	if response.Code != http.StatusOK {
+		t.Fatalf("list status: got %d want %d body %s", response.Code, http.StatusOK, response.Body.String())
+	}
+	var listed []sprintResponse
+	if err := json.NewDecoder(response.Body).Decode(&listed); err != nil {
+		t.Fatalf("decode: %v", err)
+	}
+	if len(listed) != 2 || listed[0].ID != open.ID || listed[1].ID != closed.ID {
+		t.Fatalf("listed %+v", listed)
+	}
+	if listed[1].Status != StatusClosed {
+		t.Fatalf("closed status: %+v", listed[1])
+	}
+
+	missing := sprintRequest(router, http.MethodGet, "/projects/9/sprints", "")
+	if missing.Code != http.StatusNotFound {
+		t.Fatalf("missing project: got %d want %d body %s", missing.Code, http.StatusNotFound, missing.Body.String())
+	}
+
+	invalid := sprintRequest(router, http.MethodGet, "/projects/abc/sprints", "")
+	if invalid.Code != http.StatusBadRequest {
+		t.Fatalf("invalid project: got %d want %d body %s", invalid.Code, http.StatusBadRequest, invalid.Body.String())
+	}
+}

@@ -2,6 +2,7 @@ package defects
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -198,6 +199,7 @@ func postgresRouter(pool *pgxpool.Pool) http.Handler {
 		NewPostgresRepository(pool),
 		NewStoryLookup(storyRepo),
 		NewSprintLookup(sprintService),
+		NewProjectLookup(projectRepo),
 	))
 	mountPostgresResolution(pool, router, sprintService)
 	return router
@@ -291,4 +293,60 @@ func seedProject(
 		t.Fatal(err)
 	}
 	return project, story, sprint
+}
+
+func TestPostgresListDefectsByProject(t *testing.T) {
+	pool := postgresTestPool(t)
+	project, story, sprint := seedProject(t, pool, projects.StatusActive, "todo", sprints.StatusOpen)
+	otherProject, otherStory, otherSprint := seedProject(t, pool, projects.StatusActive, "todo", sprints.StatusOpen)
+	router := postgresRouter(pool)
+
+	openPath := fmt.Sprintf("/projects/%d/stories/%d/defects", project.ID, story.ID)
+	openCreated := requestJSON(router, http.MethodPost, openPath,
+		fmt.Sprintf(`{"description":"Abierto","severity":"high","detection_sprint_id":%d}`, sprint.ID))
+	if openCreated.Code != http.StatusCreated {
+		t.Fatalf("create open: %d %s", openCreated.Code, openCreated.Body.String())
+	}
+	open := decodeDefect(t, openCreated)
+
+	resolvedCreated := requestJSON(router, http.MethodPost, openPath,
+		fmt.Sprintf(`{"description":"Resuelto","severity":"low","detection_sprint_id":%d}`, sprint.ID))
+	if resolvedCreated.Code != http.StatusCreated {
+		t.Fatalf("create resolved: %d %s", resolvedCreated.Code, resolvedCreated.Body.String())
+	}
+	resolved := decodeDefect(t, resolvedCreated)
+	resolvePath := fmt.Sprintf("/projects/%d/defects/%d/resolve", project.ID, resolved.ID)
+	if response := requestJSON(router, http.MethodPost, resolvePath,
+		fmt.Sprintf(`{"resolution_sprint_id":%d}`, sprint.ID)); response.Code != http.StatusOK {
+		t.Fatalf("resolve: %d %s", response.Code, response.Body.String())
+	}
+
+	foreignPath := fmt.Sprintf("/projects/%d/stories/%d/defects", otherProject.ID, otherStory.ID)
+	if response := requestJSON(router, http.MethodPost, foreignPath,
+		fmt.Sprintf(`{"description":"Ajeno","severity":"medium","detection_sprint_id":%d}`, otherSprint.ID)); response.Code != http.StatusCreated {
+		t.Fatalf("create foreign: %d %s", response.Code, response.Body.String())
+	}
+
+	response := requestJSON(router, http.MethodGet, fmt.Sprintf("/projects/%d/defects", project.ID), "")
+	if response.Code != http.StatusOK {
+		t.Fatalf("list: %d %s", response.Code, response.Body.String())
+	}
+	var body struct {
+		Defects []Defect `json:"defects"`
+	}
+	if err := json.Unmarshal(response.Body.Bytes(), &body); err != nil {
+		t.Fatal(err)
+	}
+	if len(body.Defects) != 2 {
+		t.Fatalf("len: got %d want 2 (%+v)", len(body.Defects), body.Defects)
+	}
+	if body.Defects[0].ID != resolved.ID || body.Defects[0].Status != "resolved" {
+		t.Fatalf("first: %+v", body.Defects[0])
+	}
+	if body.Defects[0].ResolutionSprintID == nil || *body.Defects[0].ResolutionSprintID != sprint.ID {
+		t.Fatalf("resolution sprint: %+v", body.Defects[0])
+	}
+	if body.Defects[1].ID != open.ID || body.Defects[1].Status != "open" || body.Defects[1].ResolutionSprintID != nil {
+		t.Fatalf("second: %+v", body.Defects[1])
+	}
 }

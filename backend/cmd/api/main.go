@@ -68,6 +68,7 @@ func main() {
 			defects.NewPostgresRepository(pool),
 			defects.NewStoryLookup(backlogRepo),
 			defects.NewSprintLookup(sprintService),
+			defects.NewProjectLookup(projectRepo),
 		))
 		defects.MountResolution(router, defects.NewResolutionService(
 			defects.NewPostgresRepository(pool),

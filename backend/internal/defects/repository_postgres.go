@@ -61,6 +61,39 @@ func (r *PostgresRepository) Save(ctx context.Context, defect Defect) (Defect, e
 	return saved, err
 }
 
+func (r *PostgresRepository) ListByProject(ctx context.Context, projectID int64) ([]Defect, error) {
+	const query = `
+		SELECT id, project_id, story_id, detection_sprint_id, description, severity, status, resolution_sprint_id
+		FROM defects
+		WHERE project_id = $1
+		ORDER BY id DESC`
+
+	rows, err := r.pool.Query(ctx, query, projectID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	listed := make([]Defect, 0)
+	for rows.Next() {
+		var defect Defect
+		if err := rows.Scan(
+			&defect.ID,
+			&defect.ProjectID,
+			&defect.StoryID,
+			&defect.DetectionSprintID,
+			&defect.Description,
+			&defect.Severity,
+			&defect.Status,
+			&defect.ResolutionSprintID,
+		); err != nil {
+			return nil, err
+		}
+		listed = append(listed, defect)
+	}
+	return listed, rows.Err()
+}
+
 func (r *PostgresRepository) FindByID(ctx context.Context, projectID, id int64) (Defect, error) {
 	const query = `
 		SELECT id, project_id, story_id, detection_sprint_id, description, severity, status, resolution_sprint_id

@@ -9,6 +9,7 @@ import (
 
 var (
 	ErrInvalidID           = errors.New("project, story, sprint and defect ids must be positive")
+	ErrProjectNotFound     = errors.New("project not found")
 	ErrNotFound            = errors.New("defect not found")
 	ErrStoryNotFound       = errors.New("story not found")
 	ErrSprintNotFound      = errors.New("detection sprint not found")
@@ -19,13 +20,14 @@ var (
 )
 
 type Service struct {
-	repo    Repository
-	stories StoryLookup
-	sprints SprintLookup
+	repo     Repository
+	stories  StoryLookup
+	sprints  SprintLookup
+	projects ProjectLookup
 }
 
-func NewService(repo Repository, stories StoryLookup, sprints SprintLookup) *Service {
-	return &Service{repo: repo, stories: stories, sprints: sprints}
+func NewService(repo Repository, stories StoryLookup, sprints SprintLookup, projects ProjectLookup) *Service {
+	return &Service{repo: repo, stories: stories, sprints: sprints, projects: projects}
 }
 
 func (s *Service) Register(ctx context.Context, input RegisterInput) (Defect, error) {
@@ -69,4 +71,11 @@ func (s *Service) Get(ctx context.Context, projectID, id int64) (Defect, error) 
 		return Defect{}, ErrInvalidID
 	}
 	return s.repo.FindByID(ctx, projectID, id)
+}
+
+func (s *Service) List(ctx context.Context, projectID int64) ([]Defect, error) {
+	if err := s.projects.Exists(ctx, projectID); err != nil {
+		return nil, err
+	}
+	return s.repo.ListByProject(ctx, projectID)
 }
