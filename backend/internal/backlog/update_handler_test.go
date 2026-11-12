@@ -18,11 +18,15 @@ func TestUpdateStoryHTTP(t *testing.T) {
 	MountUpdates(router, NewUpdateService(store))
 	response := storyRequest(router, http.MethodPatch, "/projects/1/stories/7", `{"priority":"high","story_points":null}`)
 	var got Story
-	if err := json.Unmarshal(response.Body.Bytes(), &got); err != nil { t.Fatal(err) }
+	if err := json.Unmarshal(response.Body.Bytes(), &got); err != nil {
+		t.Fatal(err)
+	}
 	if response.Code != http.StatusOK || got.Priority != PriorityHigh || *got.StoryPoints != 5 {
 		t.Fatalf("patch: %d %s", response.Code, response.Body.String())
 	}
-	if !reflect.DeepEqual(got, store.story) { t.Fatal("response must contain the complete stored story") }
+	if !reflect.DeepEqual(got, store.story) {
+		t.Fatal("response must contain the complete stored story")
+	}
 
 	for _, body := range []string{
 		`{}`, `null`, `[]`, ``, `{`, `{"priority":"high"} {}`, `{"story_points":null}`,
@@ -44,16 +48,23 @@ func TestUpdateStoryHTTP(t *testing.T) {
 		"/projects/1/stories/-1", "/projects/1/stories/9223372036854775808",
 	} {
 		response := storyRequest(router, http.MethodPatch, path, `{"priority":"high"}`)
-		if response.Code != http.StatusBadRequest { t.Fatalf("%s: %d", path, response.Code) }
+		if response.Code != http.StatusBadRequest {
+			t.Fatalf("%s: %d", path, response.Code)
+		}
 	}
 	for _, path := range []string{"/projects/2/stories/7", "/projects/1/stories/99"} {
 		response := storyRequest(router, http.MethodPatch, path, `{"priority":"high"}`)
-		if response.Code != http.StatusNotFound { t.Fatalf("%s: %d", path, response.Code) }
+		if response.Code != http.StatusNotFound {
+			t.Fatalf("%s: %d", path, response.Code)
+		}
 	}
 }
 
 func TestUpdateStoryHTTPErrors(t *testing.T) {
-	for _, tt := range []struct{ failure error; status int }{
+	for _, tt := range []struct {
+		failure error
+		status  int
+	}{
 		{projects.ErrNotFound, 404}, {ErrNotFound, 404}, {ErrProjectClosed, 409},
 		{ErrUpdateSprintClosed, 409}, {ErrUpdateNeedsOpenSprint, 409},
 		{ErrStoryUnestimated, 409}, {ErrCompletedStoryEstimate, 409},
@@ -70,9 +81,13 @@ func TestUpdateStoryHTTPErrors(t *testing.T) {
 			if response.Code != tt.status || err != nil || body["error"] == "" {
 				t.Fatalf("error response: %d %s", response.Code, response.Body.String())
 			}
-			if strings.Contains(response.Body.String(), "private") { t.Fatal("internal error exposed") }
+			if strings.Contains(response.Body.String(), "private") {
+				t.Fatal("internal error exposed")
+			}
 			invalid := storyRequest(router, http.MethodPatch, "/projects/1/stories/7", `{"priority":"invalid"}`)
-			if invalid.Code != 400 { t.Fatal("input must be validated before existence and business restrictions") }
+			if invalid.Code != 400 {
+				t.Fatal("input must be validated before existence and business restrictions")
+			}
 		})
 	}
 }
