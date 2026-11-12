@@ -58,6 +58,43 @@ func (s *Service) Create(ctx context.Context, input CreateProject) (Project, err
 	})
 }
 
+func (s *Service) Update(ctx context.Context, id int64, input UpdateProject) (Project, error) {
+	current, err := s.repo.FindByID(ctx, id)
+	if err != nil {
+		return Project{}, err
+	}
+
+	if input.Name != nil {
+		name := strings.TrimSpace(*input.Name)
+		if name == "" {
+			return Project{}, ErrNameRequired
+		}
+		current.Name = name
+	}
+	if input.StartDate != nil {
+		if input.StartDate.IsZero() {
+			return Project{}, ErrInvalidDates
+		}
+		current.StartDate = calendarDate(*input.StartDate)
+	}
+	if input.EndDate != nil {
+		if input.EndDate.IsZero() {
+			return Project{}, ErrInvalidDates
+		}
+		current.EndDate = calendarDate(*input.EndDate)
+	}
+	if current.EndDate.Before(current.StartDate) {
+		return Project{}, ErrInvalidDates
+	}
+	if input.Status != nil {
+		if !input.Status.valid() {
+			return Project{}, ErrInvalidStatus
+		}
+		current.Status = *input.Status
+	}
+	return s.repo.Update(ctx, current)
+}
+
 func (s *Service) Get(ctx context.Context, id int64) (Project, error) {
 	return s.repo.FindByID(ctx, id)
 }

@@ -61,6 +61,10 @@ curl -s -X POST http://localhost:8080/projects \
 
 curl -s http://localhost:8080/projects/1
 
+curl -s -X PATCH http://localhost:8080/projects/1 \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Seguimiento"}'
+
 curl -s -X POST http://localhost:8080/projects/1/members \
   -H 'Content-Type: application/json' \
   -d '{"name":"Valentino"}'

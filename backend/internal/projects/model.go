@@ -35,6 +35,13 @@ type CreateProject struct {
 	Status    Status
 }
 
+type UpdateProject struct {
+	Name      *string
+	StartDate *time.Time
+	EndDate   *time.Time
+	Status    *Status
+}
+
 type Member struct {
 	ID        int64
 	ProjectID int64
