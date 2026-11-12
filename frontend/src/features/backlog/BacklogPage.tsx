@@ -22,6 +22,9 @@ function ProjectBacklog({ project }: { project: BacklogProject }) {
   const [created, setCreated] = useState(false)
   const [editing, setEditing] = useState<Story | null>(null)
   const [updated, setUpdated] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [creating, setCreating] = useState(false)
+  const mutating = saving || creating
 
   useEffect(() => {
     const controller = new AbortController()
@@ -36,6 +39,7 @@ function ProjectBacklog({ project }: { project: BacklogProject }) {
   }, [project.id, attempt])
 
   function refresh() {
+    setEditing(null)
     setState({ kind: 'loading' })
     setAttempt(previous => previous + 1)
   }
@@ -48,7 +52,8 @@ function ProjectBacklog({ project }: { project: BacklogProject }) {
         <p className="lead">Creá, consultá y actualizá las historias del backlog de tu proyecto.</p></header>
       {project.status === 'closed'
         ? <p className="backlog-alert" role="status">El proyecto está cerrado. Podés consultar sus historias, pero no crear ni editar.</p>
-        : <StoryForm projectId={String(project.id)} onSubmitting={() => setCreated(false)} onCreated={() => {
+        : <StoryForm projectId={String(project.id)} disabled={saving} onPendingChange={setCreating}
+          onSubmitting={() => { setCreated(false); setUpdated(false); setEditing(null) }} onCreated={() => {
           setCreated(true)
           refresh()
         }} />}
@@ -59,20 +64,22 @@ function ProjectBacklog({ project }: { project: BacklogProject }) {
       <section className="backlog-list" aria-labelledby="stories-heading" aria-busy={state.kind === 'loading'}>
         <div className="backlog-section-heading"><span className="section-number" aria-hidden="true">02 /</span>
           <div><h2 id="stories-heading">Historias del proyecto</h2><p>Altas más recientes primero.</p></div>
-          <button className="backlog-quiet-button" type="button" disabled={state.kind === 'loading'} onClick={refresh}>
+          <button className="backlog-quiet-button" type="button" disabled={state.kind === 'loading' || mutating} onClick={refresh}>
             Actualizar listado</button></div>
         {state.kind === 'loading' ? <p className="backlog-loading" role="status">Cargando historias…</p> : null}
         {state.kind === 'error' ? <div className="backlog-alert" role="alert">
           <p>{created ? 'La historia fue creada, pero no pudimos actualizar el listado.' : 'No pudimos cargar las historias del proyecto.'}</p>
           <button className="button" type="button" onClick={refresh}>Reintentar carga</button></div> : null}
-        {editing ? <StoryEditForm key={editing.id} story={editing} onCancel={() => setEditing(null)} onUpdated={story => {
+        {editing ? <StoryEditForm key={editing.id} story={editing} onPendingChange={setSaving}
+          onCancel={() => setEditing(null)} onUpdated={story => {
+          setSaving(false)
           setState(previous => previous.kind === 'ready'
             ? { kind: 'ready', stories: previous.stories.map(item => item.id === story.id ? story : item) } : previous)
           setEditing(null)
           setCreated(false)
           setUpdated(true)
         }} /> : null}
-        {state.kind === 'ready' ? <StoryList stories={state.stories}
+        {state.kind === 'ready' ? <StoryList stories={state.stories} editingDisabled={mutating}
           onEdit={project.status === 'closed' ? undefined : story => {
             setCreated(false)
             setUpdated(false)

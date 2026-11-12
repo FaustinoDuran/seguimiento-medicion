@@ -1,7 +1,9 @@
 import type { Story } from './model'
 import { priorityLabels, statusLabels } from './model'
 
-export function StoryList({ stories, onEdit }: { stories: Story[]; onEdit?: (story: Story) => void }) {
+export function StoryList({ stories, onEdit, editingDisabled = false }: {
+  stories: Story[]; onEdit?: (story: Story) => void; editingDisabled?: boolean
+}) {
   if (stories.length === 0) {
     return <div className="backlog-empty"><h3>Todavía no hay historias</h3>
       <p>Cuando agregues la primera, vas a encontrarla acá.</p></div>
@@ -22,7 +24,8 @@ export function StoryList({ stories, onEdit }: { stories: Story[]; onEdit?: (sto
               {statusLabels[story.status] ?? story.status}</span></td>
             <td className="backlog-points">{story.story_points === null ? 'Sin estimar' : `${story.story_points} SP`}</td>
             {onEdit ? <td><button type="button" className="backlog-quiet-button"
-              aria-label={`Editar ${story.identifier}`} onClick={() => onEdit(story)}>Editar</button></td> : null}
+              aria-label={`Editar ${story.identifier}`} disabled={editingDisabled}
+              onClick={() => onEdit(story)}>Editar</button></td> : null}
           </tr>
         ))}</tbody>
       </table>

@@ -5,9 +5,12 @@ import { updateError } from './errors'
 import { priorityLabels, statusLabels } from './model'
 import type { Story, UpdateStory } from './model'
 
-type Props = { story: Story; onUpdated: (story: Story) => void; onCancel: () => void }
+type Props = {
+  story: Story; onUpdated: (story: Story) => void; onCancel: () => void
+  onPendingChange?: (pending: boolean) => void
+}
 
-export function StoryEditForm({ story, onUpdated, onCancel }: Props) {
+export function StoryEditForm({ story, onUpdated, onCancel, onPendingChange }: Props) {
   const [priority, setPriority] = useState(story.priority)
   const [status, setStatus] = useState(story.status)
   const [points, setPoints] = useState(story.story_points === null ? '' : String(story.story_points))
@@ -37,6 +40,7 @@ export function StoryEditForm({ story, onUpdated, onCancel }: Props) {
     const controller = new AbortController()
     pending.current = controller
     setSending(true)
+    onPendingChange?.(true)
     setError(null)
     try {
       const updated = await updateStory(story, changes, controller.signal)
@@ -45,7 +49,10 @@ export function StoryEditForm({ story, onUpdated, onCancel }: Props) {
       if (!controller.signal.aborted) setError(updateError(cause))
     } finally {
       pending.current = null
-      if (!controller.signal.aborted) setSending(false)
+      if (!controller.signal.aborted) {
+        setSending(false)
+        onPendingChange?.(false)
+      }
     }
   }
 
