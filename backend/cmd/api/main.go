@@ -53,6 +53,9 @@ func main() {
 		projects.Mount(router, projectService)
 		backlogRepo := backlog.NewPostgresRepository(pool)
 		backlog.Mount(router, backlog.NewService(backlogRepo, projectService))
+		backlog.MountUpdates(router, backlog.NewUpdateService(backlog.NewPostgresUpdateStore(
+			pool, projectRepo, sprints.NewPostgresRepository(pool),
+		)))
 		effort.Mount(router, effort.NewService(
 			effort.NewPostgresRepository(pool),
 			effort.NewStoryLookup(backlogRepo),
