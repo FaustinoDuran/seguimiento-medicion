@@ -33,6 +33,7 @@ Completar una fila por cada HU mergeada. La demo final se apoya en esta tabla.
 | HU-030 | [#85](https://github.com/FaustinoDuran/seguimiento-medicion/issues/85) | [SDD](sdd/HU-030-ui-esfuerzo-defectos.md) | AC-030-01 a AC-030-08 | [feature](../features/HU-030-ui-esfuerzo-defectos.feature) | Backend: `sprints` y `defects` con servicio, HTTP y PostgreSQL. UI: `Measurement.test.tsx`; altas, resolución, errores en español, estados vacíos y reintento | `backend/internal/sprints/` y `backend/internal/defects/`; `frontend/src/features/measurement/`, `features/effort/` y `features/defects/`; ruta en `App.tsx` | [#93](https://github.com/FaustinoDuran/seguimiento-medicion/pull/93) | Spec `9f028c8`; sprints RED `86828cc` → GREEN `4465c75`; defectos RED `8470894` → GREEN `c682d95`; UI RED `e5710a5` → GREEN `62c815a`. Merge `af59e04` |
 | HU-021 | [#30](https://github.com/FaustinoDuran/seguimiento-medicion/issues/30) | [SDD](sdd/HU-021-reporte-proyecto-sprint.md) | AC-021-01 a AC-021-14 | [feature](../features/HU-021-reporte-proyecto-sprint.feature) | `backend/internal/reports/{service,handler,repository_postgres}_test.go`; `frontend/src/features/reports/Report.test.tsx`; suite Go con PostgreSQL y `-race`, vet, tests frontend, build y lint | `backend/internal/reports/`; `frontend/src/features/reports/`; bootstrap y navegación | [#96](https://github.com/FaustinoDuran/seguimiento-medicion/pull/96) | Spec `f95cea2`; proyecto RED `43964f1` → GREEN `e3c7cd1`; alcance RED `9e6ab2e` → GREEN `79dacdf`; validación RED `33ea72e` → GREEN `9f19640`; HTTP RED `ca2dc26` → GREEN `ac460f5`; PostgreSQL RED `1bcb279` → GREEN `b0d3a4d`; UI RED `6b779aa` → GREEN `b6fdae6`; selector RED `cfa5aa0` → GREEN `45a0969`; errores UI RED `c1631eb` → GREEN `faf3086`; concurrencia `ebfcbed`; integración RED `f4fb81f` → GREEN `a19ba5d`; main actualizado RED `128b74f` → GREEN `05aa46d`. Merge `33fcb93` |
 | HU-022 | [#31](https://github.com/FaustinoDuran/seguimiento-medicion/issues/31) | [SDD](sdd/HU-022-exportar-informe-pdf.md) | AC-022-01 a AC-022-07 | [feature](../features/HU-022-exportar-informe-pdf.feature) | `backend/internal/reports/pdf_test.go`, `pdf_handler_test.go` y `TestPostgresReportPDFUsesPersistedScope`; `frontend/src/features/reports/Report.test.tsx` | `backend/internal/reports/`; `frontend/src/features/reports/`; [ADR 0007](adr/0007-generacion-pdf.md) | [#97](https://github.com/FaustinoDuran/seguimiento-medicion/pull/97) | `docs(#31)` `0fd8080` → RED `3280e52` → GREEN `70f00b0`. Merge `64513a4` |
+| HU-002 | [#11](https://github.com/FaustinoDuran/seguimiento-medicion/issues/11) | [SDD](sdd/HU-002-modificar-proyecto.md) | AC-002-01 a AC-002-06 | [feature](../features/HU-002-modificar-proyecto.feature) | `backend/internal/projects/{service,handler,repository_postgres}_test.go`; `go test -count=1 ./internal/projects/` con PostgreSQL local | `backend/internal/projects/` | [#101](https://github.com/FaustinoDuran/seguimiento-medicion/pull/101) | `docs(#11)` `4c307bd` → RED `7d14839` → GREEN `578bdd8` |
 
 HU-001 a HU-011 están mergeadas en `main`. HU-023 agrega `GET /projects`.
 HU-013 está integrada por el merge `88f30c4` (PR #78), HU-015 por
@@ -51,8 +52,8 @@ resolución en la consulta de HU-019.
 
 ## HU en desarrollo o revisión
 
-Ninguna. El siguiente recorte es el Sprint 5 (ADR 0008): HU-002, HU-006 y
-TASK-012.
+HU-002 está en revisión en el PR #101. Del Sprint 5 (ADR 0008) queda HU-006.
+TASK-012 ya está en `main`.
 
 ## Corrección del estado de integración
 

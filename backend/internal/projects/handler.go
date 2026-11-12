@@ -34,6 +34,13 @@ type createRequest struct {
 	Status    Status `json:"status"`
 }
 
+type updateRequest struct {
+	Name      *string `json:"name"`
+	StartDate *string `json:"start_date"`
+	EndDate   *string `json:"end_date"`
+	Status    *Status `json:"status"`
+}
+
 type errorResponse struct {
 	Error string `json:"error"`
 }
@@ -67,6 +74,44 @@ func (h *Handler) Create(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	writeJSON(writer, http.StatusCreated, toResponse(project))
+}
+
+func (h *Handler) Update(writer http.ResponseWriter, request *http.Request) {
+	id, ok := parseProjectID(writer, request)
+	if !ok {
+		return
+	}
+
+	var body updateRequest
+	if err := json.NewDecoder(request.Body).Decode(&body); err != nil {
+		writeError(writer, http.StatusBadRequest, "invalid json")
+		return
+	}
+
+	input := UpdateProject{Name: body.Name, Status: body.Status}
+	if body.StartDate != nil {
+		start, err := parseDate(*body.StartDate)
+		if err != nil || start.IsZero() {
+			writeError(writer, http.StatusBadRequest, ErrInvalidDates.Error())
+			return
+		}
+		input.StartDate = &start
+	}
+	if body.EndDate != nil {
+		end, err := parseDate(*body.EndDate)
+		if err != nil || end.IsZero() {
+			writeError(writer, http.StatusBadRequest, ErrInvalidDates.Error())
+			return
+		}
+		input.EndDate = &end
+	}
+
+	project, err := h.service.Update(request.Context(), id, input)
+	if err != nil {
+		writeServiceError(writer, err)
+		return
+	}
+	writeJSON(writer, http.StatusOK, toResponse(project))
 }
 
 func (h *Handler) List(writer http.ResponseWriter, request *http.Request) {

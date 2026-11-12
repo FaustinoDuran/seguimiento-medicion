@@ -91,6 +91,29 @@ func (r *PostgresRepository) List(ctx context.Context) ([]Project, error) {
 	return found, rows.Err()
 }
 
+func (r *PostgresRepository) Update(ctx context.Context, project Project) (Project, error) {
+	const query = `
+		UPDATE projects
+		SET name = $2, start_date = $3, end_date = $4, status = $5
+		WHERE id = $1
+		RETURNING id, name, start_date, end_date, status, created_at`
+
+	var saved Project
+	err := r.pool.QueryRow(
+		ctx,
+		query,
+		project.ID,
+		project.Name,
+		project.StartDate,
+		project.EndDate,
+		project.Status,
+	).Scan(&saved.ID, &saved.Name, &saved.StartDate, &saved.EndDate, &saved.Status, &saved.CreatedAt)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return Project{}, ErrNotFound
+	}
+	return saved, err
+}
+
 func (r *PostgresRepository) FindByID(ctx context.Context, id int64) (Project, error) {
 	const query = `
 		SELECT id, name, start_date, end_date, status, created_at

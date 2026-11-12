@@ -7,6 +7,7 @@ func Mount(router chi.Router, service *Service) {
 	router.Get("/projects", handler.List)
 	router.Post("/projects", handler.Create)
 	router.Get("/projects/{id}", handler.Get)
+	router.Patch("/projects/{id}", handler.Update)
 	router.Post("/projects/{id}/members", handler.AddMember)
 	router.Get("/projects/{id}/members", handler.ListMembers)
 }
