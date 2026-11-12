@@ -37,6 +37,7 @@
 .backlog-alert h1 { font-size: 32px; }
 .backlog-success { border-left: 3px solid #28594d; padding: 16px 22px; background: #e7ede3; }
 .backlog-list { margin-top: 44px; }
+.backlog-edit-form { margin-bottom: 28px; border-left: 3px solid #28594d; }
 .backlog-table-scroll { overflow-x: auto; }
 .backlog-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
 .backlog-table thead { color: #53675f; font-size: 12px; }

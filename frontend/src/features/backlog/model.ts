@@ -15,6 +15,8 @@ export type Story = {
 export type CreateStory = Pick<Story,
   'identifier' | 'title' | 'description' | 'priority' | 'story_points' | 'acceptance_criteria'>
 
+export type UpdateStory = Partial<Pick<Story, 'priority' | 'status' | 'story_points'>>
+
 export type BacklogProject = {
   id: number
   name: string
