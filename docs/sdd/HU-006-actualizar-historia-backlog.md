@@ -2,7 +2,7 @@
 
 - Issue: [#15](https://github.com/FaustinoDuran/seguimiento-medicion/issues/15)
 - Módulo Go: `backend/internal/backlog/`
-- Estado: lista para implementar; entendimiento final confirmado por el usuario
+- Estado: implementada en `feat/HU-006-update-backlog-story`; pendiente de revisión y merge
 
 ## Objetivo
 
@@ -133,50 +133,66 @@ descripción, criterios y asignación al Sprint no se modifican.
 
 ## Criterios de aceptación
 
-- [ ] AC-006-01 — Persistir cambios válidos y reflejarlos en consultas posteriores.
-- [ ] AC-006-02 — Informar que la historia no existe.
-- [ ] AC-006-03 — Completar y reabrir historias dentro de un Sprint abierto,
+- [x] AC-006-01 — Persistir cambios válidos y reflejarlos en consultas posteriores.
+- [x] AC-006-02 — Informar que la historia no existe.
+- [x] AC-006-03 — Completar y reabrir historias dentro de un Sprint abierto,
   conservando su asignación y las condiciones de finalización de HU-009.
-- [ ] AC-006-04 — Corregir únicamente estimaciones existentes mediante enteros
+- [x] AC-006-04 — Corregir únicamente estimaciones existentes mediante enteros
   positivos, sin permitir la primera estimación ni su eliminación.
-- [ ] AC-006-05 — Permitir corregir prioridad en historias completadas y exigir
+- [x] AC-006-05 — Permitir corregir prioridad en historias completadas y exigir
   su reapertura antes de corregir story points.
-- [ ] AC-006-06 — Rechazar todo cambio en historias de Sprints cerrados.
-- [ ] AC-006-07 — Rechazar toda edición en proyectos cerrados y mantener la consulta.
-- [ ] AC-006-08 — Actualizar únicamente los campos editables presentes de forma
+- [x] AC-006-06 — Rechazar todo cambio en historias de Sprints cerrados.
+- [x] AC-006-07 — Rechazar toda edición en proyectos cerrados y mantener la consulta.
+- [x] AC-006-08 — Actualizar únicamente los campos editables presentes de forma
   atómica; admitir las cuatro prioridades, incluida `unassigned`.
-- [ ] AC-006-09 — Rechazar la corrección de puntos en historias inicialmente
+- [x] AC-006-09 — Rechazar la corrección de puntos en historias inicialmente
   completadas, aunque se solicite su reapertura en el mismo guardado.
-- [ ] AC-006-10 — Admitir reintentos válidos y rechazar solicitudes sin campos editables.
-- [ ] AC-006-11 — Admitir corregir cualquier estimación existente, sin exigir
+- [x] AC-006-10 — Admitir reintentos válidos y rechazar solicitudes sin campos editables.
+- [x] AC-006-11 — Admitir corregir cualquier estimación existente, sin exigir
   procedencia de Planning Poker.
-- [ ] AC-006-12 — Conservar votos y rondas, guardar solo el puntaje vigente y
+- [x] AC-006-12 — Conservar votos y rondas, guardar solo el puntaje vigente y
   reflejarlo en métricas y reportes, sin agregar historial ni autor.
-- [ ] AC-006-13 — Respetar el contrato HTTP, valores nulos, campos desconocidos,
+- [x] AC-006-13 — Respetar el contrato HTTP, valores nulos, campos desconocidos,
   códigos y precedencia de errores, sin modificar datos ante fallos.
-- [ ] AC-006-14 — Admitir repetir `todo` sin Sprint y rechazar transiciones
+- [x] AC-006-14 — Admitir repetir `todo` sin Sprint y rechazar transiciones
   efectivas sin un Sprint abierto.
-- [ ] AC-006-15 — Corregir puntos y completar una historia inicialmente pendiente
+- [x] AC-006-15 — Corregir puntos y completar una historia inicialmente pendiente
   en un único guardado válido.
-- [ ] AC-006-16 — Permitir corregir con rondas abiertas o posteriores y registrar
+- [x] AC-006-16 — Permitir corregir con rondas abiertas o posteriores y registrar
   después un acuerdo válido de HU-015 que reemplace el puntaje.
-- [ ] AC-006-17 — Editar desde el backlog, guardar solo campos modificados,
+- [x] AC-006-17 — Editar desde el backlog, guardar solo campos modificados,
   cancelar y conservar lo ingresado ante errores, mostrando el resultado.
-- [ ] AC-006-18 — Presentar el proyecto cerrado como consulta y explicar las
+- [x] AC-006-18 — Presentar el proyecto cerrado como consulta y explicar las
   restricciones de puntos en historias sin estimar o completadas.
 
 ## Trazabilidad
 
 - BDD: `features/HU-006-actualizar-historia-backlog.feature`.
-- Tests previstos: servicio, HTTP y persistencia PostgreSQL en
-  `backend/internal/backlog/`; interacción de UI en `frontend/src/features/backlog/`.
-- Código previsto: `backend/internal/backlog/`, integración mediante puertos
-  públicos de `sprints` y registro en `backend/cmd/api/main.go`.
-- UI prevista: `frontend/src/features/backlog/{BacklogPage,StoryList}.tsx`,
+- Tests: `backend/internal/backlog/update_{service,handler,postgres}_test.go`;
+  interacción en `frontend/src/features/backlog/{BacklogPage,StoryEditForm}.test.tsx`.
+- Código: `backend/internal/backlog/update_{service,handler,postgres}.go`, puertos
+  públicos `projects/story_update.go` y `sprints/story_update.go`, y registro en
+  `backend/cmd/api/main.go`.
+- UI: `frontend/src/features/backlog/{BacklogPage,StoryList}.tsx`,
   formulario `StoryEditForm.tsx` y cliente `api.ts`.
-- Matriz: `docs/traceability.md`. Tests, commits TDD y PR todavía pendientes.
+- Matriz y evidencia de commits RED/GREEN: `docs/traceability.md`.
 
-## Plan de implementación tras la confirmación final
+## Verificación
+
+- Suite completa Go: `go test -count=1 -race ./...` con `DATABASE_URL`,
+  `BACKLOG_TEST_DATABASE_URL` y `SPRINTS_TEST_DATABASE_URL` contra PostgreSQL local;
+  `go vet ./...`. Todas las suites pasaron.
+- PostgreSQL: recorrido HTTP, aislamiento entre proyectos, conservación de datos
+  ante rechazos, transiciones y asignación, integración con rondas y acuerdos de
+  Planning Poker, métricas y reportes vigentes. Ediciones simultáneas conservan
+  los campos omitidos y un cierre concurrente bloquea la edición.
+- El guardado bloquea el proyecto, la historia y su Sprint asignado en una
+  transacción; el SQL de cada módulo permanece en su módulo. No hay migraciones.
+- Frontend: `npm test` (115 tests), `npm run lint` y `npm run build`, todos verdes.
+  Las pruebas de UI usan HTTP simulado con MSW; las de Go usan PostgreSQL real
+  con esquemas aislados. No se declara una validación manual en navegador.
+
+## Plan acordado e implementado
 
 1. Rama `feat/HU-006-update-backlog-story`; preservar los cambios ajenos existentes.
 2. TDD por reglas: tests RED de servicio, implementación GREEN y refactor cuando
@@ -191,6 +207,6 @@ descripción, criterios y asignación al Sprint no se modifican.
 6. Verificar Go con PostgreSQL local y frontend con tests, lint y build;
    completar trazabilidad y abrir PR contra `main` con `Closes #15`.
 
-Commits previstos: `docs(#15): especificar actualización de historias`,
+Convención de commits: `docs(#15): especificar actualización de historias`,
 `test(#15): red - ...`, `feat(#15): green - ...` y `refactor(#15): ...` cuando
 haya cambios de diseño. Sin nuevas métricas, autenticación, GORM ni cambio de stack.
