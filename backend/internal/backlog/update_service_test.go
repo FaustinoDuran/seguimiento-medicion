@@ -142,3 +142,66 @@ func TestUpdateStatusAndClosedWork(t *testing.T) {
 		}
 	}
 }
+
+func TestUpdateCorrectsOnlyExistingEstimatesOnInitiallyPendingStories(t *testing.T) {
+	done, todo := "done", "todo"
+	tests := []struct {
+		name string
+		initial string
+		unestimated bool
+		target *string
+		points int64
+		want error
+	}{
+		{"correct", "todo", false, nil, 8, nil},
+		{"repeat", "todo", false, nil, 5, nil},
+		{"correct and complete", "todo", false, &done, 8, nil},
+		{"first estimate", "todo", true, nil, 8, ErrStoryUnestimated},
+		{"done", "done", false, nil, 8, ErrCompletedStoryEstimate},
+		{"same points on done", "done", false, nil, 5, ErrCompletedStoryEstimate},
+		{"reopen and correct", "done", false, &todo, 8, ErrCompletedStoryEstimate},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			store := updateFixture()
+			store.story.Status = tt.initial
+			store.state.SprintAssigned = true
+			if tt.unestimated { store.story.StoryPoints = nil }
+			before := store.story
+			priority := PriorityHigh
+			got, err := NewUpdateService(store).Update(context.Background(), UpdateStory{
+				ProjectID: 1, ID: 7, Priority: &priority, Status: tt.target, StoryPoints: &tt.points,
+			})
+			if !errors.Is(err, tt.want) { t.Fatalf("got %v; want %v", err, tt.want) }
+			if tt.want != nil {
+				if !reflect.DeepEqual(store.story, before) { t.Fatal("rejected update changed the story") }
+				return
+			}
+			if got.StoryPoints == nil || *got.StoryPoints != tt.points || got.Priority != PriorityHigh {
+				t.Fatalf("unexpected correction: %+v", got)
+			}
+			if tt.target != nil && got.Status != *tt.target { t.Fatalf("status: %s", got.Status) }
+		})
+	}
+	store := updateFixture()
+	store.story.Status = "done"
+	store.state.SprintAssigned = true
+	service := NewUpdateService(store)
+	if _, err := service.Update(context.Background(), UpdateStory{ProjectID: 1, ID: 7, Status: &todo}); err != nil {
+		t.Fatal(err)
+	}
+	points := int64(8)
+	if _, err := service.Update(context.Background(), UpdateStory{ProjectID: 1, ID: 7, StoryPoints: &points}); err != nil {
+		t.Fatalf("correction after reopening: %v", err)
+	}
+}
+
+func TestUpdatePreservesMissingAndStorageErrors(t *testing.T) {
+	priority := PriorityHigh
+	for _, failure := range []error{ErrNotFound, errors.New("storage unavailable")} {
+		store := updateFixture()
+		store.err = failure
+		_, err := NewUpdateService(store).Update(context.Background(), UpdateStory{ProjectID: 1, ID: 7, Priority: &priority})
+		if !errors.Is(err, failure) { t.Fatalf("got %v; want %v", err, failure) }
+	}
+}
