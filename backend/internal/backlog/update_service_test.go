@@ -93,11 +93,11 @@ func TestUpdatePriorityPreservesOtherFields(t *testing.T) {
 
 func TestUpdateStatusAndClosedWork(t *testing.T) {
 	tests := []struct {
-		name string
+		name    string
 		initial string
-		target string
-		state StoryUpdateState
-		want error
+		target  string
+		state   StoryUpdateState
+		want    error
 	}{
 		{"complete", "todo", "done", StoryUpdateState{SprintAssigned: true}, nil},
 		{"reopen", "done", "todo", StoryUpdateState{SprintAssigned: true}, nil},
@@ -123,9 +123,13 @@ func TestUpdateStatusAndClosedWork(t *testing.T) {
 			want := before
 			if tt.want == nil {
 				want.Status = tt.target
-				if !reflect.DeepEqual(got, want) { t.Fatalf("got %+v; want %+v", got, want) }
+				if !reflect.DeepEqual(got, want) {
+					t.Fatalf("got %+v; want %+v", got, want)
+				}
 			}
-			if !reflect.DeepEqual(store.story, want) { t.Fatalf("persisted %+v; want %+v", store.story, want) }
+			if !reflect.DeepEqual(store.story, want) {
+				t.Fatalf("persisted %+v; want %+v", store.story, want)
+			}
 		})
 	}
 	for _, state := range []StoryUpdateState{{ProjectClosed: true}, {SprintAssigned: true, SprintClosed: true}} {
@@ -133,6 +137,8 @@ func TestUpdateStatusAndClosedWork(t *testing.T) {
 		store.state = state
 		priority := store.story.Priority
 		_, err := NewUpdateService(store).Update(context.Background(), UpdateStory{ProjectID: 1, ID: 7, Priority: &priority})
-		if err == nil { t.Fatal("repeating priority must not bypass closed-work restrictions") }
+		if err == nil {
+			t.Fatal("repeating priority must not bypass closed-work restrictions")
+		}
 	}
 }

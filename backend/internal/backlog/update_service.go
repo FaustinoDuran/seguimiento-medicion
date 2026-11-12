@@ -6,9 +6,11 @@ import (
 )
 
 var (
-	ErrNoStoryChanges      = errors.New("at least one editable story field is required")
-	ErrInvalidUpdateID     = errors.New("project and story ids must be positive integers")
-	ErrInvalidUpdateStatus = errors.New("story status must be todo or done")
+	ErrNoStoryChanges        = errors.New("at least one editable story field is required")
+	ErrInvalidUpdateID       = errors.New("project and story ids must be positive integers")
+	ErrInvalidUpdateStatus   = errors.New("story status must be todo or done")
+	ErrUpdateNeedsOpenSprint = errors.New("story status changes require an assigned open sprint")
+	ErrUpdateSprintClosed    = errors.New("story sprint is closed")
 )
 
 type UpdateStory struct {
@@ -42,7 +44,19 @@ func (s *UpdateService) Update(ctx context.Context, input UpdateStory) (Story, e
 	if err := input.validate(); err != nil {
 		return Story{}, err
 	}
-	return s.store.UpdateStory(ctx, input, func(story Story, _ StoryUpdateState) (Story, error) {
+	return s.store.UpdateStory(ctx, input, func(story Story, state StoryUpdateState) (Story, error) {
+		if state.ProjectClosed {
+			return Story{}, ErrProjectClosed
+		}
+		if state.SprintClosed {
+			return Story{}, ErrUpdateSprintClosed
+		}
+		if input.Status != nil && *input.Status != story.Status {
+			if !state.SprintAssigned {
+				return Story{}, ErrUpdateNeedsOpenSprint
+			}
+			story.Status = *input.Status
+		}
 		if input.Priority != nil {
 			story.Priority = *input.Priority
 		}
