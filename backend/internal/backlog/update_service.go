@@ -1,6 +1,15 @@
 package backlog
 
-import "context"
+import (
+	"context"
+	"errors"
+)
+
+var (
+	ErrNoStoryChanges      = errors.New("at least one editable story field is required")
+	ErrInvalidUpdateID     = errors.New("project and story ids must be positive integers")
+	ErrInvalidUpdateStatus = errors.New("story status must be todo or done")
+)
 
 type UpdateStory struct {
 	ProjectID   int64     `json:"-"`
@@ -30,10 +39,41 @@ func NewUpdateService(store UpdateStore) *UpdateService {
 }
 
 func (s *UpdateService) Update(ctx context.Context, input UpdateStory) (Story, error) {
+	if err := input.validate(); err != nil {
+		return Story{}, err
+	}
 	return s.store.UpdateStory(ctx, input, func(story Story, _ StoryUpdateState) (Story, error) {
 		if input.Priority != nil {
 			story.Priority = *input.Priority
 		}
 		return story, nil
 	})
+}
+
+func (in UpdateStory) validate() error {
+	if in.ProjectID < 1 || in.ID < 1 {
+		return ErrInvalidUpdateID
+	}
+	noPriorityOrStatus := in.Priority == nil && in.Status == nil
+	if noPriorityOrStatus && in.StoryPoints == nil {
+		return ErrNoStoryChanges
+	}
+	if in.Priority != nil {
+		switch *in.Priority {
+		case PriorityUnassigned, PriorityLow, PriorityMedium, PriorityHigh:
+		default:
+			return ErrInvalidPriority
+		}
+	}
+	if in.Status != nil {
+		switch *in.Status {
+		case "todo", "done":
+		default:
+			return ErrInvalidUpdateStatus
+		}
+	}
+	if in.StoryPoints != nil && *in.StoryPoints <= 0 {
+		return ErrInvalidStoryPoints
+	}
+	return nil
 }

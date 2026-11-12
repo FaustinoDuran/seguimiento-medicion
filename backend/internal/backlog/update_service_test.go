@@ -19,9 +19,9 @@ func TestUpdateRejectsInvalidInputWithoutSaving(t *testing.T) {
 	blankPriority, unknownPriority := Priority(""), Priority("urgent")
 	blankStatus, unknownStatus := "", "in_progress"
 	tests := []struct {
-		name string
+		name   string
 		change func(*UpdateStory)
-		want error
+		want   error
 	}{
 		{"empty", func(in *UpdateStory) { in.Priority = nil }, ErrNoStoryChanges},
 		{"project id", func(in *UpdateStory) { in.ProjectID = 0 }, ErrInvalidUpdateID},
