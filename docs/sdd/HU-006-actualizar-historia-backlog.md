@@ -3,6 +3,7 @@
 - Issue: [#15](https://github.com/FaustinoDuran/seguimiento-medicion/issues/15)
 - Módulo Go: `backend/internal/backlog/`
 - Estado: implementada en `feat/HU-006-update-backlog-story`; pendiente de revisión y merge
+- PR: [#102](https://github.com/FaustinoDuran/seguimiento-medicion/pull/102), contra `main`.
 
 ## Objetivo
 

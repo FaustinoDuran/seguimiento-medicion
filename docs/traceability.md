@@ -52,13 +52,13 @@ resolución en la consulta de HU-019.
 
 ## HU en desarrollo o revisión
 
-HU-002 está en revisión en el PR #101. HU-006 está implementada en su rama,
+HU-002 está en revisión en el PR #101. HU-006 está implementada en el PR [#102](https://github.com/FaustinoDuran/seguimiento-medicion/pull/102),
 pendiente de revisión y merge. No se declara terminada en `main`.
 TASK-012 ya está en `main`.
 
 | HU | Issue | SDD | Criterios | BDD | Tests | Código | PR | Evidencia TDD |
 |---|---|---|---|---|---|---|---|---|
-| HU-006 | [#15](https://github.com/FaustinoDuran/seguimiento-medicion/issues/15) | [SDD](sdd/HU-006-actualizar-historia-backlog.md) | AC-006-01 a AC-006-18 | [feature](../features/HU-006-actualizar-historia-backlog.feature) | `backlog/update_{service,handler,postgres}_test.go`; Go completo con PostgreSQL y `-race`, vet; frontend 115 tests, lint y build | `backend/internal/backlog/update_*.go`; puertos de projects/sprints; bootstrap; `frontend/src/features/backlog/` | Pendiente de apertura | Spec `9ad035d`; prioridad RED `3b2bd3e` → GREEN `2ae1484`; entradas RED `b9934df` → GREEN `ec9d8a1`; estado RED `1de392a` → GREEN `7a8ae3d`; puntos RED `cd19a9f` → GREEN `87e3413`; HTTP RED `872ee37` → GREEN `6b3f4d1`; PostgreSQL RED `ac9fe6e` → GREEN `3496985`; UI RED `6118249` → GREEN `e6803fc`; errores RED `c088c8f` → GREEN `4e8dd25`; guardado RED `003dd25` → GREEN `eaebaf3`; integración y concurrencia `5408f9c`; legibilidad `b803965` |
+| HU-006 | [#15](https://github.com/FaustinoDuran/seguimiento-medicion/issues/15) | [SDD](sdd/HU-006-actualizar-historia-backlog.md) | AC-006-01 a AC-006-18 | [feature](../features/HU-006-actualizar-historia-backlog.feature) | `backlog/update_{service,handler,postgres}_test.go`; Go completo con PostgreSQL y `-race`, vet; frontend 115 tests, lint y build | `backend/internal/backlog/update_*.go`; puertos de projects/sprints; bootstrap; `frontend/src/features/backlog/` | [#102](https://github.com/FaustinoDuran/seguimiento-medicion/pull/102) | Spec `9ad035d`; prioridad RED `3b2bd3e` → GREEN `2ae1484`; entradas RED `b9934df` → GREEN `ec9d8a1`; estado RED `1de392a` → GREEN `7a8ae3d`; puntos RED `cd19a9f` → GREEN `87e3413`; HTTP RED `872ee37` → GREEN `6b3f4d1`; PostgreSQL RED `ac9fe6e` → GREEN `3496985`; UI RED `6118249` → GREEN `e6803fc`; errores RED `c088c8f` → GREEN `4e8dd25`; guardado RED `003dd25` → GREEN `eaebaf3`; integración y concurrencia `5408f9c`; legibilidad `b803965` |
 
 ## Corrección del estado de integración
 
