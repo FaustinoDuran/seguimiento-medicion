@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { updateStory } from './api'
+import { updateError } from './errors'
 import { priorityLabels, statusLabels } from './model'
 import type { Story, UpdateStory } from './model'
 
@@ -14,6 +15,9 @@ export function StoryEditForm({ story, onUpdated, onCancel }: Props) {
   const [error, setError] = useState<string | null>(null)
   const pending = useRef<AbortController | null>(null)
   const firstInput = useRef<HTMLSelectElement>(null)
+  const pointsHint = story.story_points === null
+    ? 'La primera estimación se registra mediante Planning Poker.'
+    : story.status === 'done' ? 'Guardá primero la reapertura para corregir los story points.' : null
 
   useEffect(() => {
     firstInput.current?.focus()
@@ -37,8 +41,8 @@ export function StoryEditForm({ story, onUpdated, onCancel }: Props) {
     try {
       const updated = await updateStory(story, changes, controller.signal)
       if (!controller.signal.aborted) onUpdated(updated)
-    } catch {
-      if (!controller.signal.aborted) setError('No pudimos actualizar la historia. Volvé a intentarlo.')
+    } catch (cause) {
+      if (!controller.signal.aborted) setError(updateError(cause))
     } finally {
       pending.current = null
       if (!controller.signal.aborted) setSending(false)
@@ -62,8 +66,10 @@ export function StoryEditForm({ story, onUpdated, onCancel }: Props) {
               {Object.entries(statusLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
             </select></div>
           <div><label htmlFor="edit-story-points">Story points</label>
-            <input id="edit-story-points" type="number" value={points} step="1"
-              onChange={event => setPoints(event.target.value)} /></div>
+            <input id="edit-story-points" type="number" value={points} step="1" disabled={pointsHint !== null}
+              aria-describedby={pointsHint ? 'edit-story-points-hint' : undefined}
+              onChange={event => setPoints(event.target.value)} />
+            {pointsHint ? <p className="backlog-edit-hint" id="edit-story-points-hint">{pointsHint}</p> : null}</div>
         </div>
         <div className="backlog-form-footer">
           <button className="backlog-quiet-button" type="button" onClick={onCancel}>Cancelar</button>
