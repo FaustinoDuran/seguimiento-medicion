@@ -146,12 +146,12 @@ func TestUpdateStatusAndClosedWork(t *testing.T) {
 func TestUpdateCorrectsOnlyExistingEstimatesOnInitiallyPendingStories(t *testing.T) {
 	done, todo := "done", "todo"
 	tests := []struct {
-		name string
-		initial string
+		name        string
+		initial     string
 		unestimated bool
-		target *string
-		points int64
-		want error
+		target      *string
+		points      int64
+		want        error
 	}{
 		{"correct", "todo", false, nil, 8, nil},
 		{"repeat", "todo", false, nil, 5, nil},
@@ -166,21 +166,29 @@ func TestUpdateCorrectsOnlyExistingEstimatesOnInitiallyPendingStories(t *testing
 			store := updateFixture()
 			store.story.Status = tt.initial
 			store.state.SprintAssigned = true
-			if tt.unestimated { store.story.StoryPoints = nil }
+			if tt.unestimated {
+				store.story.StoryPoints = nil
+			}
 			before := store.story
 			priority := PriorityHigh
 			got, err := NewUpdateService(store).Update(context.Background(), UpdateStory{
 				ProjectID: 1, ID: 7, Priority: &priority, Status: tt.target, StoryPoints: &tt.points,
 			})
-			if !errors.Is(err, tt.want) { t.Fatalf("got %v; want %v", err, tt.want) }
+			if !errors.Is(err, tt.want) {
+				t.Fatalf("got %v; want %v", err, tt.want)
+			}
 			if tt.want != nil {
-				if !reflect.DeepEqual(store.story, before) { t.Fatal("rejected update changed the story") }
+				if !reflect.DeepEqual(store.story, before) {
+					t.Fatal("rejected update changed the story")
+				}
 				return
 			}
 			if got.StoryPoints == nil || *got.StoryPoints != tt.points || got.Priority != PriorityHigh {
 				t.Fatalf("unexpected correction: %+v", got)
 			}
-			if tt.target != nil && got.Status != *tt.target { t.Fatalf("status: %s", got.Status) }
+			if tt.target != nil && got.Status != *tt.target {
+				t.Fatalf("status: %s", got.Status)
+			}
 		})
 	}
 	store := updateFixture()
@@ -202,6 +210,8 @@ func TestUpdatePreservesMissingAndStorageErrors(t *testing.T) {
 		store := updateFixture()
 		store.err = failure
 		_, err := NewUpdateService(store).Update(context.Background(), UpdateStory{ProjectID: 1, ID: 7, Priority: &priority})
-		if !errors.Is(err, failure) { t.Fatalf("got %v; want %v", err, failure) }
+		if !errors.Is(err, failure) {
+			t.Fatalf("got %v; want %v", err, failure)
+		}
 	}
 }

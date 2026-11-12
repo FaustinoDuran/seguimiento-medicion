@@ -6,11 +6,13 @@ import (
 )
 
 var (
-	ErrNoStoryChanges        = errors.New("at least one editable story field is required")
-	ErrInvalidUpdateID       = errors.New("project and story ids must be positive integers")
-	ErrInvalidUpdateStatus   = errors.New("story status must be todo or done")
-	ErrUpdateNeedsOpenSprint = errors.New("story status changes require an assigned open sprint")
-	ErrUpdateSprintClosed    = errors.New("story sprint is closed")
+	ErrNoStoryChanges         = errors.New("at least one editable story field is required")
+	ErrInvalidUpdateID        = errors.New("project and story ids must be positive integers")
+	ErrInvalidUpdateStatus    = errors.New("story status must be todo or done")
+	ErrUpdateNeedsOpenSprint  = errors.New("story status changes require an assigned open sprint")
+	ErrUpdateSprintClosed     = errors.New("story sprint is closed")
+	ErrStoryUnestimated       = errors.New("only an existing story estimate can be corrected")
+	ErrCompletedStoryEstimate = errors.New("reopen the story before correcting its estimate")
 )
 
 type UpdateStory struct {
@@ -50,6 +52,15 @@ func (s *UpdateService) Update(ctx context.Context, input UpdateStory) (Story, e
 		}
 		if state.SprintClosed {
 			return Story{}, ErrUpdateSprintClosed
+		}
+		if input.StoryPoints != nil {
+			if story.Status == "done" {
+				return Story{}, ErrCompletedStoryEstimate
+			}
+			if story.StoryPoints == nil {
+				return Story{}, ErrStoryUnestimated
+			}
+			story.StoryPoints = input.StoryPoints
 		}
 		if input.Status != nil && *input.Status != story.Status {
 			if !state.SprintAssigned {
