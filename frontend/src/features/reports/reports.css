@@ -23,6 +23,8 @@
 .report-selector label { font-size: 13px; font-weight: 600; }
 .report-selector select { padding: 12px 16px; border: 1px solid #183e3655; background: transparent; color: inherit; font: inherit; max-width: 100%; }
 .report-selector select:focus-visible, .report-table-scroll:focus-visible { outline: 3px solid #a44721; outline-offset: 3px; }
+a.button { display: inline-block; text-decoration: none; }
+a.button:hover { background: #28594d; }
 .report-alert { border-left: 3px solid #a44721; background: #f0e4d9; padding: 24px; margin-top: 24px; }
 .report-loading { padding: 32px 0; color: #53675f; }
 @media (max-width: 640px) { .report-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); } .report-metrics dd { font-size: 28px; } }

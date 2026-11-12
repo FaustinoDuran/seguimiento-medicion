@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ApiError } from '../../shared/api/client'
-import { getReport } from './api'
+import { getReport, reportPDFPath } from './api'
 import type { ProjectReport, ReportSprint } from './model'
 import { ReportContent } from './ReportContent'
 import './reports.css'
@@ -50,6 +50,7 @@ function ReportLoader({ projectId }: { projectId: string }) {
           Sprint {sprint.id} · {sprint.goal} · {sprint.status === 'closed' ? 'Cerrado' : 'Abierto'}
         </option>)}
       </select>
+      {state.kind === 'ready' ? <a className="button" href={reportPDFPath(projectId, selected)} download>Exportar PDF</a> : null}
     </div>
     {state.kind === 'ready' ? <ReportContent report={state.report} /> : null}
     {state.kind === 'loading' ? <p className="report-loading" role="status">Cargando reporte…</p> : null}

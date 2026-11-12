@@ -3,7 +3,7 @@
 - Issue: [#30](https://github.com/FaustinoDuran/seguimiento-medicion/issues/30)
 - Módulo Go: `backend/internal/reports/`
 - Presentación: `frontend/src/features/reports/`
-- Estado: implementada; [PR #96 en revisión contra main](https://github.com/FaustinoDuran/seguimiento-medicion/pull/96). Dependencia PR #95 mergeada.
+- Estado: mergeada en `main` ([PR #96](https://github.com/FaustinoDuran/seguimiento-medicion/pull/96))
 - Depende de HU-019.
 
 ## Objetivo

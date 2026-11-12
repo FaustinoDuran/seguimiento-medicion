@@ -379,3 +379,34 @@ func TestPostgresReportRemainsConsistentDuringEffortWrites(t *testing.T) {
 		}
 	}
 }
+
+func TestPostgresReportPDFUsesPersistedScope(t *testing.T) {
+	pool := postgresTestPool(t)
+	router := mountedRouter(t, pool)
+	project := createProject(t, router, "Informe persistido")
+	assigned := createStory(t, router, project, "HU-A", 8)
+	sprint := createSprint(t, router, project, "Entregar el informe")
+	assignStory(t, router, sprint, assigned)
+	decodeID(t, postJSON(t, router, fmt.Sprintf("/projects/%d/stories", project),
+		`{"identifier":"HU-B","title":"Sin sprint"}`))
+	other := createProject(t, router, "Otro proyecto")
+	createStory(t, router, other, "HU-Z", 3)
+
+	projectPDF := getJSON(t, router, fmt.Sprintf("/projects/%d/report.pdf", project))
+	if projectPDF.Code != http.StatusOK {
+		t.Fatalf("project pdf: %d %s", projectPDF.Code, projectPDF.Body.String())
+	}
+	projectText := assertPDFText(t, projectPDF.Body.Bytes(), "Informe persistido", "HU-A", "HU-B")
+	if strings.Contains(projectText, "HU-Z") {
+		t.Fatalf("project pdf includes another project\n%s", projectText)
+	}
+
+	sprintPDF := getJSON(t, router, fmt.Sprintf("/projects/%d/sprints/%d/report.pdf", project, sprint))
+	if sprintPDF.Code != http.StatusOK {
+		t.Fatalf("sprint pdf: %d %s", sprintPDF.Code, sprintPDF.Body.String())
+	}
+	sprintText := assertPDFText(t, sprintPDF.Body.Bytes(), "Entregar el informe", "HU-A")
+	if strings.Contains(sprintText, "HU-B") || strings.Contains(sprintText, "HU-Z") {
+		t.Fatalf("sprint pdf includes another scope\n%s", sprintText)
+	}
+}

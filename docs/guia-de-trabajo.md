@@ -191,6 +191,12 @@ No duplicar decisiones en Slack, Jira, Notion u otros documentos.
 
 ## 7. Regla para agentes de Cursor
 
+Skills compartidas (TASK-012, no ir a `.agents/`):
+
+- `.cursor/skills/pre-commit/` — reglas del TP antes de codear o commitear.
+- `.cursor/skills/plan-de-accion/` — clasifica un ticket y arma el plan.
+- Hook: `.cursor/hooks.json` + `.cursor/hooks/tp-pre-commit.py` en `git commit` y `git push`.
+
 Ante una solicitud de funcionalidad, el agente debe verificar primero que
 existan Issue/HU, SDD y BDD. Si falta un eslabón, debe detener la implementación
 y crearlo o pedir confirmación. Para tareas técnicas no debe inventar una HU:
