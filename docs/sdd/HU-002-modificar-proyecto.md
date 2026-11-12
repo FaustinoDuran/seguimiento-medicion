@@ -2,7 +2,7 @@
 
 - Issue: [#11](https://github.com/FaustinoDuran/seguimiento-medicion/issues/11)
 - Módulo Go: `backend/internal/projects/`
-- Estado: implementada en `feat/HU-002-modificar-proyecto`; falta el PR
+- Estado: implementada en `feat/HU-002-modificar-proyecto`. PR [#101](https://github.com/FaustinoDuran/seguimiento-medicion/pull/101)
 
 ## Objetivo
 
