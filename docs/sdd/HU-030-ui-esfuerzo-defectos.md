@@ -3,7 +3,7 @@
 - Issue: [#85](https://github.com/FaustinoDuran/seguimiento-medicion/issues/85)
 - Módulos Go: `backend/internal/effort/` y `backend/internal/defects/`
 - Presentación: `frontend/src/features/measurement/`, `features/effort/` y `features/defects/`
-- Estado: en desarrollo
+- Estado: mergeada en `main` ([PR #93](https://github.com/FaustinoDuran/seguimiento-medicion/pull/93))
 - Depende de: HU-016, HU-017 y HU-018
 
 ## Objetivo

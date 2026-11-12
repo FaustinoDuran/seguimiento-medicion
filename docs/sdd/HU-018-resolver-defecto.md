@@ -2,8 +2,8 @@
 
 - Issue: [#27](https://github.com/FaustinoDuran/seguimiento-medicion/issues/27)
 - Módulo Go: `backend/internal/defects/`
-- Estado: implementada en `feat/HU-018-resolve-defect`; pendiente de revisión y merge
-- Dependencia: HU-017, disponible en la base de `feat/HU-018-resolve-defect`.
+- Estado: mergeada en `main` ([PR #92](https://github.com/FaustinoDuran/seguimiento-medicion/pull/92); commits del PR #89)
+- Dependencia: HU-017, mergeada en `main`.
 
 ## Objetivo
 
