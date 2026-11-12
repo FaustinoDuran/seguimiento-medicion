@@ -2,6 +2,7 @@ package backlog
 
 import (
 	"context"
+	"errors"
 	"reflect"
 	"testing"
 )
@@ -10,6 +11,40 @@ type memoryUpdateStore struct {
 	story Story
 	state StoryUpdateState
 	err   error
+}
+
+func TestUpdateRejectsInvalidInputWithoutSaving(t *testing.T) {
+	priority := PriorityHigh
+	zero, negative := int64(0), int64(-1)
+	blankPriority, unknownPriority := Priority(""), Priority("urgent")
+	blankStatus, unknownStatus := "", "in_progress"
+	tests := []struct {
+		name string
+		change func(*UpdateStory)
+		want error
+	}{
+		{"empty", func(in *UpdateStory) { in.Priority = nil }, ErrNoStoryChanges},
+		{"project id", func(in *UpdateStory) { in.ProjectID = 0 }, ErrInvalidUpdateID},
+		{"story id", func(in *UpdateStory) { in.ID = -1 }, ErrInvalidUpdateID},
+		{"blank priority", func(in *UpdateStory) { in.Priority = &blankPriority }, ErrInvalidPriority},
+		{"unknown priority", func(in *UpdateStory) { in.Priority = &unknownPriority }, ErrInvalidPriority},
+		{"blank status", func(in *UpdateStory) { in.Status = &blankStatus }, ErrInvalidUpdateStatus},
+		{"unknown status", func(in *UpdateStory) { in.Status = &unknownStatus }, ErrInvalidUpdateStatus},
+		{"zero points", func(in *UpdateStory) { in.StoryPoints = &zero }, ErrInvalidStoryPoints},
+		{"negative points", func(in *UpdateStory) { in.StoryPoints = &negative }, ErrInvalidStoryPoints},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			store := updateFixture()
+			before := store.story
+			input := UpdateStory{ProjectID: 1, ID: 7, Priority: &priority}
+			tt.change(&input)
+			_, err := NewUpdateService(store).Update(context.Background(), input)
+			if !errors.Is(err, tt.want) || !reflect.DeepEqual(store.story, before) {
+				t.Fatalf("got %v, story %+v; want %v and unchanged story", err, store.story, tt.want)
+			}
+		})
+	}
 }
 
 func (r *memoryUpdateStore) UpdateStory(
