@@ -88,7 +88,9 @@ func newUpdateEnvironment(t *testing.T) *updateEnvironment {
 	storyRepo := backlog.NewPostgresRepository(pool)
 	stories := backlog.NewService(storyRepo, projectService)
 	sprintRepo := sprints.NewPostgresRepository(pool)
-	sprintService := sprints.NewService(sprintRepo, sprints.NewProjectLookup(projectRepo), sprints.NewStoryLookup(storyRepo))
+	sprintService := sprints.NewService(
+		sprintRepo, sprints.NewProjectLookup(projectRepo), sprints.NewStoryLookup(storyRepo),
+	)
 	updates := backlog.NewUpdateService(backlog.NewPostgresUpdateStore(pool, projectRepo, sprintRepo))
 	project, err := projectService.Create(ctx, projects.CreateProject{
 		Name: "Edición", StartDate: time.Now(), EndDate: time.Now().AddDate(0, 0, 1),
@@ -152,7 +154,10 @@ func TestPostgresBacklogUpdatePersistsAndRespectsSprintLifecycle(t *testing.T) {
 	if _, err := e.sprints.Assign(ctx, sprint.ID, e.story.ID); err != nil {
 		t.Fatal(err)
 	}
-	for _, body := range []string{`{"status":"done","story_points":13}`, `{"priority":"unassigned"}`, `{"status":"todo"}`, `{"story_points":8}`} {
+	for _, body := range []string{
+		`{"status":"done","story_points":13}`, `{"priority":"unassigned"}`,
+		`{"status":"todo"}`, `{"story_points":8}`,
+	} {
 		got := updateRequest(e.router, http.MethodPatch, e.path, body)
 		if got.Code != 200 {
 			t.Fatalf("%s: %d %s", body, got.Code, got.Body.String())

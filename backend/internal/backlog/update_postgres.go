@@ -46,9 +46,15 @@ func (r *PostgresUpdateStore) UpdateStory(
 		return Story{}, err
 	}
 	// FOR UPDATE also blocks new Sprint assignments through the story foreign key.
-	const find = `SELECT id, project_id, identifier, title, description, priority, status, story_points, acceptance_criteria
+	const find = `SELECT id, project_id, identifier, title, description,
+        priority, status, story_points, acceptance_criteria
         FROM backlog_stories WHERE project_id = $1 AND id = $2 FOR UPDATE`
-	current, err := scanStory(tx.QueryRow(ctx, find, input.ProjectID, input.ID))
+	current, err := scanStory(tx.QueryRow(
+		ctx,
+		find,
+		input.ProjectID,
+		input.ID,
+	))
 	if errors.Is(err, pgx.ErrNoRows) {
 		return Story{}, ErrNotFound
 	}

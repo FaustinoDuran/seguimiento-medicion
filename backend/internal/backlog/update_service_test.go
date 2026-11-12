@@ -105,7 +105,10 @@ func TestUpdateStatusAndClosedWork(t *testing.T) {
 		{"repeat done", "done", "done", StoryUpdateState{SprintAssigned: true}, nil},
 		{"complete without sprint", "todo", "done", StoryUpdateState{}, ErrUpdateNeedsOpenSprint},
 		{"closed sprint", "todo", "done", StoryUpdateState{SprintAssigned: true, SprintClosed: true}, ErrUpdateSprintClosed},
-		{"closed sprint retry", "done", "done", StoryUpdateState{SprintAssigned: true, SprintClosed: true}, ErrUpdateSprintClosed},
+		{
+			"closed sprint retry", "done", "done",
+			StoryUpdateState{SprintAssigned: true, SprintClosed: true}, ErrUpdateSprintClosed,
+		},
 		{"closed project", "todo", "todo", StoryUpdateState{ProjectClosed: true}, ErrProjectClosed},
 	}
 	for _, tt := range tests {
