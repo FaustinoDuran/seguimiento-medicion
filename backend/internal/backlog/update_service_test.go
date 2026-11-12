@@ -90,3 +90,49 @@ func TestUpdatePriorityPreservesOtherFields(t *testing.T) {
 		})
 	}
 }
+
+func TestUpdateStatusAndClosedWork(t *testing.T) {
+	tests := []struct {
+		name string
+		initial string
+		target string
+		state StoryUpdateState
+		want error
+	}{
+		{"complete", "todo", "done", StoryUpdateState{SprintAssigned: true}, nil},
+		{"reopen", "done", "todo", StoryUpdateState{SprintAssigned: true}, nil},
+		{"repeat todo without sprint", "todo", "todo", StoryUpdateState{}, nil},
+		{"repeat done", "done", "done", StoryUpdateState{SprintAssigned: true}, nil},
+		{"complete without sprint", "todo", "done", StoryUpdateState{}, ErrUpdateNeedsOpenSprint},
+		{"closed sprint", "todo", "done", StoryUpdateState{SprintAssigned: true, SprintClosed: true}, ErrUpdateSprintClosed},
+		{"closed sprint retry", "done", "done", StoryUpdateState{SprintAssigned: true, SprintClosed: true}, ErrUpdateSprintClosed},
+		{"closed project", "todo", "todo", StoryUpdateState{ProjectClosed: true}, ErrProjectClosed},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			store := updateFixture()
+			store.story.Status = tt.initial
+			store.state = tt.state
+			before := store.story
+			got, err := NewUpdateService(store).Update(context.Background(), UpdateStory{
+				ProjectID: 1, ID: 7, Status: &tt.target,
+			})
+			if !errors.Is(err, tt.want) {
+				t.Fatalf("got %v; want %v", err, tt.want)
+			}
+			want := before
+			if tt.want == nil {
+				want.Status = tt.target
+				if !reflect.DeepEqual(got, want) { t.Fatalf("got %+v; want %+v", got, want) }
+			}
+			if !reflect.DeepEqual(store.story, want) { t.Fatalf("persisted %+v; want %+v", store.story, want) }
+		})
+	}
+	for _, state := range []StoryUpdateState{{ProjectClosed: true}, {SprintAssigned: true, SprintClosed: true}} {
+		store := updateFixture()
+		store.state = state
+		priority := store.story.Priority
+		_, err := NewUpdateService(store).Update(context.Background(), UpdateStory{ProjectID: 1, ID: 7, Priority: &priority})
+		if err == nil { t.Fatal("repeating priority must not bypass closed-work restrictions") }
+	}
+}
