@@ -35,7 +35,7 @@ Completar una fila por cada HU mergeada. La demo final se apoya en esta tabla.
 | HU-022 | [#31](https://github.com/FaustinoDuran/seguimiento-medicion/issues/31) | [SDD](sdd/HU-022-exportar-informe-pdf.md) | AC-022-01 a AC-022-07 | [feature](../features/HU-022-exportar-informe-pdf.feature) | `backend/internal/reports/pdf_test.go`, `pdf_handler_test.go` y `TestPostgresReportPDFUsesPersistedScope`; `frontend/src/features/reports/Report.test.tsx` | `backend/internal/reports/`; `frontend/src/features/reports/`; [ADR 0007](adr/0007-generacion-pdf.md) | [#97](https://github.com/FaustinoDuran/seguimiento-medicion/pull/97) | `docs(#31)` `0fd8080` → RED `3280e52` → GREEN `70f00b0`. Merge `64513a4` |
 | HU-002 | [#11](https://github.com/FaustinoDuran/seguimiento-medicion/issues/11) | [SDD](sdd/HU-002-modificar-proyecto.md) | AC-002-01 a AC-002-06 | [feature](../features/HU-002-modificar-proyecto.feature) | `backend/internal/projects/{service,handler,repository_postgres}_test.go`; `go test -count=1 ./internal/projects/` con PostgreSQL local | `backend/internal/projects/` | [#101](https://github.com/FaustinoDuran/seguimiento-medicion/pull/101) | `docs(#11)` `4c307bd` → RED `7d14839` → GREEN `578bdd8` |
 
-HU-001 a HU-011 están mergeadas en `main`. HU-023 agrega `GET /projects`.
+HU-001, HU-003, HU-005 y HU-007 a HU-011 están mergeadas en `main`. HU-023 agrega `GET /projects`.
 HU-013 está integrada por el merge `88f30c4` (PR #78), HU-015 por
 `9dbc4f2` (PR #79) y HU-014 por `ca374a2` (PR #80). HU-029 por `842863e`
 (PR #81), HU-016 por `e6acb14` (PR #87), HU-017 por `3ee6a0f` (PR #88) y
@@ -52,8 +52,13 @@ resolución en la consulta de HU-019.
 
 ## HU en desarrollo o revisión
 
-HU-002 está en revisión en el PR #101. Del Sprint 5 (ADR 0008) queda HU-006.
+HU-002 está en revisión en el PR #101. HU-006 está implementada en el PR [#102](https://github.com/FaustinoDuran/seguimiento-medicion/pull/102),
+pendiente de revisión y merge. No se declara terminada en `main`.
 TASK-012 ya está en `main`.
+
+| HU | Issue | SDD | Criterios | BDD | Tests | Código | PR | Evidencia TDD |
+|---|---|---|---|---|---|---|---|---|
+| HU-006 | [#15](https://github.com/FaustinoDuran/seguimiento-medicion/issues/15) | [SDD](sdd/HU-006-actualizar-historia-backlog.md) | AC-006-01 a AC-006-18 | [feature](../features/HU-006-actualizar-historia-backlog.feature) | `backlog/update_{service,handler,postgres}_test.go`; Go completo con PostgreSQL y `-race`, vet; frontend 115 tests, lint y build | `backend/internal/backlog/update_*.go`; puertos de projects/sprints; bootstrap; `frontend/src/features/backlog/` | [#102](https://github.com/FaustinoDuran/seguimiento-medicion/pull/102) | Spec `9ad035d`; prioridad RED `3b2bd3e` → GREEN `2ae1484`; entradas RED `b9934df` → GREEN `ec9d8a1`; estado RED `1de392a` → GREEN `7a8ae3d`; puntos RED `cd19a9f` → GREEN `87e3413`; HTTP RED `872ee37` → GREEN `6b3f4d1`; PostgreSQL RED `ac9fe6e` → GREEN `3496985`; UI RED `6118249` → GREEN `e6803fc`; errores RED `c088c8f` → GREEN `4e8dd25`; guardado RED `003dd25` → GREEN `eaebaf3`; integración y concurrencia `5408f9c`; legibilidad `b803965` |
 
 ## Corrección del estado de integración
 

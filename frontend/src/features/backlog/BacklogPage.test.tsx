@@ -44,6 +44,60 @@ function serveProject(id: number, name: string, status: 'planned' | 'active' | '
   server.use(http.get(`*/api/projects/${id}`, () => HttpResponse.json(project(id, name, status))))
 }
 
+// AC-006-01, AC-006-08, AC-006-17: edición desde el backlog y envío parcial.
+test('edita una historia enviando solo los campos modificados y muestra el resultado', async () => {
+  serveProject(1, 'Proyecto Uno')
+  let current = story({ id: 7, identifier: 'HU-007', priority: 'low', story_points: 5 })
+  let payload: unknown
+  server.use(
+    http.get('*/api/projects/1/stories', () => HttpResponse.json({ stories: [current] })),
+    http.patch('*/api/projects/1/stories/7', async ({ request }) => {
+      payload = await request.json()
+      current = { ...current, priority: 'high' }
+      return HttpResponse.json(current)
+    }),
+  )
+  const user = userEvent.setup()
+  openBacklog()
+  await user.click(await screen.findByRole('button', { name: 'Editar HU-007' }))
+  const form = screen.getByRole('form', { name: 'Editar HU-007' })
+  expect(within(form).getByLabelText('Prioridad')).toHaveValue('low')
+  expect(within(form).getByLabelText('Estado')).toHaveValue('todo')
+  expect(within(form).getByLabelText('Story points')).toHaveValue(5)
+  await user.selectOptions(within(form).getByLabelText('Prioridad'), 'high')
+  await user.click(within(form).getByRole('button', { name: 'Guardar' }))
+  expect(await screen.findByText('Historia actualizada correctamente.')).toBeInTheDocument()
+  expect(payload).toEqual({ priority: 'high' })
+  expect(within(screen.getByRole('table')).getByText('Alta')).toBeInTheDocument()
+  expect(screen.queryByRole('form', { name: 'Editar HU-007' })).not.toBeInTheDocument()
+})
+
+test('mantiene la edición visible y bloquea la recarga mientras guarda', async () => {
+  serveProject(1, 'Proyecto Uno')
+  let release: (() => void) | undefined
+  const gate = new Promise<void>(resolve => { release = resolve })
+  const original = story({ id: 7, identifier: 'HU-007', priority: 'low', story_points: 5 })
+  server.use(
+    http.get('*/api/projects/1/stories', () => HttpResponse.json({ stories: [original] })),
+    http.patch('*/api/projects/1/stories/7', async () => {
+      await gate
+      return HttpResponse.json({ ...original, priority: 'high' })
+    }),
+  )
+  const user = userEvent.setup()
+  openBacklog()
+  await user.click(await screen.findByRole('button', { name: 'Editar HU-007' }))
+  const form = screen.getByRole('form', { name: 'Editar HU-007' })
+  await user.selectOptions(within(form).getByLabelText('Prioridad'), 'high')
+  await user.click(within(form).getByRole('button', { name: 'Guardar' }))
+  try {
+    expect(screen.getByRole('button', { name: 'Actualizar listado' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Editar HU-007' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Crear historia' })).toBeDisabled()
+  } finally { release?.() }
+  expect(await screen.findByText('Historia actualizada correctamente.')).toBeInTheDocument()
+})
+
 // AC-026-03, AC-026-09, AC-026-14: proyecto, listado completo y orden recibido.
 test('carga el proyecto y las historias en el orden entregado por la API', async () => {
   serveProject(1, 'Proyecto Uno')

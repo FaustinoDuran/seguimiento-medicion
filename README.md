@@ -114,7 +114,25 @@ consultas. Repetir la finalización devuelve éxito mientras el Sprint siga
 abierto. No se exige estimación ni criterios de aceptación registrados.
 Sin asignación al Sprint indicado o con Sprint cerrado, devuelve `409`;
 si no existe el Sprint o la historia en su proyecto, devuelve `404`.
-La reapertura corresponde a HU-006.
+HU-006 permite editar prioridad, estado y estimaciones existentes desde el
+backlog o mediante una actualización parcial:
+
+```bash
+curl -s -X PATCH http://localhost:8080/projects/1/stories/1 \
+  -H 'Content-Type: application/json' \
+  -d '{"status":"todo"}'
+
+curl -s -X PATCH http://localhost:8080/projects/1/stories/1 \
+  -H 'Content-Type: application/json' \
+  -d '{"priority":"high","story_points":8}'
+```
+
+Reabrir conserva la asignación y requiere un Sprint abierto. Primero se guarda
+la reapertura y después se corrigen los puntos. La corrección exige una
+estimación existente y un entero positivo; no permite borrar la estimación.
+Los campos omitidos o `null` se conservan; se rechazan campos desconocidos y
+solicitudes sin campos editables no nulos. Un error impide guardar todos los
+cambios. Proyectos o Sprints cerrados rechazan la edición con `409`.
 
 La API devuelve `400` para datos inválidos, `404` para recursos inexistentes y
 `409` para identificadores duplicados, proyectos cerrados al crear o un Sprint

@@ -10,7 +10,8 @@ Abrir la dirección que informa Vite (por defecto `http://localhost:5173`).
 
 - `/`: portada del shell.
 - `/connection`: comprueba `GET /health`, con carga, error y reintento.
-- `/projects/:projectId/backlog`: formulario y listado del backlog (HU-026).
+- `/projects/:projectId/backlog`: alta y listado (HU-026), edición de prioridad,
+  estado y estimaciones existentes (HU-006).
   Requiere `GET /projects/:projectId` y `POST /projects/:projectId/stories`.
   El listado espera `GET /projects/:projectId/stories` con `{ "stories": [...] }`,
   ordenado por `id DESC`; el endpoint está implementado por separado en HU-028
@@ -187,6 +188,20 @@ Verificación de HU-026, cuando esté disponible el contrato de listado:
 6. Comprobar fallos de conexión: el alta no confirmada sugiere revisar el listado
    antes de reenviar. Cambiar de proyecto no conserva el borrador anterior.
 7. Revisar la pantalla en móvil y escritorio y navegar con teclado.
+
+## Matriz de escenarios: edición de backlog
+
+HU-006 (#15): pruebas con HTTP simulado por MSW. La persistencia y las reglas
+se prueban en Go con PostgreSQL real; no se declara validación manual en navegador.
+
+| Criterios | Comportamiento | Archivo en `src/features/backlog/` |
+| --- | --- | --- |
+| AC-006-01, 08, 17 | Formulario precargado, envío parcial y listado confirmado | `BacklogPage.test.tsx` |
+| AC-006-17 | Recarga, otras ediciones y alta bloqueadas mientras guarda | `BacklogPage.test.tsx` |
+| AC-006-17 | Cancelar, guardar sin cambios, evitar duplicados y descartar respuesta tras desmontaje | `StoryEditForm.test.tsx` |
+| AC-006-02, 04, 05, 06, 07, 14, 17 | Avisos en español y borrador conservado ante errores de API o conexión | `StoryEditForm.test.tsx` |
+| AC-006-15 | Enviar corrección de puntos y finalización juntas | `StoryEditForm.test.tsx` |
+| AC-006-07, 18 | Proyecto cerrado de consulta y explicación de restricciones de puntos | `BacklogPage.test.tsx`, `StoryEditForm.test.tsx` |
 
 ## Matriz de escenarios: UI de esfuerzo y defectos
 

@@ -6,8 +6,9 @@ import type { CreationError, FormField } from './errors'
 import { priorityLabels } from './model'
 import type { Priority } from './model'
 
-export function StoryForm({ projectId, onCreated, onSubmitting }: {
+export function StoryForm({ projectId, onCreated, onSubmitting, disabled = false, onPendingChange }: {
   projectId: string; onCreated: () => void; onSubmitting: () => void
+  disabled?: boolean; onPendingChange?: (pending: boolean) => void
 }) {
   const [identifier, setIdentifier] = useState('')
   const [title, setTitle] = useState('')
@@ -41,7 +42,7 @@ export function StoryForm({ projectId, onCreated, onSubmitting }: {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (pending.current || closed) return
+    if (pending.current || closed || disabled) return
     if (pointsInput.current?.validity.badInput || (points !== '' && !Number.isFinite(Number(points)))) {
       setDetailsOpen(true)
       setError({ field: 'story_points', message: 'Ingresá un número válido para los story points.' })
@@ -51,6 +52,7 @@ export function StoryForm({ projectId, onCreated, onSubmitting }: {
     const controller = new AbortController()
     pending.current = controller
     setSending(true)
+    onPendingChange?.(true)
     setError(null)
     onSubmitting()
     try {
@@ -77,7 +79,10 @@ export function StoryForm({ projectId, onCreated, onSubmitting }: {
       }
     } finally {
       pending.current = null
-      if (!controller.signal.aborted) setSending(false)
+      if (!controller.signal.aborted) {
+        setSending(false)
+        onPendingChange?.(false)
+      }
     }
   }
 
@@ -86,7 +91,7 @@ export function StoryForm({ projectId, onCreated, onSubmitting }: {
       <div className="backlog-section-heading"><span className="section-number" aria-hidden="true">01 /</span>
         <div><h2 id="new-story-heading">Nueva historia</h2><p>Un identificador y un título para empezar.</p></div></div>
       {error && !error.field ? <p className="backlog-alert" role="alert">{error.message}</p> : null}
-      <fieldset disabled={sending || closed}>
+      <fieldset disabled={sending || closed || disabled}>
         <div className="backlog-form-grid">
           <div><label htmlFor="story-identifier">Identificador <span>(obligatorio)</span></label>
             <input id="story-identifier" name="identifier" value={identifier} required
@@ -137,7 +142,7 @@ export function StoryForm({ projectId, onCreated, onSubmitting }: {
           </div>
         </details>
         <div className="backlog-form-footer"><span>La historia se crea en estado Por hacer.</span>
-          <button type="submit" className="button" disabled={sending || closed}>
+          <button type="submit" className="button" disabled={sending || closed || disabled}>
             {sending ? 'Creando…' : 'Crear historia'}</button></div>
       </fieldset>
     </form>
