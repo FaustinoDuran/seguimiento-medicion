@@ -147,3 +147,51 @@ func TestCreateProjectHTTPRejectsBlankName(t *testing.T) {
 		t.Fatalf("status: got %d want %d", recorder.Code, http.StatusBadRequest)
 	}
 }
+
+func TestUpdateProjectHTTP(t *testing.T) {
+	router := chi.NewRouter()
+	Mount(router, NewService(newMemoryRepository()))
+
+	create := httptest.NewRequest(http.MethodPost, "/projects", strings.NewReader(`{
+		"name": "TP Integrador",
+		"start_date": "2026-10-26",
+		"end_date": "2026-11-23"
+	}`))
+	createRecorder := httptest.NewRecorder()
+	router.ServeHTTP(createRecorder, create)
+	if createRecorder.Code != http.StatusCreated {
+		t.Fatalf("create status: got %d body %s", createRecorder.Code, createRecorder.Body.String())
+	}
+
+	patch := httptest.NewRequest(http.MethodPatch, "/projects/1", strings.NewReader(`{"name":"Seguimiento"}`))
+	patchRecorder := httptest.NewRecorder()
+	router.ServeHTTP(patchRecorder, patch)
+	if patchRecorder.Code != http.StatusOK {
+		t.Fatalf("patch status: got %d want %d body %s", patchRecorder.Code, http.StatusOK, patchRecorder.Body.String())
+	}
+
+	var updated projectResponse
+	if err := json.NewDecoder(patchRecorder.Body).Decode(&updated); err != nil {
+		t.Fatalf("decode patch: %v", err)
+	}
+	if updated.ID != 1 || updated.Name != "Seguimiento" || updated.Status != StatusActive {
+		t.Fatalf("updated: %+v", updated)
+	}
+	if updated.StartDate != "2026-10-26" || updated.EndDate != "2026-11-23" {
+		t.Fatalf("dates changed: %+v", updated)
+	}
+
+	rejected := httptest.NewRequest(http.MethodPatch, "/projects/1", strings.NewReader(`{"end_date":"2026-10-01"}`))
+	rejectedRecorder := httptest.NewRecorder()
+	router.ServeHTTP(rejectedRecorder, rejected)
+	if rejectedRecorder.Code != http.StatusBadRequest {
+		t.Fatalf("rejected status: got %d want %d body %s", rejectedRecorder.Code, http.StatusBadRequest, rejectedRecorder.Body.String())
+	}
+
+	missing := httptest.NewRequest(http.MethodPatch, "/projects/99", strings.NewReader(`{"name":"Otro"}`))
+	missingRecorder := httptest.NewRecorder()
+	router.ServeHTTP(missingRecorder, missing)
+	if missingRecorder.Code != http.StatusNotFound {
+		t.Fatalf("missing status: got %d want %d", missingRecorder.Code, http.StatusNotFound)
+	}
+}

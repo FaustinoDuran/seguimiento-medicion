@@ -56,6 +56,14 @@ func (r *memoryRepository) List(_ context.Context) ([]Project, error) {
 	return projects, nil
 }
 
+func (r *memoryRepository) Update(_ context.Context, project Project) (Project, error) {
+	if _, ok := r.items[project.ID]; !ok {
+		return Project{}, ErrNotFound
+	}
+	r.items[project.ID] = project
+	return project, nil
+}
+
 func (r *memoryRepository) FindByID(_ context.Context, id int64) (Project, error) {
 	project, ok := r.items[id]
 	if !ok {
@@ -336,6 +344,173 @@ func TestListProjectsIncludesCreatedInIDOrder(t *testing.T) {
 	}
 	if got[1].ID != second.ID || got[1].Name != "Beta" || got[1].Status != StatusPlanned {
 		t.Fatalf("second: %+v", got[1])
+	}
+}
+
+func TestUpdateProjectPersistsChanges(t *testing.T) {
+	service := NewService(newMemoryRepository())
+	created := createTestProject(t, service)
+
+	name := "TP Integrador v2"
+	status := StatusPlanned
+	start := testDate(t, "2026-10-27")
+	end := testDate(t, "2026-11-24")
+
+	updated, err := service.Update(context.Background(), created.ID, UpdateProject{
+		Name:      &name,
+		StartDate: &start,
+		EndDate:   &end,
+		Status:    &status,
+	})
+	if err != nil {
+		t.Fatalf("update: %v", err)
+	}
+	if updated.ID != created.ID {
+		t.Fatalf("id: got %d want %d", updated.ID, created.ID)
+	}
+	if !updated.CreatedAt.Equal(created.CreatedAt) {
+		t.Fatalf("created_at: got %s want %s", updated.CreatedAt, created.CreatedAt)
+	}
+	if updated.Name != "TP Integrador v2" || updated.Status != StatusPlanned {
+		t.Fatalf("updated project: %+v", updated)
+	}
+	if !updated.StartDate.Equal(start) || !updated.EndDate.Equal(end) {
+		t.Fatalf("updated dates: start %s end %s", updated.StartDate, updated.EndDate)
+	}
+
+	got, err := service.Get(context.Background(), created.ID)
+	if err != nil {
+		t.Fatalf("get: %v", err)
+	}
+	if got.Name != updated.Name || got.Status != updated.Status || got.ID != updated.ID {
+		t.Fatalf("retrieved %+v want %+v", got, updated)
+	}
+	if !got.StartDate.Equal(updated.StartDate) || !got.EndDate.Equal(updated.EndDate) || !got.CreatedAt.Equal(updated.CreatedAt) {
+		t.Fatalf("retrieved dates %+v want %+v", got, updated)
+	}
+}
+
+func TestUpdateProjectKeepsOmittedFields(t *testing.T) {
+	service := NewService(newMemoryRepository())
+	created := createTestProject(t, service)
+
+	name := "Seguimiento"
+	updated, err := service.Update(context.Background(), created.ID, UpdateProject{Name: &name})
+	if err != nil {
+		t.Fatalf("update: %v", err)
+	}
+	if updated.Name != "Seguimiento" {
+		t.Fatalf("name: got %q", updated.Name)
+	}
+	if updated.Status != created.Status {
+		t.Fatalf("status: got %q want %q", updated.Status, created.Status)
+	}
+	if !updated.StartDate.Equal(created.StartDate) || !updated.EndDate.Equal(created.EndDate) {
+		t.Fatalf("dates changed: start %s end %s", updated.StartDate, updated.EndDate)
+	}
+	if updated.ID != created.ID || !updated.CreatedAt.Equal(created.CreatedAt) {
+		t.Fatalf("identity changed: %+v", updated)
+	}
+}
+
+func TestUpdateProjectRejectsInvalidChanges(t *testing.T) {
+	earlyEnd := testDate(t, "2026-10-01")
+	blank := "   "
+	invalid := Status("archived")
+
+	cases := []struct {
+		name  string
+		input UpdateProject
+		want  error
+	}{
+		{
+			name:  "end date before the stored start date",
+			input: UpdateProject{EndDate: &earlyEnd},
+			want:  ErrInvalidDates,
+		},
+		{
+			name:  "blank name",
+			input: UpdateProject{Name: &blank},
+			want:  ErrNameRequired,
+		},
+		{
+			name:  "invalid status",
+			input: UpdateProject{Status: &invalid},
+			want:  ErrInvalidStatus,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			service := NewService(newMemoryRepository())
+			created := createTestProject(t, service)
+
+			_, err := service.Update(context.Background(), created.ID, tc.input)
+			if !errors.Is(err, tc.want) {
+				t.Fatalf("error: got %v want %v", err, tc.want)
+			}
+
+			got, getErr := service.Get(context.Background(), created.ID)
+			if getErr != nil {
+				t.Fatalf("get: %v", getErr)
+			}
+			if got.Name != created.Name || got.Status != created.Status || !got.StartDate.Equal(created.StartDate) || !got.EndDate.Equal(created.EndDate) {
+				t.Fatalf("project changed after rejection: %+v", got)
+			}
+		})
+	}
+}
+
+func TestUpdateProjectNotFound(t *testing.T) {
+	service := NewService(newMemoryRepository())
+	name := "Seguimiento"
+	_, err := service.Update(context.Background(), 999, UpdateProject{Name: &name})
+	if !errors.Is(err, ErrNotFound) {
+		t.Fatalf("error: got %v want %v", err, ErrNotFound)
+	}
+}
+
+func TestUpdateProjectTrimsName(t *testing.T) {
+	service := NewService(newMemoryRepository())
+	created := createTestProject(t, service)
+	name := "  TP Integrador v2  "
+
+	updated, err := service.Update(context.Background(), created.ID, UpdateProject{Name: &name})
+	if err != nil {
+		t.Fatalf("update: %v", err)
+	}
+	if updated.Name != "TP Integrador v2" {
+		t.Fatalf("name: got %q", updated.Name)
+	}
+}
+
+func TestUpdateProjectAllowsSameStartAndEndDate(t *testing.T) {
+	service := NewService(newMemoryRepository())
+	created := createTestProject(t, service)
+	end := created.StartDate
+
+	updated, err := service.Update(context.Background(), created.ID, UpdateProject{EndDate: &end})
+	if err != nil {
+		t.Fatalf("update: %v", err)
+	}
+	if !updated.StartDate.Equal(created.StartDate) || !updated.EndDate.Equal(created.StartDate) {
+		t.Fatalf("dates: start %s end %s", updated.StartDate, updated.EndDate)
+	}
+}
+
+func TestUpdateProjectWithoutFieldsReturnsCurrent(t *testing.T) {
+	service := NewService(newMemoryRepository())
+	created := createTestProject(t, service)
+
+	updated, err := service.Update(context.Background(), created.ID, UpdateProject{})
+	if err != nil {
+		t.Fatalf("update: %v", err)
+	}
+	if updated.Name != created.Name || updated.Status != created.Status || updated.ID != created.ID || !updated.CreatedAt.Equal(created.CreatedAt) {
+		t.Fatalf("project changed: %+v", updated)
+	}
+	if !updated.StartDate.Equal(created.StartDate) || !updated.EndDate.Equal(created.EndDate) {
+		t.Fatalf("dates changed: %+v", updated)
 	}
 }
 
