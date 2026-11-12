@@ -55,6 +55,10 @@ resolución en la consulta de HU-019.
 HU-002 está en revisión en el PR #101. Del Sprint 5 (ADR 0008) queda HU-006.
 TASK-012 ya está en `main`.
 
+| HU | Issue | SDD | Criterios | BDD | Tests | Código | PR | Evidencia TDD |
+|---|---|---|---|---|---|---|---|---|
+| HU-006 | [#15](https://github.com/FaustinoDuran/seguimiento-medicion/issues/15) | [SDD](sdd/HU-006-actualizar-historia-backlog.md) | AC-006-01 a AC-006-18 | [feature](../features/HU-006-actualizar-historia-backlog.feature) | Pendientes: servicio, HTTP, PostgreSQL y flujo de edición UI | Pendiente: `backend/internal/backlog/` y `frontend/src/features/backlog/` | Pendiente | Especificación mediante `grill-with-docs`; confirmación final e implementación pendientes |
+
 ## Corrección del estado de integración
 
 El historial de `main` confirma además los merges de HU-028 (`75e39d3`, PR #64),
