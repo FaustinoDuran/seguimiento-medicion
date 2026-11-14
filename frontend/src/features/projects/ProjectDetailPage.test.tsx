@@ -51,3 +51,15 @@ test('informa que el proyecto no existe', async () => {
   expect(await screen.findByRole('heading', { level: 1, name: 'Proyecto no encontrado' })).toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'Volver al listado' })).toHaveAttribute('href', '/projects')
 })
+
+// AC-004-02: el estado consultado se muestra con su etiqueta.
+test('muestra el estado cerrado de un proyecto', async () => {
+  server.use(
+    http.get('*/api/projects/4', () => HttpResponse.json({ ...saved, status: 'closed' })),
+    http.get('*/api/projects/4/members', () => HttpResponse.json({ members: [] })),
+  )
+  openDetail()
+
+  expect(await screen.findByRole('heading', { level: 1, name: 'TP Integrador' })).toBeInTheDocument()
+  expect(screen.getAllByText('Cerrado').length).toBeGreaterThan(0)
+})

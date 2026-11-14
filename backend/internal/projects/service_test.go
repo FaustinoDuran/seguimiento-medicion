@@ -174,8 +174,11 @@ func TestCreateProjectCanBeRetrieved(t *testing.T) {
 	if err != nil {
 		t.Fatalf("get: %v", err)
 	}
-	if got.ID != created.ID || got.Name != created.Name {
+	if got.ID != created.ID || got.Name != created.Name || got.Status != created.Status {
 		t.Fatalf("retrieved %+v want %+v", got, created)
+	}
+	if got.Status != StatusActive {
+		t.Fatalf("status: got %q want %q", got.Status, StatusActive)
 	}
 }
 
