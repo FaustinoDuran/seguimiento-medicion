@@ -56,8 +56,14 @@ HU-002 está en revisión en el PR #101. HU-006 está implementada en el PR [#10
 pendiente de revisión y merge. No se declara terminada en `main`.
 TASK-012 ya está en `main`.
 
+HU-004 se cierra como ya cubierta: el estado se consulta por `GET /projects/{id}`
+desde HU-001 y el detalle lo muestra desde HU-024, como fijan los ADR 0005, 0006
+y 0008. No agrega código de producción; suma SDD, BDD y las verificaciones que
+faltaban para sus dos validaciones.
+
 | HU | Issue | SDD | Criterios | BDD | Tests | Código | PR | Evidencia TDD |
 |---|---|---|---|---|---|---|---|---|
+| HU-004 | [#13](https://github.com/FaustinoDuran/seguimiento-medicion/issues/13) | [SDD](sdd/HU-004-consultar-estado-proyecto.md) | AC-004-01 a AC-004-03 | [feature](../features/HU-004-consultar-estado-proyecto.feature) | `backend/internal/projects/{service,handler}_test.go`; `frontend/src/features/projects/ProjectDetailPage.test.tsx`; `go test ./...` en `backend/`; 116 tests frontend y lint | `backend/internal/projects/`; `frontend/src/features/projects/` | pendiente | Spec `36cb284`; verificación `097d988`. Sin RED: el comportamiento existía desde HU-001 y HU-024, así que las comprobaciones se agregaron sobre tests previos y pasaron en verde |
 | HU-006 | [#15](https://github.com/FaustinoDuran/seguimiento-medicion/issues/15) | [SDD](sdd/HU-006-actualizar-historia-backlog.md) | AC-006-01 a AC-006-18 | [feature](../features/HU-006-actualizar-historia-backlog.feature) | `backlog/update_{service,handler,postgres}_test.go`; Go completo con PostgreSQL y `-race`, vet; frontend 115 tests, lint y build | `backend/internal/backlog/update_*.go`; puertos de projects/sprints; bootstrap; `frontend/src/features/backlog/` | [#102](https://github.com/FaustinoDuran/seguimiento-medicion/pull/102) | Spec `9ad035d`; prioridad RED `3b2bd3e` → GREEN `2ae1484`; entradas RED `b9934df` → GREEN `ec9d8a1`; estado RED `1de392a` → GREEN `7a8ae3d`; puntos RED `cd19a9f` → GREEN `87e3413`; HTTP RED `872ee37` → GREEN `6b3f4d1`; PostgreSQL RED `ac9fe6e` → GREEN `3496985`; UI RED `6118249` → GREEN `e6803fc`; errores RED `c088c8f` → GREEN `4e8dd25`; guardado RED `003dd25` → GREEN `eaebaf3`; integración y concurrencia `5408f9c`; legibilidad `b803965` |
 
 ## Corrección del estado de integración
