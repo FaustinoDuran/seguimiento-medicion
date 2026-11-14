@@ -313,6 +313,79 @@ En cada push y en cada pull request corren dos checks:
 
 El hook sigue corriendo antes del push en cada clon donde esté instalado.
 
+## Despliegue
+
+[TASK-021](https://github.com/FaustinoDuran/seguimiento-medicion/issues/104).
+`.github/workflows/deploy.yml` corre solo en un push a `main`. Primero repite
+los tests del backend y del frontend y la prueba de `deploy/deploy.sh`. Si
+pasan, publica dos imágenes en GHCR etiquetadas con el SHA del commit (no usa
+`latest`) y entra por SSH al VPS.
+
+En el servidor el checkout vive en `/opt/seguimiento-medicion`, sigue a
+`origin/main` y no tiene cambios locales. El workflow hace `git pull --ff-only`
+y `./deploy/deploy.sh <sha>`. El script guarda el SHA que quedó sirviendo en
+`.deploy-sha` (no se commitea). Si `GET /health` no responde, vuelve a levantar
+ese SHA.
+
+Nginx del host es el único proceso en 80/443. La API publica
+`127.0.0.1:3002` y la SPA `127.0.0.1:3003`. Adentro del contenedor Go sigue
+en el 8080 y la imagen web en el 80. Postgres no publica puertos.
+
+```nginx
+server {
+    listen 443 ssl;
+    server_name seguimiento.ejemplo.com;
+
+    location /api/ {
+        proxy_pass http://127.0.0.1:3002/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:3003;
+    }
+}
+```
+
+La barra final de `proxy_pass` saca el prefijo `/api`, igual que el proxy de
+Vite: `/api/health` llega a Go como `/health`. La imagen web resuelve las
+rutas de la SPA a `index.html`.
+
+Una vez en el VPS, antes del primer deploy:
+
+```bash
+sudo mkdir -p /opt/seguimiento-medicion
+sudo chown "$USER" /opt/seguimiento-medicion
+git clone https://github.com/FaustinoDuran/seguimiento-medicion.git /opt/seguimiento-medicion
+cd /opt/seguimiento-medicion
+printf '%s\n' 'POSTGRES_PASSWORD=una-clave-propia' > .env
+docker login ghcr.io
+```
+
+`.env` solo necesita `POSTGRES_PASSWORD` si no alcanza el default de desarrollo.
+La contraseña entra en `DATABASE_URL` sin escapar: usá una clave sin `@`, `:`
+ni `/`. El Compose de producción arma esa URL con el hostname `postgres`, así
+que no copies el `DATABASE_URL` de `backend/.env.example` (ese apunta a
+`localhost:5433`).
+
+Secrets del repositorio: `VPS_HOST`, `VPS_USER` y `VPS_SSH_KEY`. Sin ellos el
+job de deploy falla a propósito. El login de GHCR en el VPS es de lectura y
+queda en la máquina, no en el repo.
+
+El esquema SQL se aplica al arrancar la API (`EnsureSchema`). Volver a la
+imagen anterior no deshace tablas ni columnas que esa versión ya cambió. Las
+migraciones tienen que seguir siendo compatibles con el SHA previo.
+
+La API cierra el `http.Server` al recibir SIGTERM o SIGINT, que es la señal
+con la que Docker reemplaza el contenedor.
+
+Para mirar el Compose sin levantar nada:
+
+```bash
+IMAGE_TAG=local docker compose -f docker-compose.prod.yml config
+```
+
 ## Documentación del equipo
 
 - [Guía de trabajo y trazabilidad](docs/guia-de-trabajo.md) — cómo trabaja el equipo y el agente de Cursor
@@ -329,7 +402,9 @@ backend/internal/httpx/      router y GET /health
 backend/internal/config/     DATABASE_URL y .env
 backend/internal/platform/postgres/  pool pgx
 backend/migrations/          SQL de dominio (projects, backlog y sprints)
-backend/docker-compose.yml   PostgreSQL 16
+backend/docker-compose.yml   PostgreSQL 16 de desarrollo
+docker-compose.prod.yml      API, SPA y PostgreSQL en el VPS
+deploy/deploy.sh             reemplazo de contenedores y rollback
 backend/internal/<feature>/   dominio Go (TDD)
 frontend/src/features/       UI (Sprint 2)
 docs/sdd/                    especificaciones

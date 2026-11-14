@@ -38,8 +38,9 @@ comprobar la interfaz, navegar de Inicio a Conexión, recargar `/connection`,
 usar Atrás/Adelante y abrir una ruta inexistente. Detener la API y volver a
 comprobar permite verificar el estado de error y luego recuperar la conexión.
 
-El proxy es de desarrollo. Al desplegar, el servidor debe reenviar `/api/*`
-a Go quitando el prefijo y servir `index.html` para las rutas de la SPA.
+El proxy es de desarrollo. Al desplegar, Nginx reenvía `/api/*` a Go quitando
+el prefijo y la imagen web sirve `index.html` para las rutas de la SPA. El
+`server` y el Compose de producción están en el README del monorepo.
 `npm run preview` solo previsualiza el build y no reemplaza esa configuración.
 
 ## Tests automatizados
