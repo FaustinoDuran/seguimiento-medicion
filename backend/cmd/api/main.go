@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"net"
 	"net/http"
 	"time"
 
@@ -99,8 +100,15 @@ func main() {
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
-	log.Printf("listening on %s", server.Addr)
-	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+	listener, err := net.Listen("tcp", server.Addr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("listening on %s", listener.Addr())
+
+	shutdownCtx, stop := notifyShutdown(context.Background())
+	defer stop()
+	if err := serve(shutdownCtx, server, listener); err != nil {
 		log.Fatal(err)
 	}
 }
