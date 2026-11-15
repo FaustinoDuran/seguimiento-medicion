@@ -40,6 +40,35 @@ func TestCreateAndGetProjectHTTP(t *testing.T) {
 	if getRecorder.Code != http.StatusOK {
 		t.Fatalf("get status: got %d want %d", getRecorder.Code, http.StatusOK)
 	}
+
+	var fetched projectResponse
+	if err := json.NewDecoder(getRecorder.Body).Decode(&fetched); err != nil {
+		t.Fatalf("decode get: %v", err)
+	}
+	if fetched.ID != created.ID || fetched.Name != created.Name || fetched.Status != StatusActive {
+		t.Fatalf("unexpected fetched project: %+v", fetched)
+	}
+}
+
+func TestGetMissingProjectHTTP(t *testing.T) {
+	router := chi.NewRouter()
+	Mount(router, NewService(newMemoryRepository()))
+
+	request := httptest.NewRequest(http.MethodGet, "/projects/99", nil)
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusNotFound {
+		t.Fatalf("missing status: got %d want %d body %s", recorder.Code, http.StatusNotFound, recorder.Body.String())
+	}
+
+	var body errorResponse
+	if err := json.NewDecoder(recorder.Body).Decode(&body); err != nil {
+		t.Fatalf("decode missing: %v", err)
+	}
+	if body.Error != ErrNotFound.Error() {
+		t.Fatalf("missing error: got %q want %q", body.Error, ErrNotFound.Error())
+	}
 }
 
 func TestAddAndListMembersHTTP(t *testing.T) {

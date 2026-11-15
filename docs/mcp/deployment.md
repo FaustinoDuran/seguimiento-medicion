@@ -23,7 +23,7 @@ para exhibición. No conectar una base con información privada a este modo.
 Desde la raíz del repo:
 
 ```bash
-docker build -f backend/Dockerfile -t seguimiento-mcp:demo .
+docker build -f backend/Dockerfile.mcp -t seguimiento-mcp:demo .
 ```
 
 Preparar PostgreSQL y el rol mcp_reader según la [guía](README.md). El MCP no
@@ -68,5 +68,8 @@ con el SDK oficial del servidor.
 5. Registrar URL de servicio, commit de imagen, cliente, fecha y resultado en
    la evidencia de la demo. Mantener los secretos fuera del reporte.
 
-Estado: paquete preparado; hosting, dominio y cliente aún sin seleccionar.
+Estado: paquete MCP preparado. main ya incluye despliegue de API y frontend
+en un VPS; falta integrar el servicio MCP y definir su URL y cliente de IA.
+El Dockerfile de la API sigue en backend/Dockerfile; el del MCP está en
+backend/Dockerfile.mcp y usa el contexto de la raíz del repositorio.
 No hay evidencia de un despliegue publicado ni de una prueba contra esa URL.

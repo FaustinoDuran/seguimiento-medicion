@@ -16,6 +16,7 @@ frontend/coverage/
 .env.local
 !.env.example
 !**/.env.example
+.deploy-sha
 
 # OS / IDE
 .DS_Store

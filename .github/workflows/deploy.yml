@@ -1,0 +1,127 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test-backend:
+    name: Tests con PostgreSQL
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: seguimiento_medicion
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d seguimiento_medicion"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/seguimiento_medicion?sslmode=disable
+      BACKLOG_TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/seguimiento_medicion?sslmode=disable
+      SPRINTS_TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/seguimiento_medicion?sslmode=disable
+      MCP_TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/seguimiento_medicion?sslmode=disable
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          cache-dependency-path: backend/go.sum
+      - run: go test -count=1 -race ./...
+
+  test-frontend:
+    name: Build, lint y tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      - run: npm test
+
+  test-deploy-script:
+    name: Script de deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./deploy/deploy_test.sh
+
+  publish:
+    name: Publicar imágenes
+    needs: [test-backend, test-frontend, test-deploy-script]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      api_image: ${{ steps.names.outputs.api_image }}
+      web_image: ${{ steps.names.outputs.web_image }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: names
+        run: |
+          owner=$(printf '%s' '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')
+          echo "api_image=ghcr.io/${owner}/seguimiento-medicion-api" >> "$GITHUB_OUTPUT"
+          echo "web_image=ghcr.io/${owner}/seguimiento-medicion-web" >> "$GITHUB_OUTPUT"
+          echo "API_IMAGE=ghcr.io/${owner}/seguimiento-medicion-api" >> "$GITHUB_ENV"
+          echo "WEB_IMAGE=ghcr.io/${owner}/seguimiento-medicion-web" >> "$GITHUB_ENV"
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: backend
+          push: true
+          tags: ${{ env.API_IMAGE }}:${{ github.sha }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: frontend
+          push: true
+          tags: ${{ env.WEB_IMAGE }}:${{ github.sha }}
+
+  deploy:
+    name: Desplegar en el VPS
+    needs: publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Actualizar el VPS
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          API_IMAGE: ${{ needs.publish.outputs.api_image }}
+          WEB_IMAGE: ${{ needs.publish.outputs.web_image }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          test -n "$VPS_HOST"
+          test -n "$VPS_USER"
+          test -n "$VPS_SSH_KEY"
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$VPS_HOST" >> ~/.ssh/known_hosts
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes "$VPS_USER@$VPS_HOST" \
+            "cd /opt/seguimiento-medicion && git pull --ff-only origin main && API_IMAGE='$API_IMAGE' WEB_IMAGE='$WEB_IMAGE' ./deploy/deploy.sh '$IMAGE_TAG'"
