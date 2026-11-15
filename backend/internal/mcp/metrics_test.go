@@ -112,28 +112,26 @@ func TestStdioMetricsAndReport(t *testing.T) {
 					t.Fatal(err)
 				}
 				if name == "get_metrics" {
-					expected, err := metrics.NewService(metricFixture{}).ForProject(ctx, 1)
+					expected, err := reports.NewService(reportFixture{}).ForProject(ctx, 1)
 					if sprintID > 0 {
-						expected, err = metrics.NewService(metricFixture{}).ForSprint(ctx, 10)
+						expected, err = reports.NewService(reportFixture{}).ForSprint(ctx, 1, 10)
 					}
 					if err != nil {
 						t.Fatal(err)
 					}
-					expectedJSON, _ := json.Marshal(expected)
-					if string(expectedJSON) != string(envelope.Data) {
-						// Structured content is decoded as a map; compare normalized objects.
-						var want, got any
-						json.Unmarshal(expectedJSON, &want)
-						json.Unmarshal(envelope.Data, &got)
-						wantJSON, _ := json.Marshal(want)
-						gotJSON, _ := json.Marshal(got)
-						if string(wantJSON) != string(gotJSON) {
-							t.Fatalf("metric mismatch: %s vs %s", wantJSON, gotJSON)
-						}
+					expectedJSON, _ := json.Marshal(expected.Metrics)
+					// Structured content is decoded as a map; compare normalized objects.
+					var want, got any
+					json.Unmarshal(expectedJSON, &want)
+					json.Unmarshal(envelope.Data, &got)
+					wantJSON, _ := json.Marshal(want)
+					gotJSON, _ := json.Marshal(got)
+					if string(wantJSON) != string(gotJSON) {
+						t.Fatalf("get_metrics must match get_report.metrics: %s vs %s", gotJSON, wantJSON)
 					}
 					var fixed map[string]any
 					json.Unmarshal(envelope.Data, &fixed)
-					if fixed["ActualHours"] != 2.5 || fixed["PlannedStoryPoints"] != float64(8) || fixed["CompletedStoryPercentage"] != float64(100) {
+					if fixed["actual_hours"] != 2.5 || fixed["planned_story_points"] != float64(8) || fixed["completed_story_percentage"] != float64(100) {
 						t.Fatalf("fixed metric expectations: %s", envelope.Data)
 					}
 				} else {

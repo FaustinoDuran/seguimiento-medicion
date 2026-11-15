@@ -59,7 +59,7 @@ func TestEmptyMetricsAreZero(t *testing.T) {
 	if err := json.Unmarshal(raw, &decoded); err != nil {
 		t.Fatal(err)
 	}
-	for _, key := range []string{"PlannedStoryPoints", "CompletedStoryPoints", "Velocity", "ActualHours", "EstimatedHours", "CompletedStoryPercentage", "DefectsDetected", "DefectsResolved"} {
+	for _, key := range []string{"planned_story_points", "completed_story_points", "velocity", "actual_hours", "estimated_hours", "completed_story_percentage", "defects_detected", "defects_resolved"} {
 		if decoded[key] != float64(0) {
 			t.Errorf("%s = %v, want 0", key, decoded[key])
 		}
