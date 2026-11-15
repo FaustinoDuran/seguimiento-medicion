@@ -19,6 +19,7 @@ cd "$root"
 compose_file=${COMPOSE_FILE:-docker-compose.prod.yml}
 state_file=${STATE_FILE:-$root/.deploy-sha}
 health_url=${HEALTH_URL:-http://127.0.0.1:3002/health}
+env_file=${COMPOSE_ENV_FILE:-.env}
 
 previous=
 if [ -f "$state_file" ]; then
@@ -26,8 +27,8 @@ if [ -f "$state_file" ]; then
 fi
 
 deploy_tag() {
-  IMAGE_TAG=$1 docker compose -f "$compose_file" pull || return 1
-  IMAGE_TAG=$1 docker compose -f "$compose_file" up -d --no-build --wait || return 1
+  IMAGE_TAG=$1 docker compose --env-file "$env_file" -f "$compose_file" pull || return 1
+  IMAGE_TAG=$1 docker compose --env-file "$env_file" -f "$compose_file" up -d --no-build --wait || return 1
 }
 
 failed=0

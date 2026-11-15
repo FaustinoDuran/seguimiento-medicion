@@ -318,7 +318,7 @@ El hook sigue corriendo antes del push en cada clon donde esté instalado.
 [TASK-021](https://github.com/FaustinoDuran/seguimiento-medicion/issues/104).
 `.github/workflows/deploy.yml` corre solo en un push a `main`. Primero repite
 los tests del backend y del frontend y la prueba de `deploy/deploy.sh`. Si
-pasan, publica dos imágenes en GHCR etiquetadas con el SHA del commit (no usa
+pasan, publica imágenes de API, frontend y MCP en GHCR etiquetadas con el SHA del commit (no usa
 `latest`) y entra por SSH al VPS.
 
 En el servidor el checkout vive en `/opt/seguimiento-medicion`, sigue a
@@ -372,6 +372,11 @@ que no copies el `DATABASE_URL` de `backend/.env.example` (ese apunta a
 Secrets del repositorio: `VPS_HOST`, `VPS_USER` y `VPS_SSH_KEY`. Sin ellos el
 job de deploy falla a propósito. El login de GHCR en el VPS es de lectura y
 queda en la máquina, no en el repo.
+
+TASK-024 agrega un despliegue MCP automático e independiente, con base exclusiva
+de demo y puerto local 3004. CI/CD prepara la demo y la publica en
+`https://seguimiento0-medicion.aedestec.com/mcp`, usando el HTTPS existente. Ver [la guía MCP](docs/mcp/deployment.md) para preparar HTTPS,
+conectar ChatGPT y actualizar o revertir la demo.
 
 El esquema SQL se aplica al arrancar la API (`EnsureSchema`). Volver a la
 imagen anterior no deshace tablas ni columnas que esa versión ya cambió. Las
