@@ -1,6 +1,6 @@
 # Consultas MCP — TASK-013 / #105
 
-Servidor local de solo lectura para demo controlada. No hay sesiones, roles de
+Servidor de solo lectura para demo controlada; modo local por defecto y modo HTTP opcional. No hay sesiones, roles de
 aplicación ni aislamiento por persona. Usar datos preparados para esa demo.
 Decisión arquitectónica: [ADR 0009](../adr/0009-read-only-mcp.md).
 
@@ -49,7 +49,8 @@ la variable de entorno (reemplazar contraseña y ruta):
 ```
 
 Los mensajes del protocolo usan stdout; los errores de arranque van a stderr.
-No hay endpoint HTTP. El servidor usa el SDK oficial Go MCP v1.0.0 y su
+Para exponer /mcp por HTTP ver [despliegue de demo remota](deployment.md).
+El servidor usa el SDK oficial Go MCP v1.0.0 y su
 negociación de protocolo. Se conserva Go 1.24.
 
 ## Herramientas y parámetros

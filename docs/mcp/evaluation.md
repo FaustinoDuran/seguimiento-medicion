@@ -43,3 +43,7 @@ cliente, modelo, configuración, fecha y commit. Aprobar una respuesta solamente
 si usa entidades correctas, preserva unidades y valores, justifica sus hechos
 en datos consultados y evita inventar información. Requerir al menos 18/20
 casos aprobados (90%). La corrida completa registrada aprueba el umbral; falta revisión por otra persona.
+
+Modo remoto preparado después de la corrida conversacional: cliente SDK por HTTPS
+con descubrimiento y consulta aprobados; Origin ajeno rechazado. Falta validar
+cliente y hosting reales según [el plan de despliegue](deployment.md).

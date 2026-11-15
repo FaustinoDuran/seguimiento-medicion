@@ -18,7 +18,16 @@ arranque impediría garantizar una conexión PostgreSQL con permisos de lectura.
 
 Crear un ejecutable Go independiente en backend/cmd/mcp, con transporte stdio
 para una demo local controlada. El cliente inicia el proceso y administra sus
-credenciales; no se publica un endpoint remoto sin un diseño de autorización.
+credenciales. Por pedido posterior del responsable, agregar también HTTP para
+una demo académica remota con un único conjunto de datos compartido, sin cuentas
+ni separación por persona. Ese endpoint es público: usar exclusivamente datos
+preparados para exhibición. El despliegue concreto queda pendiente de elegir
+hosting y cliente, y debe servir HTTPS mediante el proxy del proveedor.
+
+El modo HTTP usa Streamable HTTP stateless en /mcp, valida Origin cuando esté
+presente contra MCP_PUBLIC_URL y conserva las mismas herramientas de lectura.
+No habilita CORS abierto ni interpreta cabeceras de proxy como autorización.
+El modo stdio sigue siendo el predeterminado; HTTP se habilita explícitamente.
 Registrar la versión del protocolo y la dependencia MCP elegidas durante la
 implementación, verificando compatibilidad con Go 1.24.
 
@@ -90,10 +99,11 @@ requiere revisión y merge según la guía; este ADR no acredita implementación
 
 ## Consecuencias
 
-La primera entrega sirve para demo local con datos explícitamente preparados
-para ese entorno. No proporciona aislamiento por persona. El acceso remoto o
-las reglas nuevas de autorización requieren una decisión posterior y la
-clasificación de trabajo correspondiente.
+La entrega sirve para demo local o remota con datos explícitamente preparados
+para exhibición. No proporciona aislamiento por persona ni autenticación. El
+endpoint remoto comparte el mismo conjunto de datos con todos los visitantes.
+Agregar cuentas o reglas nuevas de autorización requiere una decisión posterior
+y la clasificación de trabajo correspondiente.
 
 Se conserva el stack y las reglas existentes. No se incluyen operaciones de
 Planning Poker, registros individuales de esfuerzo o defectos ni exportación
