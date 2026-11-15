@@ -1,0 +1,1988 @@
+{
+  "status": "completed-baseline",
+  "evaluated_commit": "8d58df6d9c236dd88a08953db38d817f1969fe6b",
+  "model": "gpt-6-luna",
+  "reasoning_effort": "low",
+  "client": "Codex isolated agent using file bridge to official Go SDK stdio client",
+  "fresh_context_per_case": true,
+  "expected_answers_given_to_model": false,
+  "timestamp_utc": "2026-11-15T00:57:05.792839+00:00",
+  "limitation": "File bridge instead of native MCP tools; fresh agent per case; output text summarized, exact MCP calls/results retained. Parent graded. One run per case, no statistical reliability claim.",
+  "results": {
+    "C01": {
+      "verdict": "pass",
+      "answer_summary": "Hay dos proyectos: Demo (ID 1, activo) y Other (ID 2, activo).",
+      "question": "¿Qué proyectos hay?",
+      "final_answer": "Hay dos proyectos:\n\n- **Demo** (ID 1, activo)\n- **Other** (ID 2, activo)\n\nLlamadas realizadas: `list` para descubrir las herramientas disponibles y `list_projects` para consultar los proyectos."
+    },
+    "C06": {
+      "verdict": "pass",
+      "answer_summary": "La historia completada con prioridad alta en el proyecto 1 es HU-001 — Ready (ID 1).",
+      "question": "¿Qué historias completadas tienen prioridad alta en el proyecto 1?",
+      "final_answer": "La historia completada con prioridad alta en el proyecto 1 es **HU-001 — Ready** (ID 1).\n\nLlamadas realizadas: `list` y `list_stories` con `project_id: 1`, `priority: \"high\"` y `status: \"done\"`."
+    },
+    "C08": {
+      "verdict": "pass",
+      "note": "Usó listado completo en lugar de detalle; hechos correctos, sin fuga de proyecto 2.",
+      "answer_summary": "No encontré una historia 3 en el proyecto 1. La consulta MCP devolvió HU-001 y HU-002.",
+      "question": "Mostrá la historia 3 del proyecto 1",
+      "final_answer": "No encontré una historia 3 en el proyecto 1. La consulta MCP devolvió dos historias: HU-001, “Ready” (completada, prioridad alta, 8 puntos) y HU-002, “Pending” (pendiente, prioridad baja, 3 puntos)."
+    },
+    "C17": {
+      "verdict": "fail",
+      "reason": "La pregunta exigía consultar de a una; llamó list_stories sin limit:1 y no ejercitó cursores.",
+      "answer_summary": "Listó HU-001 y HU-002; afirmó que no hay más páginas.",
+      "question": "Listá las historias del proyecto 1 de a una hasta terminar",
+      "final_answer": "El proyecto 1 tiene **2 historias**. Las listo de a una:\n\n1. **HU-001 — Ready** (ID 1): estado `done`, prioridad alta, 8 puntos.\n2. **HU-002 — Pending** (ID 2): estado `todo`, prioridad baja, 3 puntos.\n\nLa herramienta no devolvió `next_cursor`, así que no hay más páginas.\n\n**Llamada realizada**\n\n- `list_stories` con `{\"project_id\":1}` (caso C17)."
+    },
+    "C12": {
+      "verdict": "pass",
+      "answer_summary": "No encontré el sprint 12 dentro del proyecto 1.",
+      "question": "Consultá el sprint 12 dentro del proyecto 1",
+      "final_answer": "No encontré el sprint 12 dentro del proyecto 1."
+    },
+    "C19": {
+      "verdict": "pass",
+      "answer_summary": "La historia 2 del proyecto 1 está todo. No hay herramienta de modificación; no pudo pasarla a done.",
+      "question": "Cambiá a done la historia 2 del proyecto 1",
+      "final_answer": "La historia 2 del proyecto 1 (“Pending”, HU-002) está en estado `todo`. En las herramientas MCP disponibles no aparece ninguna operación para cambiar el estado, así que no pude pasarla a `done`."
+    },
+    "C20": {
+      "verdict": "pass",
+      "answer_summary": "No puede determinarlo con consultas disponibles; no inventó nombres.",
+      "question": "¿Cuál es el nombre del integrante que cargó esfuerzo?",
+      "final_answer": "No puedo determinarlo con las consultas disponibles. El MCP expone datos de proyectos, historias, sprints, métricas e informes; los resultados consultados no incluyen registros de esfuerzo ni nombres de integrantes."
+    },
+    "C02": {
+      "verdict": "pass",
+      "answer_summary": "Encontré el proyecto Demo: ID 1, estado activo, con fechas del 1 de enero al 31 de diciembre de 2026.",
+      "question": "Buscá el proyecto Demo",
+      "final_answer": "Encontré el proyecto **Demo**: ID 1, estado activo, con fechas del 1 de enero al 31 de diciembre de 2026.\n\nLlamadas realizadas:\n\n1. `list` — descubrí las herramientas disponibles.\n2. `list_projects` — busqué proyectos con la consulta «Demo»."
+    },
+    "C03": {
+      "verdict": "pass",
+      "answer_summary": "El proyecto 1, Demo, está activo. Su fecha de inicio es el 1 de enero de 2026 y la fecha de finalización prevista es el 31 de diciembre de 2026.",
+      "question": "¿Cuál es el estado del proyecto 1?",
+      "final_answer": "El proyecto 1, **Demo**, está **activo**. Su fecha de inicio es el 1 de enero de 2026 y la fecha de finalización prevista es el 31 de diciembre de 2026.\n\nLlamadas realizadas:\n\n- `list` para consultar las herramientas disponibles.\n- `get_project` con `project_id: 1` para obtener el estado del proyecto."
+    },
+    "C04": {
+      "verdict": "pass",
+      "answer_summary": "Historias del proyecto 1: HU-001 — Ready; estado done; prioridad alta; 8 puntos. HU-002 — Pending; estado todo; prioridad baja; 3 puntos.",
+      "question": "Listá historias del proyecto 1",
+      "final_answer": "Llamadas realizadas:\n\n- `list` con argumentos vacíos para descubrir las herramientas y sus esquemas.\n- `list_stories` con `project_id: 1`.\n\nHistorias del proyecto 1:\n\n- HU-001 — Ready; estado `done`; prioridad alta; 8 puntos.\n- HU-002 — Pending; estado `todo`; prioridad baja; 3 puntos."
+    },
+    "C05": {
+      "verdict": "pass",
+      "answer_summary": "En el proyecto 1 hay una historia pendiente: HU-002 — Pending (ID 2), prioridad baja, 3 puntos.",
+      "question": "¿Qué historias están pendientes en el proyecto 1?",
+      "final_answer": "En el proyecto 1 hay una historia pendiente:\n\n- HU-002 — “Pending” (ID 2), prioridad baja, 3 puntos.\n\nLlamadas realizadas: `list` para descubrir las herramientas y `list_stories` con `project_id: 1` y `status: \"todo\"`."
+    },
+    "C07": {
+      "verdict": "pass",
+      "answer_summary": "La historia 1 del proyecto 1 es HU-001: Ready. Estado done, prioridad alta, 8 puntos, descripción vacía y criterios de aceptación ninguno.",
+      "question": "Mostrá la historia 1 del proyecto 1",
+      "final_answer": "La historia 1 del proyecto 1 es **HU-001: Ready**.\n\n- Estado: done\n- Prioridad: alta\n- Puntos de historia: 8\n- Descripción: vacía\n- Criterios de aceptación: ninguno\n\nLlamadas MCP: `list` y `get_story` con `project_id: 1`, `id: 1`."
+    },
+    "C09": {
+      "verdict": "pass",
+      "answer_summary": "El proyecto 1 tiene un sprint abierto: ID 11, con objetivo Next.",
+      "question": "¿Qué sprints abiertos tiene el proyecto 1?",
+      "final_answer": "El proyecto 1 tiene un sprint abierto: **ID 11**, con objetivo **“Next”**.\n\nLlamadas realizadas: `list` para consultar herramientas; `list_sprints` con `project_id: 1` y `status: \"open\"`."
+    },
+    "C10": {
+      "verdict": "pass",
+      "answer_summary": "El proyecto 1 tiene un sprint cerrado: sprint 10, con objetivo Release.",
+      "question": "¿Qué sprints cerrados tiene el proyecto 1?",
+      "final_answer": "El proyecto 1 tiene un sprint cerrado: **sprint 10**, con objetivo **“Release”**.\n\nLlamadas realizadas:\n- `list` para descubrir herramientas.\n- `list_sprints` con `project_id: 1` y `status: \"closed\"`."
+    },
+    "C11": {
+      "verdict": "pass",
+      "answer_summary": "El sprint 10 del proyecto 1 tiene una historia: HU-001, Ready, con estado done.",
+      "question": "¿Qué historias tiene el sprint 10 del proyecto 1?",
+      "final_answer": "El sprint 10 del proyecto 1 tiene una historia: HU-001, “Ready”, con estado “done”.\n\nLlamadas realizadas:\n\n- `list` para consultar las herramientas disponibles.\n- `get_sprint` con `project_id: 1` y `sprint_id: 10`."
+    },
+    "C13": {
+      "verdict": "fail-tool-routing",
+      "answer_summary": "El proyecto 1 completó el 50 % de sus historias: 1 de 2 está en estado done. Llamadas list, list_projects, list_stories.",
+      "reason": "Resultado numérico correcto, pero no consultó get_metrics, fuente indicada en el caso para porcentajes. Se registra por separado del acierto factual.",
+      "question": "¿Qué porcentaje de historias completó el proyecto 1?",
+      "final_answer": "El proyecto 1 completó el **50 % de sus historias**: 1 de 2 está en estado `done`.\n\nLlamadas realizadas: `list` → `list_projects` → `list_stories` (proyecto 1)."
+    },
+    "C14": {
+      "verdict": "fail-tool-routing",
+      "answer_summary": "El sprint 10 del proyecto Demo tiene 1 historia asignada y 1 completada (done): completó el 100 %. Llamadas list, list_projects, list_sprints, get_sprint.",
+      "reason": "Resultado numérico correcto, pero no consultó get_metrics, fuente indicada en el caso para porcentajes. Se registra por separado del acierto factual.",
+      "question": "¿Qué porcentaje de historias completó el sprint 10?",
+      "final_answer": "El sprint 10 del proyecto Demo tiene 1 historia asignada y 1 completada (`done`): completó el **100 %**.\n\nLlamadas realizadas: `list`, `list_projects`, `list_sprints`, `get_sprint`."
+    },
+    "C15": {
+      "verdict": "pass",
+      "answer_summary": "El proyecto 1 tiene 0 horas registradas (ActualHours: 0).",
+      "question": "¿Cuántas horas registradas tiene el proyecto 1?",
+      "final_answer": "El proyecto 1 tiene **0 horas registradas** (`ActualHours: 0`).\n\nLlamadas realizadas:\n- `list`\n- `get_metrics` con `project_id: 1`"
+    },
+    "C16": {
+      "verdict": "pass",
+      "answer_summary": "Informe del sprint 10 del proyecto 1: Demo activo, Release cerrado, HU-001 Ready done 8 puntos. 8 puntos planificados/completados, 100 %, velocidad 8, horas estimadas/reales 0, desviación 0, defectos detectados/resueltos 0. Sprints disponibles 10 y 11.",
+      "question": "Dame el informe del sprint 10 del proyecto 1",
+      "final_answer": "Informe del sprint 10 del proyecto 1:\n\n- Proyecto: Demo (activo).\n- Sprint: Release (cerrado).\n- Historias: HU-001, “Ready”, terminada, 8 puntos.\n- Métricas: 8 puntos planificados y completados; 100 % de historias completadas; velocidad 8; horas estimadas y reales 0; desviación 0; defectos detectados y resueltos 0.\n- Sprints disponibles: 10 (Release, cerrado) y 11 (Next, abierto).\n\nLlamadas realizadas: `list`, `list_sprints` con `project_id: 1`, `get_report` con `project_id: 1` y `sprint_id: 10`."
+    },
+    "C18": {
+      "verdict": "pass",
+      "answer_summary": "Busqué proyectos cuyo nombre contiene Inexistente. La consulta no devolvió resultados.",
+      "question": "Buscá el proyecto Inexistente",
+      "final_answer": "Busqué proyectos cuyo nombre contiene «Inexistente». La consulta no devolvió resultados.\n\nLlamadas realizadas:\n\n1. `list` con `case: C18` para consultar herramientas y esquemas.\n2. `list_projects` con `query: \"Inexistente\"` y `case: C18`."
+    }
+  },
+  "traces": [
+    {
+      "request": {
+        "case": "C01",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "c0e41f8eab0e4b3cad3c13782b79ee0b"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794704132555231165
+    },
+    {
+      "request": {
+        "case": "C01",
+        "tool": "list_projects",
+        "arguments": {},
+        "request_id": "3480d2fe20514fee81fda79fb752d62f"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[{\"CreatedAt\":\"2026-11-14T21:55:14.037938-03:00\",\"EndDate\":\"2026-12-31T00:00:00Z\",\"ID\":1,\"Name\":\"Demo\",\"StartDate\":\"2026-01-01T00:00:00Z\",\"Status\":\"active\"},{\"CreatedAt\":\"2026-11-14T21:55:14.037938-03:00\",\"EndDate\":\"2026-12-31T00:00:00Z\",\"ID\":2,\"Name\":\"Other\",\"StartDate\":\"2026-01-01T00:00:00Z\",\"Status\":\"active\"}]}"
+          }
+        ],
+        "structuredContent": {
+          "data": [
+            {
+              "CreatedAt": "2026-11-14T21:55:14.037938-03:00",
+              "EndDate": "2026-12-31T00:00:00Z",
+              "ID": 1,
+              "Name": "Demo",
+              "StartDate": "2026-01-01T00:00:00Z",
+              "Status": "active"
+            },
+            {
+              "CreatedAt": "2026-11-14T21:55:14.037938-03:00",
+              "EndDate": "2026-12-31T00:00:00Z",
+              "ID": 2,
+              "Name": "Other",
+              "StartDate": "2026-01-01T00:00:00Z",
+              "Status": "active"
+            }
+          ]
+        }
+      },
+      "request_file_mtime_ns": 1794704134580140317
+    },
+    {
+      "request": {
+        "case": "C06",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "81419e1662f64feaa8487271276def09"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794704141922990038
+    },
+    {
+      "request": {
+        "case": "C06",
+        "tool": "list_stories",
+        "arguments": {
+          "project_id": 1,
+          "priority": "high",
+          "status": "done"
+        },
+        "request_id": "8b0377ec72724f1893e30cf000d9648f"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[{\"acceptance_criteria\":[],\"description\":\"\",\"id\":1,\"identifier\":\"HU-001\",\"priority\":\"high\",\"project_id\":1,\"status\":\"done\",\"story_points\":8,\"title\":\"Ready\"}]}"
+          }
+        ],
+        "structuredContent": {
+          "data": [
+            {
+              "acceptance_criteria": [],
+              "description": "",
+              "id": 1,
+              "identifier": "HU-001",
+              "priority": "high",
+              "project_id": 1,
+              "status": "done",
+              "story_points": 8,
+              "title": "Ready"
+            }
+          ]
+        }
+      },
+      "request_file_mtime_ns": 1794704144194801772
+    },
+    {
+      "request": {
+        "case": "C17",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "852322ea80764371bdf38474612ac2a6"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794704149287119684
+    },
+    {
+      "request": {
+        "case": "C17",
+        "tool": "list_stories",
+        "arguments": {
+          "project_id": 1
+        },
+        "request_id": "40775ca628244b2e80f27acefef91935"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[{\"acceptance_criteria\":[],\"description\":\"\",\"id\":1,\"identifier\":\"HU-001\",\"priority\":\"high\",\"project_id\":1,\"status\":\"done\",\"story_points\":8,\"title\":\"Ready\"},{\"acceptance_criteria\":[],\"description\":\"\",\"id\":2,\"identifier\":\"HU-002\",\"priority\":\"low\",\"project_id\":1,\"status\":\"todo\",\"story_points\":3,\"title\":\"Pending\"}]}"
+          }
+        ],
+        "structuredContent": {
+          "data": [
+            {
+              "acceptance_criteria": [],
+              "description": "",
+              "id": 1,
+              "identifier": "HU-001",
+              "priority": "high",
+              "project_id": 1,
+              "status": "done",
+              "story_points": 8,
+              "title": "Ready"
+            },
+            {
+              "acceptance_criteria": [],
+              "description": "",
+              "id": 2,
+              "identifier": "HU-002",
+              "priority": "low",
+              "project_id": 1,
+              "status": "todo",
+              "story_points": 3,
+              "title": "Pending"
+            }
+          ]
+        }
+      },
+      "request_file_mtime_ns": 1794704152923850025
+    },
+    {
+      "request": {
+        "case": "C08",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "96fb5f0407d54e68a6b1d2e40bb1663f"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794704164288433734
+    },
+    {
+      "request": {
+        "case": "C08",
+        "tool": "list_stories",
+        "arguments": {
+          "project_id": 1
+        },
+        "request_id": "0d0cf19c5a6b4c3a9d7114c7a5aae986"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[{\"acceptance_criteria\":[],\"description\":\"\",\"id\":1,\"identifier\":\"HU-001\",\"priority\":\"high\",\"project_id\":1,\"status\":\"done\",\"story_points\":8,\"title\":\"Ready\"},{\"acceptance_criteria\":[],\"description\":\"\",\"id\":2,\"identifier\":\"HU-002\",\"priority\":\"low\",\"project_id\":1,\"status\":\"todo\",\"story_points\":3,\"title\":\"Pending\"}]}"
+          }
+        ],
+        "structuredContent": {
+          "data": [
+            {
+              "acceptance_criteria": [],
+              "description": "",
+              "id": 1,
+              "identifier": "HU-001",
+              "priority": "high",
+              "project_id": 1,
+              "status": "done",
+              "story_points": 8,
+              "title": "Ready"
+            },
+            {
+              "acceptance_criteria": [],
+              "description": "",
+              "id": 2,
+              "identifier": "HU-002",
+              "priority": "low",
+              "project_id": 1,
+              "status": "todo",
+              "story_points": 3,
+              "title": "Pending"
+            }
+          ]
+        }
+      },
+      "request_file_mtime_ns": 1794704167214900504
+    },
+    {
+      "request": {
+        "case": "C12",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "413e6e1d69884fc2842383b70bb53705"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794704194139531189
+    },
+    {
+      "request": {
+        "case": "C12",
+        "tool": "get_sprint",
+        "arguments": {
+          "project_id": 1,
+          "sprint_id": 12
+        },
+        "request_id": "da751b3650bb4548a6bff51efb9e92fc"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "entity not found within requested scope"
+          }
+        ],
+        "isError": true
+      },
+      "request_file_mtime_ns": 1794704197499274970
+    },
+    {
+      "request": {
+        "case": "C19",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "c744e497080842478775227962202358"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794704199145193219
+    },
+    {
+      "request": {
+        "case": "C19",
+        "tool": "get_project",
+        "arguments": {
+          "project_id": 1
+        },
+        "request_id": "1799a6a8b9e84968ae93ca2c7548c885"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":{\"CreatedAt\":\"2026-11-14T21:55:14.037938-03:00\",\"EndDate\":\"2026-12-31T00:00:00Z\",\"ID\":1,\"Name\":\"Demo\",\"StartDate\":\"2026-01-01T00:00:00Z\",\"Status\":\"active\"}}"
+          }
+        ],
+        "structuredContent": {
+          "data": {
+            "CreatedAt": "2026-11-14T21:55:14.037938-03:00",
+            "EndDate": "2026-12-31T00:00:00Z",
+            "ID": 1,
+            "Name": "Demo",
+            "StartDate": "2026-01-01T00:00:00Z",
+            "Status": "active"
+          }
+        }
+      },
+      "request_file_mtime_ns": 1794704201356655544
+    },
+    {
+      "request": {
+        "case": "C19",
+        "tool": "get_story",
+        "arguments": {
+          "project_id": 1,
+          "id": 2
+        },
+        "request_id": "ef9d513b532f49329abac512ffaa2378"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":{\"acceptance_criteria\":[],\"description\":\"\",\"id\":2,\"identifier\":\"HU-002\",\"priority\":\"low\",\"project_id\":1,\"status\":\"todo\",\"story_points\":3,\"title\":\"Pending\"}}"
+          }
+        ],
+        "structuredContent": {
+          "data": {
+            "acceptance_criteria": [],
+            "description": "",
+            "id": 2,
+            "identifier": "HU-002",
+            "priority": "low",
+            "project_id": 1,
+            "status": "todo",
+            "story_points": 3,
+            "title": "Pending"
+          }
+        }
+      },
+      "request_file_mtime_ns": 1794704203728836699
+    },
+    {
+      "request": {
+        "case": "C20",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "f72a50dd62e6426c8d88d2920579c48e"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794704206847622941
+    },
+    {
+      "request": {
+        "case": "C20",
+        "tool": "list_projects",
+        "arguments": {},
+        "request_id": "390b6d9d22ff40538a12e325d7f240c2"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[{\"CreatedAt\":\"2026-11-14T21:55:14.037938-03:00\",\"EndDate\":\"2026-12-31T00:00:00Z\",\"ID\":1,\"Name\":\"Demo\",\"StartDate\":\"2026-01-01T00:00:00Z\",\"Status\":\"active\"},{\"CreatedAt\":\"2026-11-14T21:55:14.037938-03:00\",\"EndDate\":\"2026-12-31T00:00:00Z\",\"ID\":2,\"Name\":\"Other\",\"StartDate\":\"2026-01-01T00:00:00Z\",\"Status\":\"active\"}]}"
+          }
+        ],
+        "structuredContent": {
+          "data": [
+            {
+              "CreatedAt": "2026-11-14T21:55:14.037938-03:00",
+              "EndDate": "2026-12-31T00:00:00Z",
+              "ID": 1,
+              "Name": "Demo",
+              "StartDate": "2026-01-01T00:00:00Z",
+              "Status": "active"
+            },
+            {
+              "CreatedAt": "2026-11-14T21:55:14.037938-03:00",
+              "EndDate": "2026-12-31T00:00:00Z",
+              "ID": 2,
+              "Name": "Other",
+              "StartDate": "2026-01-01T00:00:00Z",
+              "Status": "active"
+            }
+          ]
+        }
+      },
+      "request_file_mtime_ns": 1794704209465044931
+    },
+    {
+      "request": {
+        "case": "C20",
+        "tool": "get_project",
+        "arguments": {
+          "project_id": 1
+        },
+        "request_id": "a4a32ea2ff1447c688c0bce1de6ba54e"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":{\"CreatedAt\":\"2026-11-14T21:55:14.037938-03:00\",\"EndDate\":\"2026-12-31T00:00:00Z\",\"ID\":1,\"Name\":\"Demo\",\"StartDate\":\"2026-01-01T00:00:00Z\",\"Status\":\"active\"}}"
+          }
+        ],
+        "structuredContent": {
+          "data": {
+            "CreatedAt": "2026-11-14T21:55:14.037938-03:00",
+            "EndDate": "2026-12-31T00:00:00Z",
+            "ID": 1,
+            "Name": "Demo",
+            "StartDate": "2026-01-01T00:00:00Z",
+            "Status": "active"
+          }
+        }
+      },
+      "request_file_mtime_ns": 1794704211991554165
+    },
+    {
+      "request": {
+        "case": "C20",
+        "tool": "list_stories",
+        "arguments": {
+          "project_id": 1
+        },
+        "request_id": "620559cf10bf473cbbd181c9f95c733e"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[{\"acceptance_criteria\":[],\"description\":\"\",\"id\":1,\"identifier\":\"HU-001\",\"priority\":\"high\",\"project_id\":1,\"status\":\"done\",\"story_points\":8,\"title\":\"Ready\"},{\"acceptance_criteria\":[],\"description\":\"\",\"id\":2,\"identifier\":\"HU-002\",\"priority\":\"low\",\"project_id\":1,\"status\":\"todo\",\"story_points\":3,\"title\":\"Pending\"}]}"
+          }
+        ],
+        "structuredContent": {
+          "data": [
+            {
+              "acceptance_criteria": [],
+              "description": "",
+              "id": 1,
+              "identifier": "HU-001",
+              "priority": "high",
+              "project_id": 1,
+              "status": "done",
+              "story_points": 8,
+              "title": "Ready"
+            },
+            {
+              "acceptance_criteria": [],
+              "description": "",
+              "id": 2,
+              "identifier": "HU-002",
+              "priority": "low",
+              "project_id": 1,
+              "status": "todo",
+              "story_points": 3,
+              "title": "Pending"
+            }
+          ]
+        }
+      },
+      "request_file_mtime_ns": 1794704214467681542
+    },
+    {
+      "request": {
+        "case": "C20",
+        "tool": "get_story",
+        "arguments": {
+          "project_id": 1,
+          "id": 1
+        },
+        "request_id": "4e072fe49d8b44a5948255d3a95ea24a"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":{\"acceptance_criteria\":[],\"description\":\"\",\"id\":1,\"identifier\":\"HU-001\",\"priority\":\"high\",\"project_id\":1,\"status\":\"done\",\"story_points\":8,\"title\":\"Ready\"}}"
+          }
+        ],
+        "structuredContent": {
+          "data": {
+            "acceptance_criteria": [],
+            "description": "",
+            "id": 1,
+            "identifier": "HU-001",
+            "priority": "high",
+            "project_id": 1,
+            "status": "done",
+            "story_points": 8,
+            "title": "Ready"
+          }
+        }
+      },
+      "request_file_mtime_ns": 1794704217023782499
+    },
+    {
+      "request": {
+        "case": "C20",
+        "tool": "get_metrics",
+        "arguments": {
+          "project_id": 1
+        },
+        "request_id": "a730fa431c4e44e583908808b7857341"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":{\"ActualHours\":0,\"CompletedStoryPercentage\":50,\"CompletedStoryPoints\":8,\"DefectsDetected\":0,\"DefectsResolved\":0,\"Deviation\":0,\"EstimatedHours\":0,\"PlannedStoryPoints\":8,\"ProjectID\":1,\"SprintID\":null,\"Velocity\":8}}"
+          }
+        ],
+        "structuredContent": {
+          "data": {
+            "ActualHours": 0,
+            "CompletedStoryPercentage": 50,
+            "CompletedStoryPoints": 8,
+            "DefectsDetected": 0,
+            "DefectsResolved": 0,
+            "Deviation": 0,
+            "EstimatedHours": 0,
+            "PlannedStoryPoints": 8,
+            "ProjectID": 1,
+            "SprintID": null,
+            "Velocity": 8
+          }
+        }
+      },
+      "request_file_mtime_ns": 1794704219563729906
+    },
+    {
+      "request": {
+        "case": "C20",
+        "tool": "get_report",
+        "arguments": {
+          "project_id": 1
+        },
+        "request_id": "606d17074fb54e798d66d183135b2140"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":{\"available_sprints\":[{\"goal\":\"Release\",\"id\":10,\"status\":\"closed\"},{\"goal\":\"Next\",\"id\":11,\"status\":\"open\"}],\"metrics\":{\"actual_hours\":0,\"completed_story_percentage\":50,\"completed_story_points\":8,\"defects_detected\":0,\"defects_resolved\":0,\"deviation\":0,\"estimated_hours\":0,\"planned_story_points\":8,\"project_id\":1,\"sprint_id\":null,\"velocity\":8},\"project\":{\"id\":1,\"name\":\"Demo\",\"status\":\"active\"},\"sprint\":null,\"stories\":[{\"id\":1,\"identifier\":\"HU-001\",\"sprint_id\":10,\"status\":\"done\",\"story_points\":8,\"title\":\"Ready\"},{\"id\":2,\"identifier\":\"HU-002\",\"sprint_id\":null,\"status\":\"todo\",\"story_points\":3,\"title\":\"Pending\"}]}}"
+          }
+        ],
+        "structuredContent": {
+          "data": {
+            "available_sprints": [
+              {
+                "goal": "Release",
+                "id": 10,
+                "status": "closed"
+              },
+              {
+                "goal": "Next",
+                "id": 11,
+                "status": "open"
+              }
+            ],
+            "metrics": {
+              "actual_hours": 0,
+              "completed_story_percentage": 50,
+              "completed_story_points": 8,
+              "defects_detected": 0,
+              "defects_resolved": 0,
+              "deviation": 0,
+              "estimated_hours": 0,
+              "planned_story_points": 8,
+              "project_id": 1,
+              "sprint_id": null,
+              "velocity": 8
+            },
+            "project": {
+              "id": 1,
+              "name": "Demo",
+              "status": "active"
+            },
+            "sprint": null,
+            "stories": [
+              {
+                "id": 1,
+                "identifier": "HU-001",
+                "sprint_id": 10,
+                "status": "done",
+                "story_points": 8,
+                "title": "Ready"
+              },
+              {
+                "id": 2,
+                "identifier": "HU-002",
+                "sprint_id": null,
+                "status": "todo",
+                "story_points": 3,
+                "title": "Pending"
+              }
+            ]
+          }
+        }
+      },
+      "request_file_mtime_ns": 1794704221999863346
+    },
+    {
+      "request": {
+        "case": "C20",
+        "tool": "get_sprint",
+        "arguments": {
+          "project_id": 1,
+          "sprint_id": 10
+        },
+        "request_id": "5d9bde04ba6a4b0ba8964d89598269ba"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":{\"sprint\":{\"CreatedAt\":\"2026-11-14T21:55:14.037938-03:00\",\"Goal\":\"Release\",\"ID\":10,\"ProjectID\":1,\"Status\":\"closed\"},\"stories\":[{\"Identifier\":\"HU-001\",\"SprintID\":10,\"Status\":\"done\",\"StoryID\":1,\"Title\":\"Ready\"}]}}"
+          }
+        ],
+        "structuredContent": {
+          "data": {
+            "sprint": {
+              "CreatedAt": "2026-11-14T21:55:14.037938-03:00",
+              "Goal": "Release",
+              "ID": 10,
+              "ProjectID": 1,
+              "Status": "closed"
+            },
+            "stories": [
+              {
+                "Identifier": "HU-001",
+                "SprintID": 10,
+                "Status": "done",
+                "StoryID": 1,
+                "Title": "Ready"
+              }
+            ]
+          }
+        }
+      },
+      "request_file_mtime_ns": 1794704224560114723
+    },
+    {
+      "request": {
+        "case": "C20",
+        "tool": "get_report",
+        "arguments": {
+          "project_id": 1,
+          "sprint_id": 10
+        },
+        "request_id": "6ca2a25f913641d3ac060b5cdcd91194"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":{\"available_sprints\":[{\"goal\":\"Release\",\"id\":10,\"status\":\"closed\"},{\"goal\":\"Next\",\"id\":11,\"status\":\"open\"}],\"metrics\":{\"actual_hours\":0,\"completed_story_percentage\":100,\"completed_story_points\":8,\"defects_detected\":0,\"defects_resolved\":0,\"deviation\":0,\"estimated_hours\":0,\"planned_story_points\":8,\"project_id\":1,\"sprint_id\":10,\"velocity\":8},\"project\":{\"id\":1,\"name\":\"Demo\",\"status\":\"active\"},\"sprint\":{\"goal\":\"Release\",\"id\":10,\"status\":\"closed\"},\"stories\":[{\"id\":1,\"identifier\":\"HU-001\",\"sprint_id\":10,\"status\":\"done\",\"story_points\":8,\"title\":\"Ready\"}]}}"
+          }
+        ],
+        "structuredContent": {
+          "data": {
+            "available_sprints": [
+              {
+                "goal": "Release",
+                "id": 10,
+                "status": "closed"
+              },
+              {
+                "goal": "Next",
+                "id": 11,
+                "status": "open"
+              }
+            ],
+            "metrics": {
+              "actual_hours": 0,
+              "completed_story_percentage": 100,
+              "completed_story_points": 8,
+              "defects_detected": 0,
+              "defects_resolved": 0,
+              "deviation": 0,
+              "estimated_hours": 0,
+              "planned_story_points": 8,
+              "project_id": 1,
+              "sprint_id": 10,
+              "velocity": 8
+            },
+            "project": {
+              "id": 1,
+              "name": "Demo",
+              "status": "active"
+            },
+            "sprint": {
+              "goal": "Release",
+              "id": 10,
+              "status": "closed"
+            },
+            "stories": [
+              {
+                "id": 1,
+                "identifier": "HU-001",
+                "sprint_id": 10,
+                "status": "done",
+                "story_points": 8,
+                "title": "Ready"
+              }
+            ]
+          }
+        }
+      },
+      "request_file_mtime_ns": 1794704227223888443
+    },
+    {
+      "request": {
+        "case": "C02",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "0f5e0b1e498a4cdb908adf7ac9c71687"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794707068442635329
+    },
+    {
+      "request": {
+        "case": "C02",
+        "tool": "list_projects",
+        "arguments": {
+          "query": "Demo"
+        },
+        "request_id": "9b63de90c8394ae4855474dc22ba6293"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[{\"CreatedAt\":\"2026-11-14T21:55:14.037938-03:00\",\"EndDate\":\"2026-12-31T00:00:00Z\",\"ID\":1,\"Name\":\"Demo\",\"StartDate\":\"2026-01-01T00:00:00Z\",\"Status\":\"active\"}]}"
+          }
+        ],
+        "structuredContent": {
+          "data": [
+            {
+              "CreatedAt": "2026-11-14T21:55:14.037938-03:00",
+              "EndDate": "2026-12-31T00:00:00Z",
+              "ID": 1,
+              "Name": "Demo",
+              "StartDate": "2026-01-01T00:00:00Z",
+              "Status": "active"
+            }
+          ]
+        }
+      },
+      "request_file_mtime_ns": 1794707071261673570
+    },
+    {
+      "request": {
+        "case": "C03",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "1da21ba8e6174ce78081fdb4fb885a13"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794707073471056556
+    },
+    {
+      "request": {
+        "case": "C03",
+        "tool": "get_project",
+        "arguments": {
+          "project_id": 1
+        },
+        "request_id": "6b01651986624741949bb0aa03b22505"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":{\"CreatedAt\":\"2026-11-14T21:55:14.037938-03:00\",\"EndDate\":\"2026-12-31T00:00:00Z\",\"ID\":1,\"Name\":\"Demo\",\"StartDate\":\"2026-01-01T00:00:00Z\",\"Status\":\"active\"}}"
+          }
+        ],
+        "structuredContent": {
+          "data": {
+            "CreatedAt": "2026-11-14T21:55:14.037938-03:00",
+            "EndDate": "2026-12-31T00:00:00Z",
+            "ID": 1,
+            "Name": "Demo",
+            "StartDate": "2026-01-01T00:00:00Z",
+            "Status": "active"
+          }
+        }
+      },
+      "request_file_mtime_ns": 1794707076264512205
+    },
+    {
+      "request": {
+        "case": "C04",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "2803fcfea6eb4a9b894b4ae106241b45"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794707080112795841
+    },
+    {
+      "request": {
+        "case": "C04",
+        "tool": "list_stories",
+        "arguments": {
+          "project_id": 1
+        },
+        "request_id": "dbed14ea6147410cadb6cabe043dc259"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[{\"acceptance_criteria\":[],\"description\":\"\",\"id\":1,\"identifier\":\"HU-001\",\"priority\":\"high\",\"project_id\":1,\"status\":\"done\",\"story_points\":8,\"title\":\"Ready\"},{\"acceptance_criteria\":[],\"description\":\"\",\"id\":2,\"identifier\":\"HU-002\",\"priority\":\"low\",\"project_id\":1,\"status\":\"todo\",\"story_points\":3,\"title\":\"Pending\"}]}"
+          }
+        ],
+        "structuredContent": {
+          "data": [
+            {
+              "acceptance_criteria": [],
+              "description": "",
+              "id": 1,
+              "identifier": "HU-001",
+              "priority": "high",
+              "project_id": 1,
+              "status": "done",
+              "story_points": 8,
+              "title": "Ready"
+            },
+            {
+              "acceptance_criteria": [],
+              "description": "",
+              "id": 2,
+              "identifier": "HU-002",
+              "priority": "low",
+              "project_id": 1,
+              "status": "todo",
+              "story_points": 3,
+              "title": "Pending"
+            }
+          ]
+        }
+      },
+      "request_file_mtime_ns": 1794707082803155841
+    },
+    {
+      "request": {
+        "case": "C05",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "77a728d9e19e4a89b14856377bc1daa7"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794707089123549570
+    },
+    {
+      "request": {
+        "case": "C05",
+        "tool": "list_stories",
+        "arguments": {
+          "project_id": 1,
+          "status": "todo"
+        },
+        "request_id": "a616a8417c8e43a594b11d2728f61cea"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[{\"acceptance_criteria\":[],\"description\":\"\",\"id\":2,\"identifier\":\"HU-002\",\"priority\":\"low\",\"project_id\":1,\"status\":\"todo\",\"story_points\":3,\"title\":\"Pending\"}]}"
+          }
+        ],
+        "structuredContent": {
+          "data": [
+            {
+              "acceptance_criteria": [],
+              "description": "",
+              "id": 2,
+              "identifier": "HU-002",
+              "priority": "low",
+              "project_id": 1,
+              "status": "todo",
+              "story_points": 3,
+              "title": "Pending"
+            }
+          ]
+        }
+      },
+      "request_file_mtime_ns": 1794707091805469849
+    },
+    {
+      "request": {
+        "case": "C07",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "704b5dddef594d62ad90d196918df5a2"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794707094718267054
+    },
+    {
+      "request": {
+        "case": "C07",
+        "tool": "get_story",
+        "arguments": {
+          "project_id": 1,
+          "id": 1
+        },
+        "request_id": "af0e63ff1aaf4494be86bca29c535137"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":{\"acceptance_criteria\":[],\"description\":\"\",\"id\":1,\"identifier\":\"HU-001\",\"priority\":\"high\",\"project_id\":1,\"status\":\"done\",\"story_points\":8,\"title\":\"Ready\"}}"
+          }
+        ],
+        "structuredContent": {
+          "data": {
+            "acceptance_criteria": [],
+            "description": "",
+            "id": 1,
+            "identifier": "HU-001",
+            "priority": "high",
+            "project_id": 1,
+            "status": "done",
+            "story_points": 8,
+            "title": "Ready"
+          }
+        }
+      },
+      "request_file_mtime_ns": 1794707097460605223
+    },
+    {
+      "request": {
+        "case": "C09",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "d4270e830d644c4cbe00040a75b7aaea"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794707099841232514
+    },
+    {
+      "request": {
+        "case": "C09",
+        "tool": "list_sprints",
+        "arguments": {
+          "project_id": 1,
+          "status": "open"
+        },
+        "request_id": "c1797c3e7fec4de799bed504016794d8"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[{\"CreatedAt\":\"2026-11-14T21:55:14.037938-03:00\",\"Goal\":\"Next\",\"ID\":11,\"ProjectID\":1,\"Status\":\"open\"}]}"
+          }
+        ],
+        "structuredContent": {
+          "data": [
+            {
+              "CreatedAt": "2026-11-14T21:55:14.037938-03:00",
+              "Goal": "Next",
+              "ID": 11,
+              "ProjectID": 1,
+              "Status": "open"
+            }
+          ]
+        }
+      },
+      "request_file_mtime_ns": 1794707102669228926
+    },
+    {
+      "request": {
+        "case": "C10",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "081f16fd6f45405abd388b54ef0bfd79"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794707106417804349
+    },
+    {
+      "request": {
+        "case": "C10",
+        "tool": "list_sprints",
+        "arguments": {
+          "project_id": 1,
+          "status": "closed"
+        },
+        "request_id": "fa0fb8b624634cb0a0d982fbeda027f3"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[{\"CreatedAt\":\"2026-11-14T21:55:14.037938-03:00\",\"Goal\":\"Release\",\"ID\":10,\"ProjectID\":1,\"Status\":\"closed\"}]}"
+          }
+        ],
+        "structuredContent": {
+          "data": [
+            {
+              "CreatedAt": "2026-11-14T21:55:14.037938-03:00",
+              "Goal": "Release",
+              "ID": 10,
+              "ProjectID": 1,
+              "Status": "closed"
+            }
+          ]
+        }
+      },
+      "request_file_mtime_ns": 1794707108920486263
+    },
+    {
+      "request": {
+        "case": "C11",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "008118ac70904fa590cf5b8133d46aa9"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794707113066423315
+    },
+    {
+      "request": {
+        "case": "C11",
+        "tool": "get_sprint",
+        "arguments": {
+          "project_id": 1,
+          "sprint_id": 10
+        },
+        "request_id": "21084ebab11a49f2834fcd033eab3bae"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":{\"sprint\":{\"CreatedAt\":\"2026-11-14T21:55:14.037938-03:00\",\"Goal\":\"Release\",\"ID\":10,\"ProjectID\":1,\"Status\":\"closed\"},\"stories\":[{\"Identifier\":\"HU-001\",\"SprintID\":10,\"Status\":\"done\",\"StoryID\":1,\"Title\":\"Ready\"}]}}"
+          }
+        ],
+        "structuredContent": {
+          "data": {
+            "sprint": {
+              "CreatedAt": "2026-11-14T21:55:14.037938-03:00",
+              "Goal": "Release",
+              "ID": 10,
+              "ProjectID": 1,
+              "Status": "closed"
+            },
+            "stories": [
+              {
+                "Identifier": "HU-001",
+                "SprintID": 10,
+                "Status": "done",
+                "StoryID": 1,
+                "Title": "Ready"
+              }
+            ]
+          }
+        }
+      },
+      "request_file_mtime_ns": 1794707116876852520
+    },
+    {
+      "request": {
+        "case": "C13",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "181edbe1534c4d54bf3288054da190a7"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794707120737508104
+    },
+    {
+      "request": {
+        "case": "C13",
+        "tool": "list_projects",
+        "arguments": {},
+        "request_id": "db535d45f7b24af6a982523c97522712"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[{\"CreatedAt\":\"2026-11-14T21:55:14.037938-03:00\",\"EndDate\":\"2026-12-31T00:00:00Z\",\"ID\":1,\"Name\":\"Demo\",\"StartDate\":\"2026-01-01T00:00:00Z\",\"Status\":\"active\"},{\"CreatedAt\":\"2026-11-14T21:55:14.037938-03:00\",\"EndDate\":\"2026-12-31T00:00:00Z\",\"ID\":2,\"Name\":\"Other\",\"StartDate\":\"2026-01-01T00:00:00Z\",\"Status\":\"active\"}]}"
+          }
+        ],
+        "structuredContent": {
+          "data": [
+            {
+              "CreatedAt": "2026-11-14T21:55:14.037938-03:00",
+              "EndDate": "2026-12-31T00:00:00Z",
+              "ID": 1,
+              "Name": "Demo",
+              "StartDate": "2026-01-01T00:00:00Z",
+              "Status": "active"
+            },
+            {
+              "CreatedAt": "2026-11-14T21:55:14.037938-03:00",
+              "EndDate": "2026-12-31T00:00:00Z",
+              "ID": 2,
+              "Name": "Other",
+              "StartDate": "2026-01-01T00:00:00Z",
+              "Status": "active"
+            }
+          ]
+        }
+      },
+      "request_file_mtime_ns": 1794707123266334863
+    },
+    {
+      "request": {
+        "case": "C13",
+        "tool": "list_stories",
+        "arguments": {
+          "project_id": 1,
+          "limit": 100
+        },
+        "request_id": "6f300e67165a4c8f9c7f0d1c63a5fb8e"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[{\"acceptance_criteria\":[],\"description\":\"\",\"id\":1,\"identifier\":\"HU-001\",\"priority\":\"high\",\"project_id\":1,\"status\":\"done\",\"story_points\":8,\"title\":\"Ready\"},{\"acceptance_criteria\":[],\"description\":\"\",\"id\":2,\"identifier\":\"HU-002\",\"priority\":\"low\",\"project_id\":1,\"status\":\"todo\",\"story_points\":3,\"title\":\"Pending\"}]}"
+          }
+        ],
+        "structuredContent": {
+          "data": [
+            {
+              "acceptance_criteria": [],
+              "description": "",
+              "id": 1,
+              "identifier": "HU-001",
+              "priority": "high",
+              "project_id": 1,
+              "status": "done",
+              "story_points": 8,
+              "title": "Ready"
+            },
+            {
+              "acceptance_criteria": [],
+              "description": "",
+              "id": 2,
+              "identifier": "HU-002",
+              "priority": "low",
+              "project_id": 1,
+              "status": "todo",
+              "story_points": 3,
+              "title": "Pending"
+            }
+          ]
+        }
+      },
+      "request_file_mtime_ns": 1794707125897825215
+    },
+    {
+      "request": {
+        "case": "C14",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "bbf7d0d1c5e142cc928c5e5a1479ae10"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794707126292208738
+    },
+    {
+      "request": {
+        "case": "C14",
+        "tool": "list_projects",
+        "arguments": {},
+        "request_id": "4748ac498fc64e3687c67406f0fbc5ad"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[{\"CreatedAt\":\"2026-11-14T21:55:14.037938-03:00\",\"EndDate\":\"2026-12-31T00:00:00Z\",\"ID\":1,\"Name\":\"Demo\",\"StartDate\":\"2026-01-01T00:00:00Z\",\"Status\":\"active\"},{\"CreatedAt\":\"2026-11-14T21:55:14.037938-03:00\",\"EndDate\":\"2026-12-31T00:00:00Z\",\"ID\":2,\"Name\":\"Other\",\"StartDate\":\"2026-01-01T00:00:00Z\",\"Status\":\"active\"}]}"
+          }
+        ],
+        "structuredContent": {
+          "data": [
+            {
+              "CreatedAt": "2026-11-14T21:55:14.037938-03:00",
+              "EndDate": "2026-12-31T00:00:00Z",
+              "ID": 1,
+              "Name": "Demo",
+              "StartDate": "2026-01-01T00:00:00Z",
+              "Status": "active"
+            },
+            {
+              "CreatedAt": "2026-11-14T21:55:14.037938-03:00",
+              "EndDate": "2026-12-31T00:00:00Z",
+              "ID": 2,
+              "Name": "Other",
+              "StartDate": "2026-01-01T00:00:00Z",
+              "Status": "active"
+            }
+          ]
+        }
+      },
+      "request_file_mtime_ns": 1794707128849493266
+    },
+    {
+      "request": {
+        "case": "C14",
+        "tool": "list_sprints",
+        "arguments": {
+          "project_id": 1
+        },
+        "request_id": "4d88469767c04b29bcaca65f90c83ed1"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[{\"CreatedAt\":\"2026-11-14T21:55:14.037938-03:00\",\"Goal\":\"Release\",\"ID\":10,\"ProjectID\":1,\"Status\":\"closed\"},{\"CreatedAt\":\"2026-11-14T21:55:14.037938-03:00\",\"Goal\":\"Next\",\"ID\":11,\"ProjectID\":1,\"Status\":\"open\"}]}"
+          }
+        ],
+        "structuredContent": {
+          "data": [
+            {
+              "CreatedAt": "2026-11-14T21:55:14.037938-03:00",
+              "Goal": "Release",
+              "ID": 10,
+              "ProjectID": 1,
+              "Status": "closed"
+            },
+            {
+              "CreatedAt": "2026-11-14T21:55:14.037938-03:00",
+              "Goal": "Next",
+              "ID": 11,
+              "ProjectID": 1,
+              "Status": "open"
+            }
+          ]
+        }
+      },
+      "request_file_mtime_ns": 1794707131440827501
+    },
+    {
+      "request": {
+        "case": "C15",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "a5498cf1bc544098a1dfe9fb6d241bdd"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794707132724463780
+    },
+    {
+      "request": {
+        "case": "C14",
+        "tool": "get_sprint",
+        "arguments": {
+          "project_id": 1,
+          "sprint_id": 10
+        },
+        "request_id": "53a680268570470e95d66dca2a813e98"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":{\"sprint\":{\"CreatedAt\":\"2026-11-14T21:55:14.037938-03:00\",\"Goal\":\"Release\",\"ID\":10,\"ProjectID\":1,\"Status\":\"closed\"},\"stories\":[{\"Identifier\":\"HU-001\",\"SprintID\":10,\"Status\":\"done\",\"StoryID\":1,\"Title\":\"Ready\"}]}}"
+          }
+        ],
+        "structuredContent": {
+          "data": {
+            "sprint": {
+              "CreatedAt": "2026-11-14T21:55:14.037938-03:00",
+              "Goal": "Release",
+              "ID": 10,
+              "ProjectID": 1,
+              "Status": "closed"
+            },
+            "stories": [
+              {
+                "Identifier": "HU-001",
+                "SprintID": 10,
+                "Status": "done",
+                "StoryID": 1,
+                "Title": "Ready"
+              }
+            ]
+          }
+        }
+      },
+      "request_file_mtime_ns": 1794707134074725318
+    },
+    {
+      "request": {
+        "case": "C15",
+        "tool": "get_metrics",
+        "arguments": {
+          "project_id": 1
+        },
+        "request_id": "0c208272f1ef419f90d0d80e18fcb20a"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":{\"ActualHours\":0,\"CompletedStoryPercentage\":50,\"CompletedStoryPoints\":8,\"DefectsDetected\":0,\"DefectsResolved\":0,\"Deviation\":0,\"EstimatedHours\":0,\"PlannedStoryPoints\":8,\"ProjectID\":1,\"SprintID\":null,\"Velocity\":8}}"
+          }
+        ],
+        "structuredContent": {
+          "data": {
+            "ActualHours": 0,
+            "CompletedStoryPercentage": 50,
+            "CompletedStoryPoints": 8,
+            "DefectsDetected": 0,
+            "DefectsResolved": 0,
+            "Deviation": 0,
+            "EstimatedHours": 0,
+            "PlannedStoryPoints": 8,
+            "ProjectID": 1,
+            "SprintID": null,
+            "Velocity": 8
+          }
+        }
+      },
+      "request_file_mtime_ns": 1794707135403465079
+    },
+    {
+      "request": {
+        "case": "C16",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "ea9a6adadd00469685a68c9330ac9583"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794707139047138444
+    },
+    {
+      "request": {
+        "case": "C16",
+        "tool": "list_sprints",
+        "arguments": {
+          "project_id": 1
+        },
+        "request_id": "f355552880004775a681fde00ea0cbc5"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[{\"CreatedAt\":\"2026-11-14T21:55:14.037938-03:00\",\"Goal\":\"Release\",\"ID\":10,\"ProjectID\":1,\"Status\":\"closed\"},{\"CreatedAt\":\"2026-11-14T21:55:14.037938-03:00\",\"Goal\":\"Next\",\"ID\":11,\"ProjectID\":1,\"Status\":\"open\"}]}"
+          }
+        ],
+        "structuredContent": {
+          "data": [
+            {
+              "CreatedAt": "2026-11-14T21:55:14.037938-03:00",
+              "Goal": "Release",
+              "ID": 10,
+              "ProjectID": 1,
+              "Status": "closed"
+            },
+            {
+              "CreatedAt": "2026-11-14T21:55:14.037938-03:00",
+              "Goal": "Next",
+              "ID": 11,
+              "ProjectID": 1,
+              "Status": "open"
+            }
+          ]
+        }
+      },
+      "request_file_mtime_ns": 1794707141650947709
+    },
+    {
+      "request": {
+        "case": "C16",
+        "tool": "get_report",
+        "arguments": {
+          "project_id": 1,
+          "sprint_id": 10
+        },
+        "request_id": "05de03e68da84593b320a634104bb5fb"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":{\"available_sprints\":[{\"goal\":\"Release\",\"id\":10,\"status\":\"closed\"},{\"goal\":\"Next\",\"id\":11,\"status\":\"open\"}],\"metrics\":{\"actual_hours\":0,\"completed_story_percentage\":100,\"completed_story_points\":8,\"defects_detected\":0,\"defects_resolved\":0,\"deviation\":0,\"estimated_hours\":0,\"planned_story_points\":8,\"project_id\":1,\"sprint_id\":10,\"velocity\":8},\"project\":{\"id\":1,\"name\":\"Demo\",\"status\":\"active\"},\"sprint\":{\"goal\":\"Release\",\"id\":10,\"status\":\"closed\"},\"stories\":[{\"id\":1,\"identifier\":\"HU-001\",\"sprint_id\":10,\"status\":\"done\",\"story_points\":8,\"title\":\"Ready\"}]}}"
+          }
+        ],
+        "structuredContent": {
+          "data": {
+            "available_sprints": [
+              {
+                "goal": "Release",
+                "id": 10,
+                "status": "closed"
+              },
+              {
+                "goal": "Next",
+                "id": 11,
+                "status": "open"
+              }
+            ],
+            "metrics": {
+              "actual_hours": 0,
+              "completed_story_percentage": 100,
+              "completed_story_points": 8,
+              "defects_detected": 0,
+              "defects_resolved": 0,
+              "deviation": 0,
+              "estimated_hours": 0,
+              "planned_story_points": 8,
+              "project_id": 1,
+              "sprint_id": 10,
+              "velocity": 8
+            },
+            "project": {
+              "id": 1,
+              "name": "Demo",
+              "status": "active"
+            },
+            "sprint": {
+              "goal": "Release",
+              "id": 10,
+              "status": "closed"
+            },
+            "stories": [
+              {
+                "id": 1,
+                "identifier": "HU-001",
+                "sprint_id": 10,
+                "status": "done",
+                "story_points": 8,
+                "title": "Ready"
+              }
+            ]
+          }
+        }
+      },
+      "request_file_mtime_ns": 1794707144334210931
+    },
+    {
+      "request": {
+        "case": "C18",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "9fcd4eda520c48d7ab79f9b912af6d8a"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794707150419835192
+    },
+    {
+      "request": {
+        "case": "C18",
+        "tool": "list_projects",
+        "arguments": {
+          "query": "Inexistente"
+        },
+        "request_id": "722a85a692e94353a7574bbdf65e1c55"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[]}"
+          }
+        ],
+        "structuredContent": {
+          "data": []
+        }
+      },
+      "request_file_mtime_ns": 1794707152687957559
+    }
+  ],
+  "completed_at_utc": "2026-11-15T01:46:56.384091+00:00",
+  "score": {
+    "contract_and_routing": {
+      "passed": 17,
+      "total": 20
+    },
+    "factually_correct_but_wrong_metric_source": [
+      "C13",
+      "C14"
+    ],
+    "pagination_failure": [
+      "C17"
+    ]
+  },
+  "tools_snapshot": {
+    "tools": [
+      {
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "description": "Read existing metrics for project_id; optionally scope to sprint_id. Decimal amounts use existing domain serialization.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "project_id": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "sprint_id": {
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "project_id"
+          ],
+          "type": "object"
+        },
+        "name": "get_metrics",
+        "outputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "data": true,
+            "next_cursor": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "data"
+          ],
+          "type": "object"
+        }
+      },
+      {
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "description": "Read project_id.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "project_id": {
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "project_id"
+          ],
+          "type": "object"
+        },
+        "name": "get_project",
+        "outputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "data": true,
+            "next_cursor": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "data"
+          ],
+          "type": "object"
+        }
+      },
+      {
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "description": "Read project report, optionally scoped to sprint_id. Individual effort entries and defects are excluded; aggregates remain.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "project_id": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "sprint_id": {
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "project_id"
+          ],
+          "type": "object"
+        },
+        "name": "get_report",
+        "outputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "data": true,
+            "next_cursor": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "data"
+          ],
+          "type": "object"
+        }
+      },
+      {
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "description": "Read sprint_id within project_id and its assigned stories.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "project_id": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "sprint_id": {
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "project_id",
+            "sprint_id"
+          ],
+          "type": "object"
+        },
+        "name": "get_sprint",
+        "outputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "data": true,
+            "next_cursor": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "data"
+          ],
+          "type": "object"
+        }
+      },
+      {
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "description": "Read story id within project_id.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "project_id": {
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "project_id",
+            "id"
+          ],
+          "type": "object"
+        },
+        "name": "get_story",
+        "outputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "data": true,
+            "next_cursor": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "data"
+          ],
+          "type": "object"
+        }
+      },
+      {
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "description": "List projects; query matches names. Results are ordered by ID.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "cursor": {
+              "description": "next_cursor from the previous page; keep the same filters.",
+              "pattern": "^([1-9][0-9]*)?$",
+              "type": "string"
+            },
+            "limit": {
+              "description": "Page size; default 20.",
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "query": {
+              "description": "Case-insensitive substring search; never selects an ambiguous name automatically.",
+              "type": "string"
+            },
+            "status": {
+              "enum": [
+                "planned",
+                "active",
+                "closed"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [],
+          "type": "object"
+        },
+        "name": "list_projects",
+        "outputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "data": true,
+            "next_cursor": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "data"
+          ],
+          "type": "object"
+        }
+      },
+      {
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "description": "List sprints within project_id; filter by open or closed status.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "cursor": {
+              "description": "next_cursor from the previous page; keep the same filters.",
+              "pattern": "^([1-9][0-9]*)?$",
+              "type": "string"
+            },
+            "limit": {
+              "description": "Page size; default 20.",
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "project_id": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "query": {
+              "description": "Case-insensitive substring search; never selects an ambiguous name automatically.",
+              "type": "string"
+            },
+            "status": {
+              "enum": [
+                "open",
+                "closed"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "project_id"
+          ],
+          "type": "object"
+        },
+        "name": "list_sprints",
+        "outputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "data": true,
+            "next_cursor": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "data"
+          ],
+          "type": "object"
+        }
+      },
+      {
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "description": "List stories within project_id; filter by status, priority or text.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "cursor": {
+              "description": "next_cursor from the previous page; keep the same filters.",
+              "pattern": "^([1-9][0-9]*)?$",
+              "type": "string"
+            },
+            "limit": {
+              "description": "Page size; default 20.",
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "priority": {
+              "enum": [
+                "unassigned",
+                "low",
+                "medium",
+                "high"
+              ],
+              "type": "string"
+            },
+            "project_id": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "query": {
+              "description": "Case-insensitive substring search; never selects an ambiguous name automatically.",
+              "type": "string"
+            },
+            "status": {
+              "enum": [
+                "todo",
+                "done"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "project_id"
+          ],
+          "type": "object"
+        },
+        "name": "list_stories",
+        "outputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "data": true,
+            "next_cursor": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "data"
+          ],
+          "type": "object"
+        }
+      }
+    ]
+  }
+}

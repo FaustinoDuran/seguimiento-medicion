@@ -411,3 +411,7 @@ docs/sdd/                    especificaciones
 docs/adr/                    decisiones
 features/                    escenarios BDD
 ```
+
+## Consultas desde IA mediante MCP
+
+Configuración local, alcance y evals: [docs/mcp/README.md](docs/mcp/README.md).

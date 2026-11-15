@@ -1,0 +1,8 @@
+**
+!backend/
+!backend/**
+**/.env
+**/.env.*
+backend/bin/
+backend/tmp/
+backend/coverage.out
