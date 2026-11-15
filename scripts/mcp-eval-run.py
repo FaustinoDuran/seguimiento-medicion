@@ -27,10 +27,17 @@ import time
 
 ROOT = Path(__file__).resolve().parent.parent
 CASES = ROOT / "docs" / "mcp" / "cases" / "TASK-022-frozen.json"
+TEE_SCRIPT = ROOT / "scripts" / "mcp-stdio-tee.py"
 # The evaluated model runs in an isolated directory outside the repository on
 # purpose: it must not read AGENTS.md, docs/, fixtures or the server source.
 WORKSPACE = Path(os.environ.get("MCP_EVAL_WORKSPACE", "/tmp/mcp-eval/ws"))
 TRANSCRIPT = Path(os.environ.get("MCP_EVAL_TRANSCRIPT", "/tmp/mcp-eval/transcript"))
+
+# Both frozen fixtures live in isolated demo databases created for TASK-022.
+DATABASES = {
+    "regressions": "postgres://mcp_reader:eval-only@localhost:5433/mcp_demo_regress?sslmode=disable",
+    "reserved": "postgres://mcp_reader:eval-only@localhost:5433/mcp_demo_shown?sslmode=disable",
+}
 
 
 def load_cases(set_name):
@@ -85,20 +92,26 @@ def read_tool_calls():
     return calls
 
 
-def run_conversation(question, model, variant, timeout, instruction):
-    """Fresh context: a new opencode process per repetition."""
+def run_conversation(question, model, variant, timeout, instruction, server_config):
+    """Fresh context: a new client process per repetition.
+
+    The evaluated model only gets the neutral instruction and its own MCP tools;
+    it never receives the fixture, the expected answers or the server source.
+    """
     if TRANSCRIPT.exists():
         shutil.rmtree(TRANSCRIPT)
     TRANSCRIPT.mkdir(parents=True, exist_ok=True)
 
     prompt = f"{instruction}\n\nPregunta: {question}"
     command = [
-        "opencode", "run", "-m", model,
-        "--format", "json",
-        "--dir", str(WORKSPACE),
+        "codex", "exec",
+        "--skip-git-repo-check",
+        "--json",
+        "-C", str(WORKSPACE),
+        "-m", model,
+        "-c", f'model_reasoning_effort="{variant}"',
     ]
-    if variant:
-        command += ["--variant", variant]
+    command += server_config
     command.append(prompt)
 
     started = time.time()
@@ -129,7 +142,7 @@ def run_conversation(question, model, variant, timeout, instruction):
 
 
 def extract_answer(stdout):
-    """Collect assistant text events; ignore provider metadata."""
+    """Collect the final agent message from Codex JSONL events."""
     texts = []
     for line in stdout.splitlines():
         line = line.strip()
@@ -142,12 +155,36 @@ def extract_answer(stdout):
         if event.get("type") == "error":
             texts.append("ERROR: " + json.dumps(event.get("error", {}))[:500])
             continue
-        part = event.get("part") or {}
-        if event.get("type") == "text" and part.get("text"):
-            texts.append(part["text"])
-        elif event.get("type") == "message" and isinstance(event.get("text"), str):
-            texts.append(event["text"])
+        item = event.get("item") or {}
+        if item.get("type") == "agent_message" and isinstance(item.get("text"), str):
+            texts.append(item["text"])
     return "\n".join(texts).strip()
+
+
+def mcp_server_config(database, binary, trace):
+    """Pass the evaluated server as a temporary config override.
+
+    Codex reads these overrides as TOML, so arrays and inline tables are written
+    in TOML form. Credentials reach the server through the tee environment only;
+    the model never sees a file with the fixture or the expected answers.
+    """
+    args = "[" + ", ".join(f'"{value}"' for value in (TEE_SCRIPT, binary)) + "]"
+    environment = f'{{MCP_DATABASE_URL="{database}", MCP_TEE_LOG="{trace}"}}'
+    return [
+        "-c", 'mcp_servers.seguimiento-medicion.command="python3"',
+        "-c", f"mcp_servers.seguimiento-medicion.args={args}",
+        "-c", f"mcp_servers.seguimiento-medicion.env={environment}",
+    ]
+
+
+def tool_failed(call):
+    """A rejection can arrive as a result flag or as a JSON-RPC protocol error.
+
+    Argument validation is rejected by the SDK before the handler runs, so it
+    surfaces as a -32602 protocol error rather than result.isError. Counting
+    only one of the two would under-report correct rejections.
+    """
+    return bool(call.get("is_error")) or call.get("error") is not None
 
 
 def summarize(run, case):
@@ -161,7 +198,7 @@ def summarize(run, case):
     flags = []
     check = case.get("check", {})
 
-    if check.get("must_fail") and not any(c.get("is_error") for c in run["tool_calls"]):
+    if check.get("must_fail") and not any(tool_failed(c) for c in run["tool_calls"]):
         flags.append("expected a tool error and found none")
     if check.get("must_empty") and case.get("expect", "").lower().find("vac") >= 0:
         if '"data":[]' not in joined:
@@ -194,8 +231,10 @@ def main():
     parser.add_argument("--set", dest="set_name", default="regressions",
                         choices=["regressions", "reserved"])
     parser.add_argument("--reps", type=int, default=3)
-    parser.add_argument("--model", default="opencode/gpt-6-luna")
-    parser.add_argument("--variant", default="low")
+    parser.add_argument("--model", default="gpt-6.1-sol")
+    parser.add_argument("--variant", default="low", help="Codex reasoning effort")
+    parser.add_argument("--binary", default="/tmp/mcp-eval/mcp",
+                        help="MCP server build under evaluation")
     parser.add_argument("--only", default="", help="comma-separated case ids")
     parser.add_argument("--timeout", type=float, default=120)
     parser.add_argument("--out", required=True)
@@ -210,6 +249,9 @@ def main():
     git_commit = subprocess.run(
         ["git", "rev-parse", "HEAD"], cwd=str(ROOT), capture_output=True, text=True,
     ).stdout.strip()
+    server_config = mcp_server_config(
+        DATABASES[args.set_name], args.binary, TRANSCRIPT / "jsonrpc.jsonl",
+    )
 
     record = {
         "task": frozen["task"],
@@ -217,7 +259,7 @@ def main():
         "set": args.set_name,
         "model": args.model,
         "variant": args.variant,
-        "client": frozen["client"],
+        "client": f"Codex CLI exec con MCP nativo por stdio. {frozen['client']}",
         "instruction": frozen["neutral_instruction"],
         "commit": git_commit,
         "started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -234,7 +276,7 @@ def main():
             print(f"{case['id']} rep {repetition}/{args.reps}", file=sys.stderr, flush=True)
             run = run_conversation(
                 case["question"], args.model, args.variant, args.timeout,
-                frozen["neutral_instruction"],
+                frozen["neutral_instruction"], server_config,
             )
             run["flags"] = summarize(run, case)
             repetitions.append(run)

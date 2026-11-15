@@ -3,9 +3,10 @@
   "issue": 108,
   "status": "frozen-before-first-run",
   "frozen_at_utc": "2026-11-15T03:00:00Z",
-  "model": "opencode/gpt-6-luna",
+  "model": "gpt-6.1-sol",
   "reasoning_variant": "low",
-  "client": "OpenCode native MCP client, stdio transport",
+  "client": "Codex CLI exec con MCP nativo por stdio, cuenta del equipo (no OpenCode)",
+  "model_selection_note": "La cuenta solo habilita gpt-6.1-sol. Los modelos pequeños (gpt-5.4-nano, gpt-5.4-mini, gpt-5-codex, gpt-5.1-codex-mini) son rechazados explicitamente por el proveedor con esta cuenta. Se usa el esfuerzo de razonamiento mas bajo disponible ('low') y se registra esa limitacion en lugar de presentarlo como un modelo de menor capacidad.",
   "neutral_instruction": "Respondé la pregunta usando las herramientas MCP disponibles. Basá cada afirmación en resultados de herramientas. Si una herramienta no ofrece el dato, decilo. No inventes entidades ni valores.",
   "limits": {
     "conversations_per_full_run": 90,
