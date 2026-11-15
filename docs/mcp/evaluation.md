@@ -2,6 +2,13 @@
 
 Estado: parcial. No acredita cierre de la TASK ni merge de PR.
 
+Se ejecutó `go test -count=1 -race ./...` con DATABASE_URL,
+BACKLOG_TEST_DATABASE_URL, SPRINTS_TEST_DATABASE_URL y MCP_TEST_DATABASE_URL
+apuntando a PostgreSQL local: todos los paquetes aprobaron. CI define también
+MCP_TEST_DATABASE_URL para ejecutar las pruebas MCP de base de datos.
+El fixture SQL del ejecutable y de los casos conversacionales es compartido;
+la prueba del ejecutable se repitió después de extraerlo y aprobó.
+
 | Evidencia ejecutada | Resultado |
 |---|---|
 | Descubrimiento de ocho herramientas por cliente SDK | aprobado |

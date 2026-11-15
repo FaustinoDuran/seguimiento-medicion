@@ -8,8 +8,18 @@ Usar el fixture de TestPostgresStdio: proyectos 1 Demo y 2 Other; historias
 y 3 HU-003 Other (proyecto 2, todo, high, 5 puntos). Sprints 10 Release
 (proyecto 1, closed), 11 Next (proyecto 1, open), 12 Other (proyecto 2, open).
 Solo HU-001 está asignada al sprint 10. Sin esfuerzo, defectos ni integrantes.
-El test elimina sus datos al terminar: preparar el mismo fixture en una base
-exclusiva de demo para la corrida interactiva, nunca en datos reales.
+El test elimina sus datos al terminar. Para la corrida interactiva se publica
+el mismo [fixture SQL](../../backend/cmd/mcp/testdata/demo.sql), consumido también
+por el test. Inicializar el esquema con la API sobre una base exclusiva de demo,
+detener la API y cargar el fixture con una cuenta administradora:
+
+```bash
+psql "$MCP_DEMO_ADMIN_URL" -v ON_ERROR_STOP=1 -f backend/cmd/mcp/testdata/demo.sql
+```
+
+El script exige tablas vacías y aborta si ya hay datos. Crear el rol de lectura
+y configurar el cliente según [la guía](README.md). Mantener la base fuera de
+los flujos de escritura de la aplicación durante la evaluación.
 
 | ID | Pregunta | Evidencia esperada |
 |---|---|---|

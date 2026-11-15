@@ -64,11 +64,14 @@ func TestPostgresStdio(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
+	seed, err := os.ReadFile("testdata/demo.sql")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := fixture.Exec(ctx, string(seed)); err != nil {
+		t.Fatal(err)
+	}
 	statements := []string{
-		"INSERT INTO projects(id,name,start_date,end_date,status) VALUES (1,'Demo','2026-01-01','2026-12-31','active'),(2,'Other','2026-01-01','2026-12-31','active')",
-		"INSERT INTO backlog_stories(id,project_id,identifier,title,priority,status,story_points) VALUES (1,1,'HU-001','Ready','high','done',8),(2,1,'HU-002','Pending','low','todo',3),(3,2,'HU-003','Other','high','todo',5)",
-		"INSERT INTO sprints(id,project_id,goal,status) VALUES (10,1,'Release','closed'),(11,1,'Next','open'),(12,2,'Other','open')",
-		"INSERT INTO sprint_stories(sprint_id,story_id) VALUES (10,1)",
 		"GRANT USAGE ON SCHEMA " + quoted + " TO " + quoted,
 		"GRANT SELECT ON ALL TABLES IN SCHEMA " + quoted + " TO " + quoted,
 	}
