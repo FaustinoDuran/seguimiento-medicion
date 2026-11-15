@@ -9,7 +9,7 @@ func inputSchema(name string) map[string]any {
 	addProject := func() { properties["project_id"] = positiveID; required = append(required, "project_id") }
 	if name == "list_projects" || name == "list_stories" || name == "list_sprints" {
 		properties["query"] = map[string]any{"type": "string", "description": "Case-insensitive substring search; never selects an ambiguous name automatically."}
-		properties["limit"] = map[string]any{"type": "integer", "minimum": 1, "maximum": 100, "description": "Page size requested by the user; set explicitly when specified, even if results fit in one default page. Default 20."}
+		properties["limit"] = map[string]any{"type": "integer", "minimum": 1, "maximum": 100, "description": "Page size requested by the user; set explicitly when specified, even if results fit in one default page. Values above 100 are rejected as invalid arguments, not clamped. Default 20."}
 		properties["cursor"] = map[string]any{"type": "string", "pattern": "^([1-9][0-9]*)?$", "description": "next_cursor from the previous page; keep the same filters."}
 	}
 	switch name {
