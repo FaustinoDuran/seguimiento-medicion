@@ -1,0 +1,1013 @@
+{
+  "status": "targeted-retest-not-full-suite",
+  "model": "gpt-6-luna",
+  "reasoning_effort": "low",
+  "fresh_context_per_case": true,
+  "expected_answers_given_to_model": false,
+  "timestamp_utc": "2026-11-15T01:48:52.731559+00:00",
+  "source_sha256": {
+    "backend/internal/mcp/server.go": "ecf444072739bf815baa77b77a2998c21af54533e7bd844812a67aee066468de",
+    "backend/internal/mcp/schema.go": "12cb610eb44b079b172857374696a8d42b21f1a994b6314cc1a12ea92ccac8a4"
+  },
+  "client": "Codex isolated agents through file bridge to Go SDK stdio client",
+  "results": {
+    "C17": {
+      "question": "Listá las historias del proyecto 1 de a una hasta terminar",
+      "verdict": "pass",
+      "answer_summary": "HU-001 y HU-002; list_stories limit1 y luego cursor1, sin duplicados."
+    },
+    "C13": {
+      "question": "¿Qué porcentaje de historias completó el proyecto 1?",
+      "verdict": "pass",
+      "answer_summary": "50%; consultó get_metrics project_id1."
+    },
+    "C14": {
+      "question": "¿Qué porcentaje de historias completó el sprint 10?",
+      "verdict": "pass",
+      "answer_summary": "100%; consultó get_metrics project_id1 sprint_id10.",
+      "note": "Buscó 10 como texto en list_sprints antes de recuperar el listado completo; se recuperó sin inventar ID."
+    },
+    "H01": {
+      "question": "Traé los proyectos en páginas de un único resultado y seguí hasta que no quede ninguno.",
+      "verdict": "pass",
+      "answer_summary": "Demo y Other; dos llamadas list_projects limit1 y cursor1."
+    },
+    "H02": {
+      "question": "En el proyecto 1 compará el porcentaje completado global con el porcentaje del sprint 10.",
+      "verdict": "pass",
+      "answer_summary": "Proyecto50%, sprint100%; dos llamadas get_metrics.",
+      "note": "Búsqueda textual de 10 en list_sprints y recuperación posterior."
+    },
+    "H03": {
+      "question": "¿Qué porcentaje completado y cuántas horas registradas tiene el proyecto 2? Si son cero, decilo.",
+      "verdict": "pass",
+      "answer_summary": "0% y 0 horas; get_metrics project_id2."
+    }
+  },
+  "score": {
+    "retests": {
+      "passed": 3,
+      "total": 3
+    },
+    "reserved_variants": {
+      "passed": 3,
+      "total": 3
+    }
+  },
+  "limitation": "Targeted rerun and reserved variants only, not 20/20; answer summaries, exact calls/results retained; parent grading, single samples.",
+  "traces": [
+    {
+      "request": {
+        "case": "C17",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "6a6bc2fd30f04782830712980b186e76"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794707252198171492
+    },
+    {
+      "request": {
+        "case": "C17",
+        "tool": "list_stories",
+        "arguments": {
+          "project_id": 1,
+          "limit": 1
+        },
+        "request_id": "964d4360f793482584fcfa2f92522739"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[{\"acceptance_criteria\":[],\"description\":\"\",\"id\":1,\"identifier\":\"HU-001\",\"priority\":\"high\",\"project_id\":1,\"status\":\"done\",\"story_points\":8,\"title\":\"Ready\"}],\"next_cursor\":\"1\"}"
+          }
+        ],
+        "structuredContent": {
+          "data": [
+            {
+              "acceptance_criteria": [],
+              "description": "",
+              "id": 1,
+              "identifier": "HU-001",
+              "priority": "high",
+              "project_id": 1,
+              "status": "done",
+              "story_points": 8,
+              "title": "Ready"
+            }
+          ],
+          "next_cursor": "1"
+        }
+      },
+      "request_file_mtime_ns": 1794707254837951023
+    },
+    {
+      "request": {
+        "case": "C13",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "d4d50b28b273457b8e37370c3a19f36a"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794707257198091051
+    },
+    {
+      "request": {
+        "case": "C17",
+        "tool": "list_stories",
+        "arguments": {
+          "project_id": 1,
+          "limit": 1,
+          "cursor": "1"
+        },
+        "request_id": "0479b7a878e64c97a9011479f1639ae9"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[{\"acceptance_criteria\":[],\"description\":\"\",\"id\":2,\"identifier\":\"HU-002\",\"priority\":\"low\",\"project_id\":1,\"status\":\"todo\",\"story_points\":3,\"title\":\"Pending\"}]}"
+          }
+        ],
+        "structuredContent": {
+          "data": [
+            {
+              "acceptance_criteria": [],
+              "description": "",
+              "id": 2,
+              "identifier": "HU-002",
+              "priority": "low",
+              "project_id": 1,
+              "status": "todo",
+              "story_points": 3,
+              "title": "Pending"
+            }
+          ]
+        }
+      },
+      "request_file_mtime_ns": 1794707257446674650
+    },
+    {
+      "request": {
+        "case": "C13",
+        "tool": "list_projects",
+        "arguments": {},
+        "request_id": "a8562081edd445afb31476564b1f75de"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[{\"CreatedAt\":\"2026-11-14T22:47:20.708435-03:00\",\"EndDate\":\"2026-12-31T00:00:00Z\",\"ID\":1,\"Name\":\"Demo\",\"StartDate\":\"2026-01-01T00:00:00Z\",\"Status\":\"active\"},{\"CreatedAt\":\"2026-11-14T22:47:20.708435-03:00\",\"EndDate\":\"2026-12-31T00:00:00Z\",\"ID\":2,\"Name\":\"Other\",\"StartDate\":\"2026-01-01T00:00:00Z\",\"Status\":\"active\"}]}"
+          }
+        ],
+        "structuredContent": {
+          "data": [
+            {
+              "CreatedAt": "2026-11-14T22:47:20.708435-03:00",
+              "EndDate": "2026-12-31T00:00:00Z",
+              "ID": 1,
+              "Name": "Demo",
+              "StartDate": "2026-01-01T00:00:00Z",
+              "Status": "active"
+            },
+            {
+              "CreatedAt": "2026-11-14T22:47:20.708435-03:00",
+              "EndDate": "2026-12-31T00:00:00Z",
+              "ID": 2,
+              "Name": "Other",
+              "StartDate": "2026-01-01T00:00:00Z",
+              "Status": "active"
+            }
+          ]
+        }
+      },
+      "request_file_mtime_ns": 1794707259937491223
+    },
+    {
+      "request": {
+        "case": "C13",
+        "tool": "get_metrics",
+        "arguments": {
+          "project_id": 1
+        },
+        "request_id": "4a3ca87f989448b0b0b40a45bab111a3"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":{\"ActualHours\":0,\"CompletedStoryPercentage\":50,\"CompletedStoryPoints\":8,\"DefectsDetected\":0,\"DefectsResolved\":0,\"Deviation\":0,\"EstimatedHours\":0,\"PlannedStoryPoints\":8,\"ProjectID\":1,\"SprintID\":null,\"Velocity\":8}}"
+          }
+        ],
+        "structuredContent": {
+          "data": {
+            "ActualHours": 0,
+            "CompletedStoryPercentage": 50,
+            "CompletedStoryPoints": 8,
+            "DefectsDetected": 0,
+            "DefectsResolved": 0,
+            "Deviation": 0,
+            "EstimatedHours": 0,
+            "PlannedStoryPoints": 8,
+            "ProjectID": 1,
+            "SprintID": null,
+            "Velocity": 8
+          }
+        }
+      },
+      "request_file_mtime_ns": 1794707262644106214
+    },
+    {
+      "request": {
+        "case": "C14",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "5aa3c06a1f36435eb4407f358a4299e1"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794707267770163533
+    },
+    {
+      "request": {
+        "case": "C14",
+        "tool": "list_projects",
+        "arguments": {},
+        "request_id": "da79d060d93e47d5b3e7aa1c34d7b91c"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[{\"CreatedAt\":\"2026-11-14T22:47:20.708435-03:00\",\"EndDate\":\"2026-12-31T00:00:00Z\",\"ID\":1,\"Name\":\"Demo\",\"StartDate\":\"2026-01-01T00:00:00Z\",\"Status\":\"active\"},{\"CreatedAt\":\"2026-11-14T22:47:20.708435-03:00\",\"EndDate\":\"2026-12-31T00:00:00Z\",\"ID\":2,\"Name\":\"Other\",\"StartDate\":\"2026-01-01T00:00:00Z\",\"Status\":\"active\"}]}"
+          }
+        ],
+        "structuredContent": {
+          "data": [
+            {
+              "CreatedAt": "2026-11-14T22:47:20.708435-03:00",
+              "EndDate": "2026-12-31T00:00:00Z",
+              "ID": 1,
+              "Name": "Demo",
+              "StartDate": "2026-01-01T00:00:00Z",
+              "Status": "active"
+            },
+            {
+              "CreatedAt": "2026-11-14T22:47:20.708435-03:00",
+              "EndDate": "2026-12-31T00:00:00Z",
+              "ID": 2,
+              "Name": "Other",
+              "StartDate": "2026-01-01T00:00:00Z",
+              "Status": "active"
+            }
+          ]
+        }
+      },
+      "request_file_mtime_ns": 1794707270987855438
+    },
+    {
+      "request": {
+        "case": "C14",
+        "tool": "list_sprints",
+        "arguments": {
+          "project_id": 1,
+          "query": "10"
+        },
+        "request_id": "b466d20537e342f9a5141addd473396b"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[]}"
+          }
+        ],
+        "structuredContent": {
+          "data": []
+        }
+      },
+      "request_file_mtime_ns": 1794707274011921937
+    },
+    {
+      "request": {
+        "case": "H01",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "fcd302628e78466b964fc8db6d1ec4a9"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794707275691181888
+    },
+    {
+      "request": {
+        "case": "C14",
+        "tool": "list_sprints",
+        "arguments": {
+          "project_id": 2,
+          "query": "10"
+        },
+        "request_id": "84438e7065274ea4b31fdd6c8eb587e1"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[]}"
+          }
+        ],
+        "structuredContent": {
+          "data": []
+        }
+      },
+      "request_file_mtime_ns": 1794707277695073919
+    },
+    {
+      "request": {
+        "case": "H01",
+        "tool": "list_projects",
+        "arguments": {
+          "limit": 1
+        },
+        "request_id": "4cc7fe252e1e4e9ea150848953b29b11"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[{\"CreatedAt\":\"2026-11-14T22:47:20.708435-03:00\",\"EndDate\":\"2026-12-31T00:00:00Z\",\"ID\":1,\"Name\":\"Demo\",\"StartDate\":\"2026-01-01T00:00:00Z\",\"Status\":\"active\"}],\"next_cursor\":\"1\"}"
+          }
+        ],
+        "structuredContent": {
+          "data": [
+            {
+              "CreatedAt": "2026-11-14T22:47:20.708435-03:00",
+              "EndDate": "2026-12-31T00:00:00Z",
+              "ID": 1,
+              "Name": "Demo",
+              "StartDate": "2026-01-01T00:00:00Z",
+              "Status": "active"
+            }
+          ],
+          "next_cursor": "1"
+        }
+      },
+      "request_file_mtime_ns": 1794707278134587715
+    },
+    {
+      "request": {
+        "case": "H01",
+        "tool": "list_projects",
+        "arguments": {
+          "limit": 1,
+          "cursor": "1"
+        },
+        "request_id": "020c46cff9a84377ad4bb7893e99baae"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[{\"CreatedAt\":\"2026-11-14T22:47:20.708435-03:00\",\"EndDate\":\"2026-12-31T00:00:00Z\",\"ID\":2,\"Name\":\"Other\",\"StartDate\":\"2026-01-01T00:00:00Z\",\"Status\":\"active\"}]}"
+          }
+        ],
+        "structuredContent": {
+          "data": [
+            {
+              "CreatedAt": "2026-11-14T22:47:20.708435-03:00",
+              "EndDate": "2026-12-31T00:00:00Z",
+              "ID": 2,
+              "Name": "Other",
+              "StartDate": "2026-01-01T00:00:00Z",
+              "Status": "active"
+            }
+          ]
+        }
+      },
+      "request_file_mtime_ns": 1794707280658280924
+    },
+    {
+      "request": {
+        "case": "C14",
+        "tool": "list_sprints",
+        "arguments": {
+          "project_id": 1
+        },
+        "request_id": "bc64c453814242ebb1559ddd98acce6a"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[{\"CreatedAt\":\"2026-11-14T22:47:20.708435-03:00\",\"Goal\":\"Release\",\"ID\":10,\"ProjectID\":1,\"Status\":\"closed\"},{\"CreatedAt\":\"2026-11-14T22:47:20.708435-03:00\",\"Goal\":\"Next\",\"ID\":11,\"ProjectID\":1,\"Status\":\"open\"}]}"
+          }
+        ],
+        "structuredContent": {
+          "data": [
+            {
+              "CreatedAt": "2026-11-14T22:47:20.708435-03:00",
+              "Goal": "Release",
+              "ID": 10,
+              "ProjectID": 1,
+              "Status": "closed"
+            },
+            {
+              "CreatedAt": "2026-11-14T22:47:20.708435-03:00",
+              "Goal": "Next",
+              "ID": 11,
+              "ProjectID": 1,
+              "Status": "open"
+            }
+          ]
+        }
+      },
+      "request_file_mtime_ns": 1794707280864801532
+    },
+    {
+      "request": {
+        "case": "C14",
+        "tool": "get_metrics",
+        "arguments": {
+          "project_id": 1,
+          "sprint_id": 10
+        },
+        "request_id": "cbaabdd6a4114b84b3b610fb4071aaf5"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":{\"ActualHours\":0,\"CompletedStoryPercentage\":100,\"CompletedStoryPoints\":8,\"DefectsDetected\":0,\"DefectsResolved\":0,\"Deviation\":0,\"EstimatedHours\":0,\"PlannedStoryPoints\":8,\"ProjectID\":1,\"SprintID\":10,\"Velocity\":8}}"
+          }
+        ],
+        "structuredContent": {
+          "data": {
+            "ActualHours": 0,
+            "CompletedStoryPercentage": 100,
+            "CompletedStoryPoints": 8,
+            "DefectsDetected": 0,
+            "DefectsResolved": 0,
+            "Deviation": 0,
+            "EstimatedHours": 0,
+            "PlannedStoryPoints": 8,
+            "ProjectID": 1,
+            "SprintID": 10,
+            "Velocity": 8
+          }
+        }
+      },
+      "request_file_mtime_ns": 1794707283828141747
+    },
+    {
+      "request": {
+        "case": "H02",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "01185f88d2364566859a5e5177ba0982"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794707285455436093
+    },
+    {
+      "request": {
+        "case": "H02",
+        "tool": "get_metrics",
+        "arguments": {
+          "project_id": 1
+        },
+        "request_id": "2532bf511a574c9798854dd2b28ff02b"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":{\"ActualHours\":0,\"CompletedStoryPercentage\":50,\"CompletedStoryPoints\":8,\"DefectsDetected\":0,\"DefectsResolved\":0,\"Deviation\":0,\"EstimatedHours\":0,\"PlannedStoryPoints\":8,\"ProjectID\":1,\"SprintID\":null,\"Velocity\":8}}"
+          }
+        ],
+        "structuredContent": {
+          "data": {
+            "ActualHours": 0,
+            "CompletedStoryPercentage": 50,
+            "CompletedStoryPoints": 8,
+            "DefectsDetected": 0,
+            "DefectsResolved": 0,
+            "Deviation": 0,
+            "EstimatedHours": 0,
+            "PlannedStoryPoints": 8,
+            "ProjectID": 1,
+            "SprintID": null,
+            "Velocity": 8
+          }
+        }
+      },
+      "request_file_mtime_ns": 1794707288084219822
+    },
+    {
+      "request": {
+        "case": "H02",
+        "tool": "list_sprints",
+        "arguments": {
+          "project_id": 1,
+          "query": "10"
+        },
+        "request_id": "491fe66acbd5440a8ca0310e3498496c"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[]}"
+          }
+        ],
+        "structuredContent": {
+          "data": []
+        }
+      },
+      "request_file_mtime_ns": 1794707290966469351
+    },
+    {
+      "request": {
+        "case": "H02",
+        "tool": "list_sprints",
+        "arguments": {
+          "project_id": 1
+        },
+        "request_id": "b199921f6c194ab79e410695388b2ced"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":[{\"CreatedAt\":\"2026-11-14T22:47:20.708435-03:00\",\"Goal\":\"Release\",\"ID\":10,\"ProjectID\":1,\"Status\":\"closed\"},{\"CreatedAt\":\"2026-11-14T22:47:20.708435-03:00\",\"Goal\":\"Next\",\"ID\":11,\"ProjectID\":1,\"Status\":\"open\"}]}"
+          }
+        ],
+        "structuredContent": {
+          "data": [
+            {
+              "CreatedAt": "2026-11-14T22:47:20.708435-03:00",
+              "Goal": "Release",
+              "ID": 10,
+              "ProjectID": 1,
+              "Status": "closed"
+            },
+            {
+              "CreatedAt": "2026-11-14T22:47:20.708435-03:00",
+              "Goal": "Next",
+              "ID": 11,
+              "ProjectID": 1,
+              "Status": "open"
+            }
+          ]
+        }
+      },
+      "request_file_mtime_ns": 1794707293378200975
+    },
+    {
+      "request": {
+        "case": "H02",
+        "tool": "get_metrics",
+        "arguments": {
+          "project_id": 1,
+          "sprint_id": 10
+        },
+        "request_id": "a4f0212a1909481a839db8c29784f2c3"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":{\"ActualHours\":0,\"CompletedStoryPercentage\":100,\"CompletedStoryPoints\":8,\"DefectsDetected\":0,\"DefectsResolved\":0,\"Deviation\":0,\"EstimatedHours\":0,\"PlannedStoryPoints\":8,\"ProjectID\":1,\"SprintID\":10,\"Velocity\":8}}"
+          }
+        ],
+        "structuredContent": {
+          "data": {
+            "ActualHours": 0,
+            "CompletedStoryPercentage": 100,
+            "CompletedStoryPoints": 8,
+            "DefectsDetected": 0,
+            "DefectsResolved": 0,
+            "Deviation": 0,
+            "EstimatedHours": 0,
+            "PlannedStoryPoints": 8,
+            "ProjectID": 1,
+            "SprintID": 10,
+            "Velocity": 8
+          }
+        }
+      },
+      "request_file_mtime_ns": 1794707295856643142
+    },
+    {
+      "request": {
+        "case": "H03",
+        "tool": "list",
+        "arguments": {},
+        "request_id": "67fafb3c2c8b495880bc9c06195f8771"
+      },
+      "response": {
+        "tools_snapshot_ref": "tools_snapshot"
+      },
+      "request_file_mtime_ns": 1794707303814398612
+    },
+    {
+      "request": {
+        "case": "H03",
+        "tool": "get_metrics",
+        "arguments": {
+          "project_id": 2
+        },
+        "request_id": "17aa993b3e434a3194db5b8fb9b396d5"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"data\":{\"ActualHours\":0,\"CompletedStoryPercentage\":0,\"CompletedStoryPoints\":0,\"DefectsDetected\":0,\"DefectsResolved\":0,\"Deviation\":0,\"EstimatedHours\":0,\"PlannedStoryPoints\":0,\"ProjectID\":2,\"SprintID\":null,\"Velocity\":0}}"
+          }
+        ],
+        "structuredContent": {
+          "data": {
+            "ActualHours": 0,
+            "CompletedStoryPercentage": 0,
+            "CompletedStoryPoints": 0,
+            "DefectsDetected": 0,
+            "DefectsResolved": 0,
+            "Deviation": 0,
+            "EstimatedHours": 0,
+            "PlannedStoryPoints": 0,
+            "ProjectID": 2,
+            "SprintID": null,
+            "Velocity": 0
+          }
+        }
+      },
+      "request_file_mtime_ns": 1794707306276975655
+    }
+  ],
+  "tools_snapshot": {
+    "tools": [
+      {
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "description": "Authoritative source for completion percentages, hours, velocity, points and defect counts. Use for metric questions rather than calculating from lists. Requires project_id; optionally scope to sprint_id. Amounts are JSON decimal values, not integer hundredths. Discover project/sprint IDs with list tools when unknown.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "project_id": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "sprint_id": {
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "project_id"
+          ],
+          "type": "object"
+        },
+        "name": "get_metrics",
+        "outputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "data": true,
+            "next_cursor": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "data"
+          ],
+          "type": "object"
+        }
+      },
+      {
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "description": "Read project_id.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "project_id": {
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "project_id"
+          ],
+          "type": "object"
+        },
+        "name": "get_project",
+        "outputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "data": true,
+            "next_cursor": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "data"
+          ],
+          "type": "object"
+        }
+      },
+      {
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "description": "Read project report, optionally scoped to sprint_id. Individual effort entries and defects are excluded; aggregates remain.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "project_id": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "sprint_id": {
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "project_id"
+          ],
+          "type": "object"
+        },
+        "name": "get_report",
+        "outputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "data": true,
+            "next_cursor": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "data"
+          ],
+          "type": "object"
+        }
+      },
+      {
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "description": "Read sprint_id within project_id and its assigned stories. For completion percentage or aggregate metrics, use get_metrics with project_id and sprint_id instead of calculating from stories.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "project_id": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "sprint_id": {
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "project_id",
+            "sprint_id"
+          ],
+          "type": "object"
+        },
+        "name": "get_sprint",
+        "outputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "data": true,
+            "next_cursor": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "data"
+          ],
+          "type": "object"
+        }
+      },
+      {
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "description": "Read story id within project_id.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "project_id": {
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "project_id",
+            "id"
+          ],
+          "type": "object"
+        },
+        "name": "get_story",
+        "outputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "data": true,
+            "next_cursor": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "data"
+          ],
+          "type": "object"
+        }
+      },
+      {
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "description": "List projects; query matches names. Ordered by ID. Honor requested page size with limit and follow next_cursor until absent. For aggregate metrics use get_metrics, not list data.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "cursor": {
+              "description": "next_cursor from the previous page; keep the same filters.",
+              "pattern": "^([1-9][0-9]*)?$",
+              "type": "string"
+            },
+            "limit": {
+              "description": "Page size requested by the user; set explicitly when specified, even if results fit in one default page. Default 20.",
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "query": {
+              "description": "Case-insensitive substring search; never selects an ambiguous name automatically.",
+              "type": "string"
+            },
+            "status": {
+              "enum": [
+                "planned",
+                "active",
+                "closed"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [],
+          "type": "object"
+        },
+        "name": "list_projects",
+        "outputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "data": true,
+            "next_cursor": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "data"
+          ],
+          "type": "object"
+        }
+      },
+      {
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "description": "List sprints within project_id; filter by open or closed status. Honor requested page size using limit and next_cursor. Use get_metrics for aggregate values.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "cursor": {
+              "description": "next_cursor from the previous page; keep the same filters.",
+              "pattern": "^([1-9][0-9]*)?$",
+              "type": "string"
+            },
+            "limit": {
+              "description": "Page size requested by the user; set explicitly when specified, even if results fit in one default page. Default 20.",
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "project_id": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "query": {
+              "description": "Case-insensitive substring search; never selects an ambiguous name automatically.",
+              "type": "string"
+            },
+            "status": {
+              "enum": [
+                "open",
+                "closed"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "project_id"
+          ],
+          "type": "object"
+        },
+        "name": "list_sprints",
+        "outputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "data": true,
+            "next_cursor": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "data"
+          ],
+          "type": "object"
+        }
+      },
+      {
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "description": "List stories within project_id; filter by status, priority or text. Set limit to the page size requested by the user, even for small lists. Follow next_cursor until absent. For completion percentages, hours, points or other aggregates use get_metrics; do not calculate them from this list.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "cursor": {
+              "description": "next_cursor from the previous page; keep the same filters.",
+              "pattern": "^([1-9][0-9]*)?$",
+              "type": "string"
+            },
+            "limit": {
+              "description": "Page size requested by the user; set explicitly when specified, even if results fit in one default page. Default 20.",
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "priority": {
+              "enum": [
+                "unassigned",
+                "low",
+                "medium",
+                "high"
+              ],
+              "type": "string"
+            },
+            "project_id": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "query": {
+              "description": "Case-insensitive substring search; never selects an ambiguous name automatically.",
+              "type": "string"
+            },
+            "status": {
+              "enum": [
+                "todo",
+                "done"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "project_id"
+          ],
+          "type": "object"
+        },
+        "name": "list_stories",
+        "outputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "data": true,
+            "next_cursor": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "data"
+          ],
+          "type": "object"
+        }
+      }
+    ]
+  }
+}

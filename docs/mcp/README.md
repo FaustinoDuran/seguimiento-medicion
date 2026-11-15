@@ -118,3 +118,5 @@ y una rúbrica; su ejecución requiere un cliente de IA y debe registrarse.
 
 Ver [reporte de evidencia](evaluation.md). La aprobación crítica es obligatoria
 en todos los casos; el resultado conversacional no compensa fallos críticos.
+
+Ciclo de evaluación con modelo de menor capacidad: [procedimiento y evidencia](improvement-loop.md).

@@ -1,6 +1,6 @@
 # Casos conversacionales — #105
 
-Estado: preparados; corrida pendiente. Umbral: al menos 18/20 aprobados.
+Estado: corrida inicial y corrida posterior a la mejora registradas en [el ciclo de evaluación](improvement-loop.md). Umbral: al menos 18/20 aprobados.
 No contar los tests deterministas como respuestas de un modelo.
 
 Usar el fixture de TestPostgresStdio: proyectos 1 Demo y 2 Other; historias

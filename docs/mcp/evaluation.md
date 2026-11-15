@@ -1,6 +1,6 @@
 # Evidencia de evaluación — #105
 
-Estado: parcial. No acredita cierre de la TASK ni merge de PR.
+Estado: pruebas críticas y corrida conversacional ejecutadas; pendiente revisión y merge del PR.
 
 Se ejecutó `go test -count=1 -race ./...` con DATABASE_URL,
 BACKLOG_TEST_DATABASE_URL, SPRINTS_TEST_DATABASE_URL y MCP_TEST_DATABASE_URL
@@ -34,7 +34,7 @@ que el registro inicial siga presente después de intentar escrituras.
 
 Pendiente para acreditar el conjunto completo:
 
-- Corrida de [casos conversacionales versionados](conversation-cases.md) con cliente/modelo identificado.
+- Revisión de la evidencia conversacional por otra persona. La corrida inicial de gpt-6-luna dio 17/20 en cumplimiento/ruta; la reprueba dirigida y variantes dieron 3/3 cada una; la corrida completa posterior dio **20/20**. Ver [ciclo de mejora](improvement-loop.md) y [respuestas/llamadas](runs/candidate-luna-full.json).
 - Revisión y merge del PR.
 
 Para cada corrida conversacional guardar pregunta, datos fixture, herramientas
@@ -42,4 +42,4 @@ invocadas y argumentos, respuesta final, hechos esperados y dictamen. Registrar
 cliente, modelo, configuración, fecha y commit. Aprobar una respuesta solamente
 si usa entidades correctas, preserva unidades y valores, justifica sus hechos
 en datos consultados y evita inventar información. Requerir al menos 18/20
-casos aprobados (90%). Sin esa corrida el resultado es pendiente, nunca 100%.
+casos aprobados (90%). La corrida completa registrada aprueba el umbral; falta revisión por otra persona.

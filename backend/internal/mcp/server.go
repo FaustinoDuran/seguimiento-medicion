@@ -37,9 +37,9 @@ type output struct {
 
 func NewServer(readers Readers) *sdk.Server {
 	server := sdk.NewServer(&sdk.Implementation{Name: "seguimiento-medicion", Version: "0.1.0"}, nil)
-	registerList(server, "list_projects", "List projects; query matches names. Results are ordered by ID.", readers.listProjects)
-	registerList(server, "list_stories", "List stories within project_id; filter by status, priority or text.", readers.listStories)
-	registerList(server, "list_sprints", "List sprints within project_id; filter by open or closed status.", readers.listSprints)
+	registerList(server, "list_projects", "List projects; query matches names. Ordered by ID. Honor requested page size with limit and follow next_cursor until absent. For aggregate metrics use get_metrics, not list data.", readers.listProjects)
+	registerList(server, "list_stories", "List stories within project_id; filter by status, priority or text. Set limit to the page size requested by the user, even for small lists. Follow next_cursor until absent. For completion percentages, hours, points or other aggregates use get_metrics; do not calculate them from this list.", readers.listStories)
+	registerList(server, "list_sprints", "List sprints within project_id; filter by open or closed status. Honor requested page size using limit and next_cursor. Use get_metrics for aggregate values.", readers.listSprints)
 	for _, name := range []string{"get_project", "get_story", "get_sprint", "get_metrics", "get_report"} {
 		toolName := name
 		sdk.AddTool(server, &sdk.Tool{Name: toolName, InputSchema: inputSchema(toolName), Description: description(toolName), Annotations: &sdk.ToolAnnotations{ReadOnlyHint: true}},
@@ -58,9 +58,9 @@ func description(name string) string {
 	case "get_story":
 		return "Read story id within project_id."
 	case "get_sprint":
-		return "Read sprint_id within project_id and its assigned stories."
+		return "Read sprint_id within project_id and its assigned stories. For completion percentage or aggregate metrics, use get_metrics with project_id and sprint_id instead of calculating from stories."
 	case "get_metrics":
-		return "Read existing metrics for project_id; optionally scope to sprint_id. Decimal amounts use existing domain serialization."
+		return "Authoritative source for completion percentages, hours, velocity, points and defect counts. Use for metric questions rather than calculating from lists. Requires project_id; optionally scope to sprint_id. Amounts are JSON decimal values, not integer hundredths. Discover project/sprint IDs with list tools when unknown."
 	default:
 		return "Read project report, optionally scoped to sprint_id. Individual effort entries and defects are excluded; aggregates remain."
 	}

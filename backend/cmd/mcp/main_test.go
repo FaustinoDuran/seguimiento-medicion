@@ -27,7 +27,12 @@ func TestPostgresStdio(t *testing.T) {
 	if address == "" {
 		t.Skip("MCP_TEST_DATABASE_URL required")
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 40*time.Second)
+	timeout := 40 * time.Second
+	evalDirectory := os.Getenv("MCP_EVAL_DIR")
+	if evalDirectory != "" {
+		timeout = 30 * time.Minute
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 	admin, err := pgxpool.New(ctx, address)
 	if err != nil {
@@ -183,6 +188,9 @@ func TestPostgresStdio(t *testing.T) {
 		if cursor != "" || len(seen) != 2 {
 			t.Fatal("pagination did not terminate")
 		}
+	}
+	if evalDirectory != "" {
+		serveEvalRequests(t, ctx, session, evalDirectory)
 	}
 	after := fixtureSnapshot(t, ctx, fixture)
 	if !reflect.DeepEqual(before, after) {
