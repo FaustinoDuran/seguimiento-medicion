@@ -171,11 +171,7 @@ func TestPostgresStdio(t *testing.T) {
 			if len(decoded.Data) != 1 {
 				t.Fatalf("page size: %s", raw)
 			}
-			key := "id"
-			if tool == "list_sprints" {
-				key = "ID"
-			}
-			id, ok := decoded.Data[0][key].(float64)
+			id, ok := decoded.Data[0]["id"].(float64)
 			if !ok || seen[id] {
 				t.Fatalf("invalid or duplicate ID: %s", raw)
 			}

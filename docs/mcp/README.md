@@ -121,3 +121,6 @@ Ver [reporte de evidencia](evaluation.md). La aprobación crítica es obligatori
 en todos los casos; el resultado conversacional no compensa fallos críticos.
 
 Ciclo de evaluación con modelo de menor capacidad: [procedimiento y evidencia](improvement-loop.md).
+
+Evaluación posterior con modelo de menor capacidad, casos congelados y runner
+de OpenCode: [TASK-022](task-022-improvement.md).

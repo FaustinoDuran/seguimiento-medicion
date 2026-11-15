@@ -27,3 +27,7 @@ thumbs.db
 # Local agent skills
 .agents/
 skills-lock.json
+
+# Python bytecode
+__pycache__/
+*.pyc

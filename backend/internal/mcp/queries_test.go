@@ -53,10 +53,10 @@ func TestProjectQueriesOverMCP(t *testing.T) {
 		contains  string
 	}{
 		{name: "filter before pagination", tool: "list_projects", args: map[string]any{"query": "demo", "limit": 1}, contains: `"next_cursor":"1"`},
-		{name: "next page", tool: "list_projects", args: map[string]any{"query": "demo", "limit": 1, "cursor": "1"}, contains: `"ID":3`},
-		{name: "status filter", tool: "list_projects", args: map[string]any{"query": "demo", "status": "closed"}, contains: `"ID":3`},
+		{name: "next page", tool: "list_projects", args: map[string]any{"query": "demo", "limit": 1, "cursor": "1"}, contains: `"id":3`},
+		{name: "status filter", tool: "list_projects", args: map[string]any{"query": "demo", "status": "closed"}, contains: `"id":3`},
 		{name: "empty result", tool: "list_projects", args: map[string]any{"query": "missing"}, contains: `"data":[]`},
-		{name: "detail", tool: "get_project", args: map[string]any{"project_id": 1}, contains: `"Name":"Demo"`},
+		{name: "detail", tool: "get_project", args: map[string]any{"project_id": 1}, contains: `"name":"Demo"`},
 		{name: "invalid limit", tool: "list_projects", args: map[string]any{"limit": 101}, wantError: true},
 		{name: "invalid cursor", tool: "list_projects", args: map[string]any{"cursor": "-1"}, wantError: true},
 		{name: "invalid status", tool: "list_projects", args: map[string]any{"status": "unknown"}, wantError: true},
