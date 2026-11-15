@@ -24,6 +24,7 @@ chmod +x "$tmp/bin/docker" "$tmp/bin/curl"
 
 export PATH="$tmp/bin:$PATH"
 export COMPOSE_FILE="docker-compose.prod.yml"
+export COMPOSE_ENV_FILE=".env.test"
 export HEALTH_URL="http://127.0.0.1:9/health"
 export DEPLOY_LOG="$tmp/log"
 export STATE_FILE="$tmp/state"
@@ -41,11 +42,11 @@ assert_eq() {
 }
 
 pull_line() {
-  printf '%s compose -f %s pull' "$1" "$COMPOSE_FILE"
+  printf '%s compose --env-file %s -f %s pull' "$1" "$COMPOSE_ENV_FILE" "$COMPOSE_FILE"
 }
 
 up_line() {
-  printf '%s compose -f %s up -d --no-build --wait' "$1" "$COMPOSE_FILE"
+  printf '%s compose --env-file %s -f %s up -d --no-build --wait' "$1" "$COMPOSE_ENV_FILE" "$COMPOSE_FILE"
 }
 
 : > "$DEPLOY_LOG"

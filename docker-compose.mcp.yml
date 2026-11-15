@@ -1,0 +1,63 @@
+# Base exclusiva de exhibición. No comparte volúmenes con la aplicación.
+name: seguimiento-medicion-mcp
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: seguimiento_medicion
+      POSTGRES_PASSWORD: ${MCP_ADMIN_PASSWORD:?MCP_ADMIN_PASSWORD is required}
+      MCP_READER_PASSWORD: ${MCP_READER_PASSWORD:?MCP_READER_PASSWORD is required}
+    volumes:
+      - demo_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d seguimiento_medicion"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  bootstrap:
+    profiles: [setup]
+    image: ${API_IMAGE:-ghcr.io/faustinoduran/seguimiento-medicion-api}:${IMAGE_TAG:?IMAGE_TAG is required}
+    environment:
+      DATABASE_URL: postgres://postgres:${MCP_ADMIN_PASSWORD}@postgres:5432/seguimiento_medicion?sslmode=disable
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  mcp:
+    image: ${MCP_IMAGE:-ghcr.io/faustinoduran/seguimiento-medicion-mcp}:${IMAGE_TAG:?IMAGE_TAG is required}
+    restart: unless-stopped
+    environment:
+      MCP_TRANSPORT: http
+      PORT: "8080"
+      MCP_PUBLIC_URL: ${MCP_PUBLIC_URL:?MCP_PUBLIC_URL is required}
+      MCP_DATABASE_URL: postgres://mcp_reader:${MCP_READER_PASSWORD:?MCP_READER_PASSWORD is required}@postgres:5432/seguimiento_medicion?sslmode=disable
+    ports:
+      - "127.0.0.1:3004:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/healthz"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    stop_grace_period: 15s
+    networks:
+      default:
+      application:
+        aliases: [mcp]
+
+networks:
+  application:
+    external: true
+    name: seguimiento-medicion-prod_default
+
+volumes:
+  demo_data:

@@ -49,3 +49,29 @@ casos aprobados (90%). La corrida completa registrada aprueba el umbral; falta r
 Modo remoto preparado después de la corrida conversacional: cliente SDK por HTTPS
 con descubrimiento y consulta aprobados; Origin ajeno rechazado. Falta validar
 cliente y hosting reales según [el plan de despliegue](deployment.md).
+
+## TASK-024 / #111 — despliegue de demo
+
+Configuración preparada: imagen MCP en GHCR, Compose con base exclusiva,
+aprovisionamiento del rol de lectura, ruta HTTPS en el frontend y script de
+actualización/reversión con estado separado. Ver deployment.md.
+
+Validación local de TASK-024:
+
+- Construcción de backend/Dockerfile.mcp: aprobada.
+- Pruebas MCP y del rol de lectura contra PostgreSQL local: aprobadas.
+- Validación de Compose con valores de prueba: aprobada.
+- deploy/deploy_test.sh: aprobada, incluyendo reversión.
+- deploy/deploy-mcp_test.sh: aprobada; primer despliegue, repetición sin
+  regenerar secretos ni recargar el fixture, y aborto ante fallo del bootstrap.
+- nginx -t en contenedor con frontend/nginx.conf: aprobado.
+
+Estas comprobaciones no acreditan despliegue en el VPS ni uso desde ChatGPT.
+
+Pendiente de evidencia real (no se acredita con pruebas locales):
+
+- Verificación de la URL configurada https://seguimiento0-medicion.aedestec.com/mcp y su certificado.
+- SHA de la imagen efectivamente desplegada y fecha.
+- Conexión desde ChatGPT, cuenta/permisos compatibles y ocho herramientas.
+- Consultas de proyectos, historias, métricas e informe contrastadas con la demo.
+- Revisión y PR contra main.
