@@ -2,6 +2,8 @@
 
 Estado: pruebas críticas y corrida conversacional ejecutadas; pendiente revisión y merge del PR.
 
+La evaluación posterior a #105 se documenta aparte en [el ciclo de TASK-022](task-022-improvement.md).
+
 Se ejecutó `go test -count=1 -race ./...` con DATABASE_URL,
 BACKLOG_TEST_DATABASE_URL, SPRINTS_TEST_DATABASE_URL y MCP_TEST_DATABASE_URL
 apuntando a PostgreSQL local: todos los paquetes aprobaron. CI define también

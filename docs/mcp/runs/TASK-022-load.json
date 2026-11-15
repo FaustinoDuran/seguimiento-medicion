@@ -1,0 +1,36 @@
+{
+  "task": "TASK-022",
+  "issue": 108,
+  "kind": "bounded-load",
+  "timestamp_utc": "2026-11-15T04:12:00Z",
+  "commit": "3372a7e",
+  "transport": "stdio, client SDK Go oficial contra el binario compilado",
+  "fixture": "backend/cmd/mcp/testdata/demo.sql en la base mcp_demo_regress",
+  "database_user": "mcp_reader (solo lectura)",
+  "environment": "macOS arm64, PostgreSQL 16.13 local, Go 1.24.13, servidor caliente",
+  "parameters": {
+    "calls": 100,
+    "concurrency": 5,
+    "tools_rotated": [
+      "list_projects", "get_project", "list_stories",
+      "get_sprint", "get_metrics", "get_report"
+    ],
+    "warmup_calls_before_measure": 6
+  },
+  "result": {
+    "p50_ms": 1,
+    "p95_ms": 5,
+    "max_ms": 9,
+    "wall_ms": 36,
+    "internal_errors": 0,
+    "cold_start_ms": 437,
+    "cold_first_call_ms": 439
+  },
+  "interpretation": {
+    "p95_target_ms": 3000,
+    "p95_target_met": true,
+    "model_generation_included": false,
+    "note": "Mide solo latencia del servidor MCP. El tiempo de generación del modelo se mide aparte y no forma parte de este número. El arranque en frío se registra separado y no entra en el p95. Una corrida de 100 llamadas no prueba producción."
+  },
+  "reproduce": "MCP_EVAL_LOAD=1 MCP_DATABASE_URL='postgres://mcp_reader:...@localhost:5433/mcp_demo_regress?sslmode=disable' go test ./cmd/mcp -run TestLoadP95 -count=1 -v"
+}
