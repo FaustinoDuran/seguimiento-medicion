@@ -48,3 +48,7 @@
 }
 .measurement-resolve label { margin: 0; }
 .measurement-resolve select { width: auto; min-width: 220px; }
+.measurement-panel .measurement-form { padding: 0; border: 0; border-radius: 0; box-shadow: none; background: transparent; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); }
+.measurement-notice .text-link { display: block; width: fit-content; padding-block: 8px; }
+.measurement-alert { padding: 18px; }
+.measurement-resolve select { min-width: 0; max-width: 100%; }

@@ -66,9 +66,8 @@ function PlanningSession({ project }: { project: Project }) {
     <>
       <Link className="text-link" to={`/projects/${project.id}`}>← Volver al proyecto</Link>
       <header className="poker-page-heading">
-        <p className="eyebrow">{project.name}</p>
         <h1>Planning<br /><em>Poker.</em></h1>
-        <p className="lead">Elegí una historia y abrí una ronda. El puntaje de los demás queda oculto hasta revelar.</p>
+        <p className="lead">{project.name}. Elegí una historia y abrí una ronda. El puntaje de los demás queda oculto hasta revelar.</p>
       </header>
       <section aria-labelledby="planning-stories-heading" aria-busy={stories.kind === 'loading'}>
         <div className="poker-section-heading">
@@ -92,11 +91,11 @@ function PlanningSession({ project }: { project: Project }) {
         {stories.kind === 'ready' && stories.stories.length === 0 ? (
           <div className="poker-empty">
             <h3>Todavía no hay historias</h3>
-            <p>Cuando el backlog tenga una historia, vas a poder estimarla acá.</p>
+            <p>Cuando el backlog tenga una historia, vas a poder estimarla acá. <Link className="text-link" to={`/projects/${project.id}/backlog`}>Crear historias</Link></p>
           </div>
         ) : null}
         {stories.kind === 'ready' && stories.stories.length > 0 ? (
-          <table className="poker-table">
+          <div className="poker-table-scroll" tabIndex={0} role="region" aria-label="Historias para estimar"><table className="poker-table">
             <thead>
               <tr>
                 <th scope="col">Identificador</th>
@@ -124,7 +123,7 @@ function PlanningSession({ project }: { project: Project }) {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
         ) : null}
       </section>
     </>

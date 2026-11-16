@@ -127,6 +127,7 @@ function SprintDetail({ projectId, sprintId }: { projectId: string; sprintId: st
     setBusy(true)
     await run(async signal => {
       const assigned = await assignStory(sprintId, storyId, signal)
+      if (signal.aborted) return
       setState(previous => previous.kind === 'ready'
         ? {
           ...previous,
@@ -145,6 +146,7 @@ function SprintDetail({ projectId, sprintId }: { projectId: string; sprintId: st
     setCompletingId(story.story_id)
     await run(async signal => {
       const completed = await completeStory(sprintId, story.story_id, signal)
+      if (signal.aborted) return
       setState(previous => previous.kind === 'ready'
         ? {
           ...previous,
@@ -163,6 +165,7 @@ function SprintDetail({ projectId, sprintId }: { projectId: string; sprintId: st
     setBusy(true)
     await run(async signal => {
       const closed = await closeSprint(sprintId, signal)
+      if (signal.aborted) return
       setState(previous => previous.kind === 'ready'
         ? { ...previous, sprint: closed, available: [] }
         : previous)

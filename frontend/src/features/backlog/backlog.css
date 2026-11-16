@@ -41,7 +41,8 @@
 .backlog-edit-hint { margin: 8px 0 0; font-size: 13px; color: var(--color-ink-muted); }
 .backlog-edit-form input:disabled { opacity: .65; cursor: not-allowed; }
 .backlog-table-scroll { overflow-x: auto; }
-.backlog-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+.backlog-table { width: 100%; min-width: 720px; border-collapse: collapse; text-align: left; font-size: 14px; }
+.backlog-table :is(th, td) { overflow-wrap: normal; }
 .backlog-table thead { color: var(--color-ink-muted); font-size: 12px; }
 .backlog-table th, .backlog-table td { padding: 18px 16px; border-bottom: 1px solid color-mix(in oklch, var(--color-ink) 15%, transparent); }
 .backlog-table th:first-child, .backlog-table td:first-child { padding-left: 0; }

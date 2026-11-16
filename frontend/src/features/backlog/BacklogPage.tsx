@@ -47,9 +47,9 @@ function ProjectBacklog({ project }: { project: BacklogProject }) {
   return (
     <>
       <Link className="text-link" to={`/projects/${project.id}`}>← Volver al proyecto</Link>
-      <header className="backlog-page-heading"><p className="eyebrow">{project.name}</p>
+      <header className="backlog-page-heading">
         <h1>El trabajo,<br /><em>historia a historia.</em></h1>
-        <p className="lead">Creá, consultá y actualizá las historias del backlog de tu proyecto.</p></header>
+        <p className="lead"><span>{project.name}</span>. Creá, consultá y actualizá las historias del backlog de tu proyecto.</p></header>
       {project.status === 'closed'
         ? <p className="backlog-alert" role="status">El proyecto está cerrado. Podés consultar sus historias, pero no crear ni editar.</p>
         : <StoryForm projectId={String(project.id)} disabled={saving} onPendingChange={setCreating}

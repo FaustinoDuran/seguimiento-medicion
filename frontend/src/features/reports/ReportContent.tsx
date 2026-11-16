@@ -34,8 +34,8 @@ function StoryReference({ identifier, title }: { identifier: string; title: stri
 export function ReportContent({ report }: { report: ProjectReport }) {
   return <article className="report-content">
     <header className="report-heading">
-      <p className="eyebrow">Reporte de {report.sprint ? `Sprint ${report.sprint.id}` : 'proyecto'}</p>
       <h1>{report.project.name}</h1>
+      <p>Reporte de {report.sprint ? `Sprint ${report.sprint.id}` : 'proyecto'}</p>
       <p className="report-context">{statusLabels[report.project.status]} · {report.sprint
         ? `${report.sprint.goal} · ${report.sprint.status === 'closed' ? 'Cerrado' : 'Abierto'}`
         : 'Todo el proyecto'}</p>

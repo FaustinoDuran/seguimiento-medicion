@@ -58,12 +58,11 @@ function MetricsPanel({ project, report }: { project: Project; report: MetricsRe
     <>
       <Link className="text-link" to={`/projects/${project.id}`}>← Volver al proyecto</Link>
       <header className="metrics-heading">
-        <p className="eyebrow">{statusLabels[project.status]}</p>
         <h1>{project.name}</h1>
-        <p className="lead">Estado del proyecto: {statusLabels[project.status]}.</p>
+        <p className="lead">Estado del proyecto: <span>{statusLabels[project.status]}</span>.</p>
       </header>
       {hasNoMetrics(report) ? (
-        <p className="metrics-empty">Todavía no hay métricas para mostrar.</p>
+        <div className="metrics-empty"><p>Todavía no hay métricas para mostrar.</p><p>La API devuelve valores en cero para este alcance. <Link className="text-link" to={`/projects/${project.id}/sprints`}>Organizar un sprint</Link> o <Link className="text-link" to={`/projects/${project.id}/measurement`}>Registrar esfuerzo y defectos</Link>.</p></div>
       ) : (
         <>
           <dl className="metrics-facts">

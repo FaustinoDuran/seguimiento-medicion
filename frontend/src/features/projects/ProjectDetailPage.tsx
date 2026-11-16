@@ -42,7 +42,7 @@ function ProjectDetail({ project: initial }: { project: Project }) {
         <h1>{project.name}</h1>
         <p className="lead">Del {formatDay(project.start_date)} al {formatDay(project.end_date)}.</p>
       </header>
-      <button ref={editButton} className="button" type="button" hidden={editing} onClick={() => { setNotice(''); setEditing(true) }}>Editar proyecto</button>
+      <button ref={editButton} className="button project-edit-trigger" type="button" hidden={editing} onClick={() => { setNotice(''); setEditing(true) }}>Editar proyecto</button>
       {notice ? <p className="project-success" role="status">{notice}</p> : null}
       {editing ? <ProjectEditForm project={project} onCancel={finishEditing} onSaved={updated => {
         setProject(updated)
@@ -67,7 +67,7 @@ function ProjectDetail({ project: initial }: { project: Project }) {
           <dd>{statusLabels[project.status]}</dd>
         </div>
       </dl>
-      <div id="members"><MemberSection projectId={project.id} /></div>
+      <div id="members" tabIndex={-1}><MemberSection projectId={project.id} /></div>
     </>
   )
 }

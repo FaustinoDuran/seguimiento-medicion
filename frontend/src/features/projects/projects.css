@@ -1,4 +1,5 @@
 .project-page { padding: 40px 0 72px; }
+.project-edit-trigger { margin-bottom: 24px; }
 .project-edit-fields { border: 0; margin: 0; padding: 0; min-width: 0; }
 .project-form:has(.project-edit-fields) { margin-block: 24px; }
 .project-edit-fields .text-link { background: none; border: 0; cursor: pointer; }

@@ -24,11 +24,25 @@ import { SprintListPage } from "./features/sprints/SprintListPage";
 import { AppErrorBoundary } from "./shared/ui/AppErrorBoundary";
 
 function RouteFocus() {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
 
   useEffect(() => {
-    document.querySelector<HTMLElement>("#main-content")?.focus();
-  }, [pathname]);
+    if (!hash) {
+      document.querySelector<HTMLElement>("#main-content")?.focus();
+      return;
+    }
+    function focusTarget() {
+      const target = document.getElementById(hash.slice(1));
+      if (!target) return false;
+      target.focus();
+      target.scrollIntoView?.({ block: 'start' });
+      return true;
+    }
+    if (focusTarget()) return;
+    const observer = new MutationObserver(() => { if (focusTarget()) observer.disconnect(); });
+    observer.observe(document.getElementById('main-content')!, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, [pathname, hash]);
 
   return null;
 }
@@ -48,13 +62,13 @@ function AppLayout() {
         <Link
           className="brand"
           to="/"
-          aria-label="Seguimiento y medición, inicio"
+          aria-label="sm. Seguimiento y medición, inicio"
         >
           <span className="brand-mark" aria-hidden="true">
             sm.
           </span>
           <span className="brand-copy">
-            Seguimiento
+            Seguimiento{" "}
             <br />
             <strong>y medición</strong>
           </span>

@@ -2,7 +2,8 @@
 
 - Issue: [#126](https://github.com/FaustinoDuran/seguimiento-medicion/issues/126)
 - Responsable: Ignacio (`nachopatinoc`).
-- Estado: especificada; implementación y verificación pendientes.
+- Estado: implementada en rama de HU-031; validación local documentada. Pendiente
+  de publicación, revisión de otra persona y merge.
 - Presentación: `frontend/src/features/`, composición en `frontend/src/App.tsx`.
 
 ## Objetivo y dirección
@@ -92,3 +93,16 @@ Comandos frontend: `npm test`, `npm run lint`, `npm run build`.
 
 BDD: `features/HU-031-complete-user-flow.feature`. Evidencia y límites reales se
 completan en esta SDD y `docs/traceability.md` al finalizar.
+
+## Evidencia local
+
+[Informe y capturas](../evidence/HU-031/README.md): 131 pruebas React/HTTP,
+lint/build aprobados, recorrido real con PDF y 27 capturas de tres tamaños y
+estados de error/vacío. Axe: 18 auditorías sin violaciones detectadas; celdas
+fuera del área visible requieren revisión manual. El arnés reproduce el ancho
+CSS equivalente al 200 %; no verifica el control nativo de zoom ni reemplaza
+una revisión humana con lector de pantalla. No se declara certificación AA.
+
+La vuelta a sprints ahora muestra también los abiertos mediante el contrato
+existente `GET /projects/{id}/sprints`. No se agrega una regla de negocio.
+Las pruebas de dominio permanecen en sus HUs originales y no se modificó Go.

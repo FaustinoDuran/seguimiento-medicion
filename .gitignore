@@ -30,6 +30,7 @@ thumbs.db
 
 # Local agent skills
 .agents/
+.impeccable/review/
 skills-lock.json
 
 # Python bytecode

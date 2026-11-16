@@ -29,3 +29,11 @@
 .poker-facts dt { color: var(--color-ink-muted); font-size: 12px; margin-bottom: 6px; }
 .poker-facts dd { margin: 0; font-size: 18px; }
 .poker-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+.poker-table-scroll { max-width: 100%; overflow-x: auto; }
+.poker-table { min-width: 600px; }
+.poker-table th, .poker-table td { overflow-wrap: normal; }
+.poker-table td:nth-child(2) { min-width: 180px; overflow-wrap: anywhere; }
+@media (max-width: 600px) {
+  .poker-facts { grid-template-columns: 1fr; }
+  .poker-form-footer { flex-direction: column; align-items: stretch; }
+}
