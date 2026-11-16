@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { expect, test } from 'vitest'
 import { http, HttpResponse } from 'msw'
@@ -39,6 +39,31 @@ test('muestra la página de dirección no encontrada', () => {
 
   expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Página no encontrada')
   expect(screen.getByRole('link', { name: /Volver al inicio/ })).toBeInTheDocument()
+})
+
+test('abre la guía MCP debajo de Proyectos', async () => {
+  const user = userEvent.setup()
+  renderAt('/projects')
+
+  const navigation = screen.getByRole('navigation', { name: 'Navegación principal' })
+  const links = within(navigation).getAllByRole('link')
+  expect(links.map((link) => link.textContent)).toEqual(['Proyectos', 'MCP', 'Conexión'])
+
+  await user.click(within(navigation).getByRole('link', { name: 'MCP' }))
+
+  expect(await screen.findByRole('heading', { level: 1, name: 'MCP' })).toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'https://seguimiento-medicion.aedestec.com/mcp' })).toHaveAttribute(
+    'href',
+    'https://seguimiento-medicion.aedestec.com/mcp',
+  )
+  expect(screen.getByRole('main')).toHaveFocus()
+})
+
+test('abre la guía MCP por URL directa', () => {
+  renderAt('/mcp')
+
+  expect(screen.getByRole('heading', { level: 1, name: 'MCP' })).toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'MCP' })).toHaveAttribute('aria-current', 'page')
 })
 
 test('abre proyectos directamente y elimina el contenido que no ayuda a operar', async () => {
