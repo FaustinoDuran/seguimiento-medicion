@@ -15,8 +15,14 @@ if [ ! -f .env.mcp ]; then
   {
     printf 'MCP_ADMIN_PASSWORD=%s\n' "$admin_password"
     printf 'MCP_READER_PASSWORD=%s\n' "$reader_password"
-    printf 'MCP_PUBLIC_URL=https://seguimiento0-medicion.aedestec.com\n'
+    printf 'MCP_PUBLIC_URL=https://seguimiento-medicion.aedestec.com\n'
   } > .env.mcp.tmp
+  mv .env.mcp.tmp .env.mcp
+fi
+# Corrige el dominio original sin regenerar credenciales ni alterar otros orígenes.
+if grep -qx 'MCP_PUBLIC_URL=https://seguimiento0-medicion.aedestec.com' .env.mcp; then
+  sed 's|^MCP_PUBLIC_URL=https://seguimiento0-medicion.aedestec.com$|MCP_PUBLIC_URL=https://seguimiento-medicion.aedestec.com|' \
+    .env.mcp > .env.mcp.tmp
   mv .env.mcp.tmp .env.mcp
 fi
 export IMAGE_TAG=$1

@@ -27,7 +27,7 @@ chmod +x "$tmp/bin/docker" "$tmp/bin/curl"
 export PATH="$tmp/bin:$PATH" MOCK_LOG="$tmp/log"
 sh "$tmp/repo/deploy/deploy-mcp.sh" first
 test -s "$tmp/repo/.env.mcp"
-grep -qx 'MCP_PUBLIC_URL=https://seguimiento0-medicion.aedestec.com' "$tmp/repo/.env.mcp"
+grep -qx 'MCP_PUBLIC_URL=https://seguimiento-medicion.aedestec.com' "$tmp/repo/.env.mcp"
 test "$(cat "$tmp/repo/.deploy-mcp-sha")" = first
 test "$(grep -c '^seeded$' "$MOCK_LOG")" = 1
 before=$(cksum < "$tmp/repo/.env.mcp")
@@ -36,11 +36,18 @@ sh "$tmp/repo/deploy/deploy-mcp.sh" second
 test "$before" = "$(cksum < "$tmp/repo/.env.mcp")"
 test "$(grep -c '^seeded$' "$MOCK_LOG")" = 1
 test "$(cat "$tmp/repo/.deploy-mcp-sha")" = second
+credentials_before=$(sed '/^MCP_PUBLIC_URL=/d' "$tmp/repo/.env.mcp" | cksum)
+sed 's|seguimiento-medicion.aedestec.com|seguimiento0-medicion.aedestec.com|' \
+  "$tmp/repo/.env.mcp" > "$tmp/old-env"
+cp "$tmp/old-env" "$tmp/repo/.env.mcp"
+sh "$tmp/repo/deploy/deploy-mcp.sh" corrected
+grep -qx 'MCP_PUBLIC_URL=https://seguimiento-medicion.aedestec.com' "$tmp/repo/.env.mcp"
+test "$credentials_before" = "$(sed '/^MCP_PUBLIC_URL=/d' "$tmp/repo/.env.mcp" | cksum)"
 export MOCK_BOOTSTRAP_EXIT=1
 if sh "$tmp/repo/deploy/deploy-mcp.sh" broken; then
   echo 'El bootstrap fallido debe rechazar el despliegue' >&2
   exit 1
 fi
-test "$(cat "$tmp/repo/.deploy-mcp-sha")" = second
+test "$(cat "$tmp/repo/.deploy-mcp-sha")" = corrected
 tail -1 "$MOCK_LOG" | grep -q 'stop bootstrap$'
 printf 'deploy-mcp_test: ok\n'

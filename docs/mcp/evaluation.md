@@ -70,7 +70,7 @@ Estas comprobaciones no acreditan despliegue en el VPS ni uso desde ChatGPT.
 
 Pendiente de evidencia real (no se acredita con pruebas locales):
 
-- Verificación de la URL configurada https://seguimiento0-medicion.aedestec.com/mcp y su certificado.
+- Verificación de la URL configurada https://seguimiento-medicion.aedestec.com/mcp y su certificado.
 - SHA de la imagen efectivamente desplegada y fecha.
 - Conexión desde ChatGPT, cuenta/permisos compatibles y ocho herramientas.
 - Consultas de proyectos, historias, métricas e informe contrastadas con la demo.
