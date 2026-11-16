@@ -1,6 +1,6 @@
 # ADR 0001 — Stack tecnológico
 
-- Estado: aceptada
+- Estado: aceptada. La versión de Go queda reemplazada por [ADR 0011](0011-go-1-25-parches-dependabot.md).
 - Fecha: 2026-09-14
 - Autores: Faustino, Valentino, Ignacio
 
