@@ -1,4 +1,7 @@
 .project-page { padding: 40px 0 72px; }
+.project-edit-fields { border: 0; margin: 0; padding: 0; min-width: 0; }
+.project-form:has(.project-edit-fields) { margin-block: 24px; }
+.project-edit-fields .text-link { background: none; border: 0; cursor: pointer; }
 .project-page-heading { padding-top: 28px; }
 .project-page-heading h1 { font-size: clamp(38px, 5vw, 64px); }
 .project-page-heading .eyebrow { margin-bottom: 16px; }

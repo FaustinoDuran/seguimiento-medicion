@@ -41,7 +41,7 @@ test('precarga, guarda una sola vez y actualiza el detalle con la respuesta del 
   expect(body).toEqual({ name: 'Proyecto actualizado', start_date: '2026-10-26', end_date: '2026-12-01', status: 'planned' })
   expect(calls).toBe(1)
   expect(screen.getByRole('status')).toHaveTextContent('Proyecto actualizado correctamente.')
-  expect(screen.getByRole('button', { name: 'Editar proyecto' })).toHaveFocus()
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Editar proyecto' })).toHaveFocus())
 })
 
 test('cancelar descarta cambios y devuelve el foco sin enviar PATCH', async () => {
@@ -55,7 +55,7 @@ test('cancelar descarta cambios y devuelve el foco sin enviar PATCH', async () =
   await user.click(screen.getByRole('button', { name: 'Cancelar edición' }))
   expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(project.name)
   expect(calls).toBe(0)
-  expect(screen.getByRole('button', { name: 'Editar proyecto' })).toHaveFocus()
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Editar proyecto' })).toHaveFocus())
 })
 
 test('conserva entradas, asocia el rechazo de fechas y permite corregir y reintentar', async () => {

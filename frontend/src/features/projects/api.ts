@@ -18,6 +18,12 @@ export function createProject(body: CreateProject, signal: AbortSignal) {
   return apiRequest<Project>('/projects', { method: 'POST', body, signal })
 }
 
+export async function updateProject(projectId: number, body: CreateProject, signal: AbortSignal) {
+  const response = await apiRequest<unknown>(`/projects/${projectId}`, { method: 'PATCH', body, signal })
+  if (!isProject(response) || response.id !== projectId) throw new Error('Invalid project response')
+  return response
+}
+
 export async function listMembers(projectId: string, signal: AbortSignal) {
   const response = await apiRequest<{ members: Member[] }>(`/projects/${projectId}/members`, { signal })
   if (!Array.isArray(response?.members)) throw new Error('Invalid members response')

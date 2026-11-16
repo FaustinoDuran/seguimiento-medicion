@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ApiError } from '../../shared/api/client'
 import { getProject } from './api'
 import { formatDay, isProject, statusLabels } from './model'
 import type { Project } from './model'
 import { MemberSection } from './MemberSection'
+import { ProjectEditForm } from './ProjectEditForm'
 import './projects.css'
 
 type DetailState =
@@ -24,7 +25,15 @@ function MissingProject() {
   )
 }
 
-function ProjectDetail({ project }: { project: Project }) {
+function ProjectDetail({ project: initial }: { project: Project }) {
+  const [project, setProject] = useState(initial)
+  const [editing, setEditing] = useState(false)
+  const [notice, setNotice] = useState('')
+  const editButton = useRef<HTMLButtonElement>(null)
+  function finishEditing() {
+    setEditing(false)
+    requestAnimationFrame(() => editButton.current?.focus())
+  }
   return (
     <>
       <Link className="text-link" to="/projects">← Volver al listado</Link>
@@ -33,6 +42,13 @@ function ProjectDetail({ project }: { project: Project }) {
         <h1>{project.name}</h1>
         <p className="lead">Del {formatDay(project.start_date)} al {formatDay(project.end_date)}.</p>
       </header>
+      <button ref={editButton} className="button" type="button" hidden={editing} onClick={() => { setNotice(''); setEditing(true) }}>Editar proyecto</button>
+      {notice ? <p className="project-success" role="status">{notice}</p> : null}
+      {editing ? <ProjectEditForm project={project} onCancel={finishEditing} onSaved={updated => {
+        setProject(updated)
+        setNotice('Proyecto actualizado correctamente.')
+        finishEditing()
+      }} /> : null}
       <dl className="project-facts">
         <div>
           <dt>Nombre</dt>
