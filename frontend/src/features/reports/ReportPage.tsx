@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { ApiError } from '../../shared/api/client'
 import { getReport, reportPDFPath } from './api'
 import type { ProjectReport, ReportSprint } from './model'
@@ -21,10 +21,16 @@ function MissingReport() {
 }
 
 function ReportLoader({ projectId }: { projectId: string }) {
-  const [selected, setSelected] = useState('')
+  const [search, setSearch] = useSearchParams()
+  const selected = search.get('sprint') ?? ''
   const [options, setOptions] = useState<ReportSprint[]>([])
   const [state, setState] = useState<PageState>({ kind: 'loading' })
   const [attempt, setAttempt] = useState(0)
+  const [loadedScope, setLoadedScope] = useState(selected)
+  if (loadedScope !== selected) {
+    setLoadedScope(selected)
+    setState({ kind: 'loading' })
+  }
   useEffect(() => {
     const controller = new AbortController()
     getReport(projectId, selected, controller.signal).then(report => {
@@ -43,7 +49,12 @@ function ReportLoader({ projectId }: { projectId: string }) {
       <label htmlFor="report-scope">Alcance del reporte</label>
       <select id="report-scope" value={selected} onChange={event => {
         setState({ kind: 'loading' })
-        setSelected(event.target.value)
+        setSearch(previous => {
+          const next = new URLSearchParams(previous)
+          if (event.target.value) next.set('sprint', event.target.value)
+          else next.delete('sprint')
+          return next
+        })
       }}>
         <option value="">Todo el proyecto</option>
         {options.map(sprint => <option key={sprint.id} value={sprint.id}>
