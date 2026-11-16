@@ -9,11 +9,19 @@
 ## Objetivo y dirección
 
 Modo **Operate**: integrantes preparan y ejecutan proyectos; responsables revisan
-resultados. Se conserva el sistema visual de TASK-029: superficies cálidas,
-verde profundo, acento terracota, controles y tokens existentes. No se reemplaza
-la identidad ni se agrega una dependencia de UI. La navegación del proyecto
-permanece disponible entre etapas; las precondiciones llevan al lugar donde se
-resuelven. La edición es inline, para conservar el contexto y evitar diálogos.
+resultados. Dirección visual solicitada explícitamente por Ignacio: «diseño
+basado en Linear (fuentes y colores)», «elimina los datos ... que no suman» y
+«usa colores oscuros». La referencia elegida por el usuario fija el sistema:
+Inter Variable, superficies carbón, texto claro, acento índigo restringido y
+densidad de una herramienta operativa. Se mantiene la navegación y los controles
+web nativos; se elimina la portada redundante, el contexto académico y técnico,
+numeración ornamental y datos duplicados. No se eliminan proyectos ni registros.
+La edición sigue inline, conservando el contexto y sin agregar diálogos.
+
+El inicio abre directamente Proyectos; Conexión queda como utilidad secundaria.
+Títulos literales nombran cada tarea. Se conserva información para operar:
+estado, fechas, equipo, historias, estimaciones, esfuerzos, defectos y métricas.
+La dirección se registra en `PRODUCT.md`, `DESIGN.md` y `.impeccable/design.json`.
 
 ## Inventario y brechas
 
