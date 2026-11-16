@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { EmptyState, ErrorState, LoadingState } from '../../shared/ui/PageState'
 import { listProjects } from './api'
 import { formatDay, statusLabels } from './model'
 import type { Project } from './model'
@@ -52,20 +53,20 @@ export function ProjectsPage() {
             <p>En el orden en que fueron dados de alta.</p>
           </div>
         </div>
-        {state.kind === 'loading' ? <p className="project-loading" role="status">Cargando proyectos…</p> : null}
+        {state.kind === 'loading' ? <LoadingState className="project-loading">Cargando proyectos…</LoadingState> : null}
         {state.kind === 'error' ? (
-          <div className="project-alert" role="alert">
-            <p>{created
-              ? 'El proyecto fue creado, pero no pudimos actualizar el listado.'
-              : 'No pudimos cargar los proyectos.'}</p>
+          <ErrorState className="project-alert" action={
             <button className="button" type="button" onClick={refresh}>Reintentar carga</button>
-          </div>
+          }>
+            {created
+              ? 'El proyecto fue creado, pero no pudimos actualizar el listado.'
+              : 'No pudimos cargar los proyectos.'}
+          </ErrorState>
         ) : null}
         {state.kind === 'ready' && state.projects.length === 0 ? (
-          <div className="project-empty">
-            <h3>Todavía no hay proyectos</h3>
-            <p>Cuando crees el primero, va a aparecer en esta lista.</p>
-          </div>
+          <EmptyState className="project-empty" title="Todavía no hay proyectos">
+            Cuando crees el primero, va a aparecer en esta lista.
+          </EmptyState>
         ) : null}
         {state.kind === 'ready' && state.projects.length > 0 ? (
           <div className="project-table-scroll">

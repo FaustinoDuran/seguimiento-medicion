@@ -19,6 +19,7 @@ test('navega de la portada a la pantalla de conexión', async () => {
 
   expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent('Una buena conexión')
   expect(await screen.findByText('El servicio responde')).toBeInTheDocument()
+  expect(screen.getByRole('main')).toHaveFocus()
 })
 
 // TASK-011 (#44): la ruta de conexión se sostiene en una recarga directa.
@@ -35,4 +36,13 @@ test('muestra la página de dirección no encontrada', () => {
 
   expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Página no encontrada')
   expect(screen.getByRole('link', { name: /Volver al inicio/ })).toBeInTheDocument()
+})
+
+test('presenta accesos operativos y marca la sección activa', () => {
+  renderAt('/')
+
+  expect(screen.getByRole('navigation', { name: 'Navegación principal' })).toBeInTheDocument()
+  expect(screen.getByRole('link', { name: /Inicio/ })).toHaveAttribute('aria-current', 'page')
+  expect(screen.getByRole('link', { name: /Área principal Proyectos/ })).toHaveAttribute('href', '/projects')
+  expect(screen.getByRole('region', { name: 'Del alcance al seguimiento' })).toBeInTheDocument()
 })
