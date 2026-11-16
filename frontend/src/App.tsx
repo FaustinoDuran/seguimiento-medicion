@@ -7,7 +7,9 @@ import {
   Route,
   Routes,
   useLocation,
+  useMatch,
 } from "react-router-dom";
+import { JourneyNextStep, ProjectNavigation } from './app/ProjectNavigation';
 import { ConnectionPage } from "./app/ConnectionPage";
 import { BacklogPage } from "./features/backlog/BacklogPage";
 import { ReportPage } from "./features/reports/ReportPage";
@@ -32,6 +34,10 @@ function RouteFocus() {
 }
 
 function AppLayout() {
+  const match = useMatch('/projects/:projectId/*');
+  const projectId = match?.params.projectId;
+  const { pathname } = useLocation();
+  const validProject = projectId && /^[1-9]\d*$/.test(projectId) ? projectId : null;
   return (
     <div className="app-shell">
       <RouteFocus />
@@ -55,13 +61,13 @@ function AppLayout() {
         </Link>
         <nav aria-label="Navegación principal">
           <NavLink to="/" end>
-            <span aria-hidden="true">⌂</span> Inicio
+            Inicio
           </NavLink>
           <NavLink to="/projects">
-            <span aria-hidden="true">▦</span> Proyectos
+            Proyectos
           </NavLink>
           <NavLink to="/connection">
-            <span aria-hidden="true">⌁</span> Conexión
+            Conexión
           </NavLink>
         </nav>
         <div className="sidebar-context">
@@ -73,10 +79,11 @@ function AppLayout() {
       <div className="app-workspace">
         <header className="workspace-bar">
           <span>Panel de seguimiento</span>
-          <span className="workspace-status">Backend Go</span>
         </header>
         <main id="main-content" tabIndex={-1}>
-          <Outlet />
+          {validProject ? <ProjectNavigation projectId={validProject} /> : null}
+          <Outlet key={pathname} />
+          {validProject ? <JourneyNextStep projectId={validProject} /> : null}
         </main>
         <footer className="site-footer">
           <span>Seguimiento y medición</span>

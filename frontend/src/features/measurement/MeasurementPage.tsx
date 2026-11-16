@@ -5,99 +5,78 @@ import { listStories } from '../backlog/api'
 import { DefectSection } from '../defects/DefectSection'
 import { EffortSection } from '../effort/EffortSection'
 import { getProject, listMembers } from '../projects/api'
-import type { Project } from '../projects/model'
 import { listProjectSprints } from './api'
-import type { MemberOption, ProjectSprint, StoryOption } from './model'
 import './measurement.css'
 
-type PageState =
-  | { kind: 'loading' }
-  | { kind: 'ready'; project: Project; stories: StoryOption[]; members: MemberOption[]; sprints: ProjectSprint[] }
-  | { kind: 'missing' }
-  | { kind: 'error' }
+type Resource<T> = { kind: 'loading' } | { kind: 'ready'; data: T } | { kind: 'error'; missing: boolean }
 
-function MissingProject() {
-  return (
-    <>
-      <p className="eyebrow">Proyecto</p>
-      <h1>Proyecto no encontrado</h1>
-      <p className="lead">No encontramos el proyecto de esta dirección.</p>
-      <Link className="text-link" to="/projects">Volver al listado</Link>
-    </>
-  )
+// Independent catalogs keep a failed dependency from hiding unrelated work.
+function useCatalog<T>(projectId: string, load: (id: string, signal: AbortSignal) => Promise<T>) {
+  const [state, setState] = useState<Resource<T>>({ kind: 'loading' })
+  const [attempt, setAttempt] = useState(0)
+  useEffect(() => {
+    const controller = new AbortController()
+    load(projectId, controller.signal).then(data => {
+      if (!controller.signal.aborted) setState({ kind: 'ready', data })
+    }).catch(error => {
+      if (!controller.signal.aborted) setState({ kind: 'error', missing: error instanceof ApiError && error.status === 404 })
+    })
+    return () => controller.abort()
+  }, [projectId, load, attempt])
+  return { state, retry: () => { setState({ kind: 'loading' }); setAttempt(previous => previous + 1) } }
 }
 
-function MeasurementContent({ projectId, state }: {
-  projectId: string
-  state: Extract<PageState, { kind: 'ready' }>
-}) {
-  return (
-    <>
-      <Link className="text-link" to={`/projects/${projectId}`}>← Volver al proyecto</Link>
-      <header className="measurement-page-heading">
-        <p className="eyebrow">{state.project.name}</p>
-        <h1>Las horas reales,<br /><em>y lo que falló.</em></h1>
-        <p className="lead">Cargá esfuerzo y defectos del proyecto sin pasar por la API.</p>
-      </header>
-      <EffortSection projectId={projectId} stories={state.stories} members={state.members} />
-      <DefectSection projectId={projectId} stories={state.stories} sprints={state.sprints} />
-    </>
-  )
+function CatalogStatus({ name, resource }: { name: string; resource: { state: Resource<unknown>; retry: () => void } }) {
+  if (resource.state.kind === 'loading') return <p className="measurement-loading" role="status">Cargando {name}…</p>
+  if (resource.state.kind === 'ready') return null
+  return <div className="measurement-alert" role="alert">
+    <p>No pudimos cargar {name}. Podés continuar con las secciones disponibles.</p>
+    <button className="button" type="button" onClick={resource.retry}>Reintentar {name}</button>
+  </div>
 }
 
 function MeasurementLoader({ projectId }: { projectId: string }) {
-  const [state, setState] = useState<PageState>({ kind: 'loading' })
-  const [attempt, setAttempt] = useState(0)
+  const project = useCatalog(projectId, getProject)
+  const stories = useCatalog(projectId, listStories)
+  const members = useCatalog(projectId, listMembers)
+  const sprints = useCatalog(projectId, listProjectSprints)
 
-  useEffect(() => {
-    const controller = new AbortController()
-    Promise.all([
-      getProject(projectId, controller.signal),
-      listStories(projectId, controller.signal),
-      listMembers(projectId, controller.signal),
-      listProjectSprints(projectId, controller.signal),
-    ])
-      .then(([project, stories, members, sprints]) => {
-        if (controller.signal.aborted) return
-        setState({
-          kind: 'ready',
-          project,
-          stories: stories.map(story => ({
-            id: story.id, identifier: story.identifier, title: story.title,
-          })),
-          members: members.map(member => ({ id: member.id, name: member.name })),
-          sprints,
-        })
-      })
-      .catch(error => {
-        if (controller.signal.aborted) return
-        setState({ kind: error instanceof ApiError && error.status === 404 ? 'missing' : 'error' })
-      })
-    return () => controller.abort()
-  }, [projectId, attempt])
-
-  if (state.kind === 'ready') return <MeasurementContent projectId={projectId} state={state} />
-  if (state.kind === 'loading') return <p className="measurement-loading" role="status">Cargando el proyecto…</p>
-  if (state.kind === 'missing') return <MissingProject />
-  return (
-    <div className="measurement-alert" role="alert">
+  if (project.state.kind === 'loading') return <p className="measurement-loading" role="status">Cargando el proyecto…</p>
+  if (project.state.kind === 'error') {
+    if (project.state.missing) return <MissingProject />
+    return <div className="measurement-alert" role="alert">
       <h1>No pudimos cargar el proyecto</h1>
       <p>Comprobá la conexión y volvé a intentarlo.</p>
-      <button className="button" type="button" onClick={() => {
-        setState({ kind: 'loading' })
-        setAttempt(previous => previous + 1)
-      }}>Reintentar carga</button>
+      <button className="button" type="button" onClick={project.retry}>Reintentar carga</button>
     </div>
-  )
+  }
+  return <>
+    <Link className="text-link" to={`/projects/${projectId}`}>← Volver al proyecto</Link>
+    <header className="measurement-page-heading">
+      <h1>Las horas reales,<br /><em>y lo que falló.</em></h1>
+      <p className="lead">{project.state.data.name}: registrá el esfuerzo y seguí los defectos del equipo.</p>
+    </header>
+    <CatalogStatus name="historias" resource={stories} />
+    <CatalogStatus name="integrantes" resource={members} />
+    {stories.state.kind === 'ready' && members.state.kind === 'ready'
+      ? <EffortSection projectId={projectId} stories={stories.state.data} members={members.state.data} /> : null}
+    <CatalogStatus name="sprints" resource={sprints} />
+    {stories.state.kind === 'ready' && sprints.state.kind === 'ready'
+      ? <DefectSection projectId={projectId} stories={stories.state.data} sprints={sprints.state.data} /> : null}
+  </>
+}
+
+function MissingProject() {
+  return <>
+    <h1>Proyecto no encontrado</h1>
+    <p className="lead">No encontramos el proyecto de esta dirección.</p>
+    <Link className="text-link" to="/projects">Volver al listado</Link>
+  </>
 }
 
 export function MeasurementPage() {
   const { projectId = '' } = useParams()
-  return (
-    <section className="measurement-page">
-      {/^[1-9]\d*$/.test(projectId)
-        ? <MeasurementLoader key={projectId} projectId={projectId} />
-        : <MissingProject />}
-    </section>
-  )
+  return <section className="measurement-page">
+    {/^[1-9]\d*$/.test(projectId) ? <MeasurementLoader key={projectId} projectId={projectId} /> : <MissingProject />}
+  </section>
 }

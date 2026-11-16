@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
+import { Link } from 'react-router-dom'
 import type { MemberOption, StoryOption } from '../measurement/model'
 import { today } from '../measurement/model'
 import { registerEffort } from './api'
@@ -107,6 +108,8 @@ export function EffortSection({ projectId, stories, members }: {
       ) : (
         <p className="measurement-notice" role="status">
           Para cargar horas hacen falta un integrante y una historia en el proyecto.
+          {' '}{members.length === 0 ? <Link className="text-link" to={`/projects/${projectId}#members`}>Agregar integrantes</Link> : null}
+          {' '}{stories.length === 0 ? <Link className="text-link" to={`/projects/${projectId}/backlog`}>Crear historias</Link> : null}
         </p>
       )}
       <div aria-live="polite" aria-atomic="true">

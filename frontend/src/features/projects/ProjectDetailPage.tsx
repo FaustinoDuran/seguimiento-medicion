@@ -38,7 +38,7 @@ function ProjectDetail({ project: initial }: { project: Project }) {
     <>
       <Link className="text-link" to="/projects">← Volver al listado</Link>
       <header className="project-page-heading">
-        <p className="eyebrow">{statusLabels[project.status]}</p>
+        <p>{statusLabels[project.status]}</p>
         <h1>{project.name}</h1>
         <p className="lead">Del {formatDay(project.start_date)} al {formatDay(project.end_date)}.</p>
       </header>
@@ -67,15 +67,7 @@ function ProjectDetail({ project: initial }: { project: Project }) {
           <dd>{statusLabels[project.status]}</dd>
         </div>
       </dl>
-      <MemberSection projectId={project.id} />
-      <nav className="project-links" aria-label="Trabajo del proyecto">
-        <Link className="text-link" to={`/projects/${project.id}/backlog`}>Backlog</Link>
-        <Link className="text-link" to={`/projects/${project.id}/sprints`}>Sprints</Link>
-        <Link className="text-link" to={`/projects/${project.id}/planning`}>Planning Poker</Link>
-        <Link className="text-link" to={`/projects/${project.id}/measurement`}>Esfuerzo y defectos</Link>
-        <Link className="text-link" to={`/projects/${project.id}/dashboard`}>Dashboard</Link>
-        <Link className="text-link" to={`/projects/${project.id}/report`}>Reporte</Link>
-      </nav>
+      <div id="members"><MemberSection projectId={project.id} /></div>
     </>
   )
 }

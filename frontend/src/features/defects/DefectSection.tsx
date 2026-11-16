@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
+import { Link } from 'react-router-dom'
 import type { Defect, DefectSeverity, ProjectSprint, StoryOption } from '../measurement/model'
 import { defectStatusLabels, severityLabels, sprintLabel } from '../measurement/model'
 import { listDefects, registerDefect, resolveDefect } from './api'
@@ -169,6 +170,8 @@ export function DefectSection({ projectId, stories, sprints }: {
       ) : (
         <p className="measurement-notice" role="status">
           Para registrar un defecto hacen falta una historia y un sprint en el proyecto.
+          {' '}{stories.length === 0 ? <Link className="text-link" to={`/projects/${projectId}/backlog`}>Crear historias</Link> : null}
+          {' '}{sprints.length === 0 ? <Link className="text-link" to={`/projects/${projectId}/sprints`}>Crear un sprint</Link> : null}
         </p>
       )}
       <div aria-live="polite" aria-atomic="true">
