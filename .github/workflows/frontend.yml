@@ -22,3 +22,17 @@ jobs:
       - run: npm run lint
       - run: npm run build
       - run: npm test
+      - run: npm run test:coverage
+      - name: Publicar resumen de cobertura
+        run: |
+          {
+            echo "### Cobertura del frontend"
+            echo
+            echo "El reporte de texto queda en el log de este paso y el HTML en el artefacto."
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frontend-coverage
+          path: frontend/coverage
+          if-no-files-found: error
