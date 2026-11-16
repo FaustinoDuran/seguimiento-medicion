@@ -36,4 +36,22 @@ jobs:
         with:
           go-version: '1.24'
           cache-dependency-path: backend/go.sum
-      - run: go test -count=1 -race ./...
+      - run: go test -count=1 -race -covermode=atomic -coverprofile=coverage.out ./...
+      - run: go tool cover -func=coverage.out | tee coverage.txt
+      - name: Publicar resumen de cobertura
+        run: |
+          {
+            echo "### Cobertura del backend"
+            echo
+            echo '```'
+            tail -n 1 coverage.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-coverage
+          path: |
+            backend/coverage.out
+            backend/coverage.txt
+          if-no-files-found: error
