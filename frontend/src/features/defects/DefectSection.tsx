@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import type { Defect, DefectSeverity, ProjectSprint, StoryOption } from '../measurement/model'
 import { defectStatusLabels, severityLabels, sprintLabel } from '../measurement/model'
 import { listDefects, registerDefect, resolveDefect } from './api'
-import { defectError, resolutionError } from './errors'
+import { defectError, defectErrorField, resolutionError } from './errors'
 
 type ListState =
   | { kind: 'loading' }
@@ -27,6 +27,7 @@ export function DefectSection({ projectId, stories, sprints }: {
   const [sending, setSending] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [errorField, setErrorField] = useState('')
   const [choices, setChoices] = useState<Record<number, string>>({})
   const [resolvingId, setResolvingId] = useState<number | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
@@ -51,6 +52,9 @@ export function DefectSection({ projectId, stories, sprints }: {
   }, [])
 
   const ready = stories.length > 0 && sprints.length > 0
+  function fieldProps(field: string) {
+    return { disabled: sending, 'aria-invalid': errorField === field || undefined, 'aria-describedby': errorField === field ? 'defect-error' : undefined }
+  }
 
   function refresh() {
     setState({ kind: 'loading' })
@@ -63,11 +67,13 @@ export function DefectSection({ projectId, stories, sprints }: {
     if (storyId === '' || detectionSprintId === '') {
       setMessage(null)
       setError('Elegí una historia y un sprint de detección antes de registrar el defecto.')
+      setErrorField(storyId === '' ? 'story' : 'sprint')
       return
     }
     if (severity === '') {
       setMessage(null)
       setError('Elegí una severidad válida.')
+      setErrorField('severity')
       return
     }
     const controller = new AbortController()
@@ -75,18 +81,25 @@ export function DefectSection({ projectId, stories, sprints }: {
     setSending(true)
     setMessage(null)
     setError(null)
+    setErrorField('')
     try {
       await registerDefect(projectId, storyId, {
         description,
         severity: severity as DefectSeverity,
         detection_sprint_id: Number(detectionSprintId),
       }, controller.signal)
+      if (controller.signal.aborted) return
       setMessage('Defecto registrado como abierto.')
       setDescription('')
       setSeverity('')
       refresh()
     } catch (failure) {
-      if (!controller.signal.aborted) setError(defectError(failure))
+      if (!controller.signal.aborted) {
+        setError(defectError(failure))
+        const field = defectErrorField(failure)
+        setErrorField(field)
+        if (field) requestAnimationFrame(() => document.getElementById(`defect-${field}`)?.focus())
+      }
     } finally {
       pending.current = null
       if (!controller.signal.aborted) setSending(false)
@@ -106,6 +119,7 @@ export function DefectSection({ projectId, stories, sprints }: {
     setActionError(null)
     try {
       await resolveDefect(projectId, defect.id, Number(chosen), controller.signal)
+      if (controller.signal.aborted) return
       refresh()
     } catch (failure) {
       if (!controller.signal.aborted) setActionError(resolutionError(failure))
@@ -128,7 +142,7 @@ export function DefectSection({ projectId, stories, sprints }: {
         <form className="measurement-form" onSubmit={submit} noValidate>
           <div className="measurement-field measurement-field-wide">
             <label htmlFor="defect-story">Historia afectada</label>
-            <select id="defect-story" value={storyId} onChange={event => setStoryId(event.target.value)}>
+            <select id="defect-story" {...fieldProps('story')} value={storyId} onChange={event => setStoryId(event.target.value)}>
               <option value="">Elegí una historia</option>
               {stories.map(story => (
                 <option key={story.id} value={story.id}>{story.identifier} — {story.title}</option>
@@ -137,13 +151,13 @@ export function DefectSection({ projectId, stories, sprints }: {
           </div>
           <div className="measurement-field measurement-field-wide">
             <label htmlFor="defect-description">Descripción</label>
-            <textarea id="defect-description" maxLength={2000} rows={3} value={description}
+            <textarea id="defect-description" {...fieldProps('description')} maxLength={2000} rows={3} value={description}
               placeholder="El archivo exportado sale vacío"
               onChange={event => setDescription(event.target.value)} />
           </div>
           <div className="measurement-field">
             <label htmlFor="defect-severity">Severidad</label>
-            <select id="defect-severity" value={severity} onChange={event => setSeverity(event.target.value)}>
+            <select id="defect-severity" {...fieldProps('severity')} value={severity} onChange={event => setSeverity(event.target.value)}>
               <option value="">Elegí una severidad</option>
               {severities.map(value => (
                 <option key={value} value={value}>{severityLabels[value]}</option>
@@ -152,7 +166,7 @@ export function DefectSection({ projectId, stories, sprints }: {
           </div>
           <div className="measurement-field">
             <label htmlFor="defect-sprint">Sprint de detección</label>
-            <select id="defect-sprint" value={detectionSprintId}
+            <select id="defect-sprint" {...fieldProps('sprint')} value={detectionSprintId}
               onChange={event => setDetectionSprintId(event.target.value)}>
               <option value="">Elegí un sprint</option>
               {sprints.map(sprint => (
@@ -177,14 +191,14 @@ export function DefectSection({ projectId, stories, sprints }: {
       <div aria-live="polite" aria-atomic="true">
         {message ? <p className="measurement-success" role="status">{message}</p> : null}
       </div>
-      {error ? <p className="measurement-alert" role="alert">{error}</p> : null}
+      {error ? <p id="defect-error" className="measurement-alert" role="alert">{error}</p> : null}
 
       <div className="measurement-list-heading">
         <h3>Defectos del proyecto</h3>
         <button className="measurement-quiet-button" type="button"
           disabled={state.kind === 'loading'} onClick={refresh}>Actualizar listado</button>
       </div>
-      {actionError ? <p className="measurement-alert" role="alert">{actionError}</p> : null}
+      {actionError ? <p id="resolution-error" className="measurement-alert" role="alert">{actionError}</p> : null}
       {state.kind === 'loading' ? <p className="measurement-loading" role="status">Cargando defectos…</p> : null}
       {state.kind === 'error' ? (
         <div className="measurement-alert" role="alert">
@@ -214,6 +228,8 @@ export function DefectSection({ projectId, stories, sprints }: {
                 <div className="measurement-resolve">
                   <label htmlFor={`defect-${defect.id}-resolution`}>Sprint de resolución</label>
                   <select id={`defect-${defect.id}-resolution`}
+                    disabled={resolvingId !== null}
+                    aria-describedby={actionError ? 'resolution-error' : undefined}
                     value={choices[defect.id] ?? ''}
                     onChange={event => setChoices(previous => ({ ...previous, [defect.id]: event.target.value }))}>
                     <option value="">Elegí un sprint</option>
@@ -222,7 +238,7 @@ export function DefectSection({ projectId, stories, sprints }: {
                     ))}
                   </select>
                   <button className="measurement-quiet-button" type="button"
-                    disabled={resolvingId === defect.id} onClick={() => resolve(defect)}>
+                    disabled={resolvingId !== null} onClick={() => resolve(defect)}>
                     {resolvingId === defect.id ? 'Resolviendo…' : 'Marcar resuelto'}
                   </button>
                 </div>

@@ -1,5 +1,17 @@
 import { ApiError } from '../../shared/api/client'
 
+const fields: Record<string, string> = {
+  'description is required': 'description',
+  'description must be at most 2000 characters': 'description',
+  'severity must be low, medium, high or critical': 'severity',
+  'story not found': 'story',
+  'detection sprint not found': 'sprint',
+}
+
+export function defectErrorField(error: unknown) {
+  return error instanceof ApiError ? fields[error.message] ?? '' : ''
+}
+
 const knownErrors: Record<string, string> = {
   'description is required': 'Escribí la descripción del defecto.',
   'description must be at most 2000 characters': 'La descripción no puede superar los 2000 caracteres.',
