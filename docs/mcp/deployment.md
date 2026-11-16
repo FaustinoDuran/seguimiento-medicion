@@ -77,7 +77,7 @@ No hay evidencia de un despliegue publicado ni de una prueba contra esa URL.
 
 ## TASK-024: despliegue automático desde main
 
-URL configurada: **https://seguimiento0-medicion.aedestec.com/mcp**.
+URL configurada: **https://seguimiento-medicion.aedestec.com/mcp**.
 Es la URL prevista por la configuración; no se considera publicada hasta que
 el workflow y la prueba de ChatGPT la validen.
 
@@ -102,6 +102,10 @@ esquema de forma idempotente. No editar las contraseñas sin rotar también los
 roles de PostgreSQL. Se puede preparar .env.mcp de antemano usando
  deploy/mcp.env.example; si existe, no se reemplaza. Cambios de esquema deben
 ser compatibles con el SHA anterior: el rollback no revierte tablas ni datos.
+
+Excepción: si .env.mcp conserva el dominio original con un cero
+(`seguimiento0-medicion.aedestec.com`), el script corrige únicamente ese origen
+a `seguimiento-medicion.aedestec.com`. No cambia las contraseñas ni otros dominios.
 
 ## Ruta HTTPS
 
@@ -133,7 +137,7 @@ de 3 puntos; sprint cerrado 10 y abierto 11. El fixture no carga esfuerzo:
 no atribuirle las 2,5 h de otras pruebas que sí agregan registros.
 
 ```bash
-curl --fail https://seguimiento0-medicion.aedestec.com/mcp/healthz
+curl --fail https://seguimiento-medicion.aedestec.com/mcp/healthz
 python3 scripts/mcp-http-smoke.py
 ```
 
@@ -159,7 +163,7 @@ En ChatGPT web, usar Plugins → + → Add custom MCP server; si la cuenta todav
 muestra la interfaz anterior, usar Configuración → Apps → Create. Configurar:
 
 - Nombre: Seguimiento y medición.
-- URL: https://seguimiento0-medicion.aedestec.com/mcp
+- URL: https://seguimiento-medicion.aedestec.com/mcp
 - Autenticación: ninguna.
 
 Revisar las herramientas descubiertas, crear e instalar el plugin.

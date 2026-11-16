@@ -4,7 +4,7 @@ import json
 import sys
 import urllib.request
 
-endpoint = sys.argv[1] if len(sys.argv) > 1 else "https://seguimiento0-medicion.aedestec.com/mcp"
+endpoint = sys.argv[1] if len(sys.argv) > 1 else "https://seguimiento-medicion.aedestec.com/mcp"
 version = "2025-06-18"
 counter = 0
 
