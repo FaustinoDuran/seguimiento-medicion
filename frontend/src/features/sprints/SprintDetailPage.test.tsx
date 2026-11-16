@@ -241,6 +241,22 @@ test('cancelar el cierre no llama al servicio', async () => {
   expect(screen.getByRole('button', { name: 'Cerrar sprint' })).toBeInTheDocument()
   expect(screen.getByText('Abierto')).toBeInTheDocument()
   expect(closes).toBe(0)
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Cerrar sprint' })).toHaveFocus())
+})
+
+// AC-031-07: el rechazo concurrente ofrece una recuperación concreta.
+test('actualiza el estado del sprint después de un rechazo concurrente', async () => {
+  serveDetail({ currentSprint: sprint({ id: 5 }), stories: [], projectStories: [] })
+  server.use(http.post('*/api/sprints/5/close', () => HttpResponse.json({ error: 'sprint is closed' }, { status: 409 })))
+  const user = userEvent.setup()
+  openDetail()
+  await user.click(await screen.findByRole('button', { name: 'Cerrar sprint' }))
+  await user.click(screen.getByRole('button', { name: 'Confirmar cierre' }))
+  await screen.findByText('El Sprint está cerrado. No se pueden hacer cambios.')
+  server.use(http.get('*/api/sprints/5', () => HttpResponse.json(sprint({ id: 5, status: 'closed' }))))
+  await user.click(screen.getByRole('button', { name: 'Actualizar sprint' }))
+  expect(await screen.findByText('Cerrado')).toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: 'Cerrar sprint' })).not.toBeInTheDocument()
 })
 
 // AC-027-08: sprint cerrado, solo lectura.
