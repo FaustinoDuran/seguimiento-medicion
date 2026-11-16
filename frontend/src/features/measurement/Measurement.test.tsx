@@ -122,6 +122,8 @@ test('muestra en español el rechazo de las horas y conserva los datos', async (
 
   expect(await screen.findByRole('alert')).toHaveTextContent('Las horas deben ser mayores que cero.')
   expect(screen.getByLabelText('Actividad')).toHaveValue('Revisar el alta')
+  expect(screen.getByLabelText('Horas')).toHaveAttribute('aria-invalid', 'true')
+  expect(screen.getByLabelText('Horas')).toHaveAttribute('aria-describedby', 'effort-error')
 })
 
 test('registra un defecto y lo muestra abierto en la lista', async () => {
@@ -171,6 +173,8 @@ test('muestra en español el rechazo de la descripción', async () => {
   await user.click(screen.getByRole('button', { name: 'Registrar defecto' }))
 
   expect(await screen.findByRole('alert')).toHaveTextContent('Escribí la descripción del defecto.')
+  expect(screen.getByLabelText('Descripción')).toHaveAttribute('aria-invalid', 'true')
+  expect(screen.getByLabelText('Descripción')).toHaveAttribute('aria-describedby', 'defect-error')
 })
 
 test('resuelve un defecto con su sprint de resolución', async () => {
