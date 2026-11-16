@@ -4,6 +4,11 @@ Servidor de solo lectura para demo controlada; modo local por defecto y modo HTT
 aplicación ni aislamiento por persona. Usar datos preparados para esa demo.
 Decisión arquitectónica: [ADR 0009](../adr/0009-read-only-mcp.md).
 
+TASK-025 conecta el despliegue del VPS a la misma base que usa la UI. El script
+`scripts/seed-project.sh` agrega datos de exhibición sin reemplazar los existentes;
+ver [carga compartida, datos y despliegue](deployment.md). La preparación manual
+de abajo sigue siendo válida para una instancia local independiente.
+
 ## Preparación
 
 Inicializar el esquema con el arranque habitual de la API antes de usar MCP.

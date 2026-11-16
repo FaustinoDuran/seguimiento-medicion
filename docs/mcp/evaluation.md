@@ -1,5 +1,27 @@
 # Evidencia de evaluación — #105
 
+## TASK-025 / #116 — carga compartida de UI y MCP
+
+Prueba local ejecutada con PostgreSQL descartable, API y MCP compilados desde
+el repo (`python3 scripts/test-shared-data.py`): aprobada.
+
+- Una falla forzada en la tercera historia revierte toda la carga.
+- Un proyecto previo se conserva y la carga utiliza IDs generados.
+- Repetición sin duplicados en las siete tablas del producto.
+- Proyecto visible por la API; métricas verificadas: 16 puntos planificados,
+  13 completados, velocidad 13, 6,5 horas, desviación 3, 50 % completado,
+  dos defectos detectados y uno resuelto.
+- Aprovisionamiento del rol repetido y escritura rechazada por PostgreSQL.
+- Edición del nombre desde la API preservada al repetir la carga.
+- MCP real por HTTP y API devuelven el mismo proyecto editado y métricas.
+
+Los scripts de despliegue y su reversión también aprobaron con comandos simulados.
+Pendiente después del merge: ejecución de CI/CD en el VPS, comprobación en la UI
+y consultas desde ChatGPT contra la nueva base compartida. Las corridas debajo
+son evidencia histórica de las tareas anteriores, con base separada.
+
+## Evidencia histórica
+
 Estado: pruebas críticas y corrida conversacional ejecutadas; pendiente revisión y merge del PR.
 
 La evaluación posterior a #105 se documenta aparte en [el ciclo de TASK-022](task-022-improvement.md).

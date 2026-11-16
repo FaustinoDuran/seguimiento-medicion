@@ -1,161 +1,117 @@
-# Demo académica remota — #105
+# Datos compartidos entre UI y MCP — TASK-025 / #116
 
-Alcance pedido por el responsable: mostrar el MCP a profesores usando una URL
-HTTPS y un único conjunto de datos. No hay cuentas ni separación por usuario.
-El endpoint no tiene autenticación: cualquier persona que pueda acceder a la
-URL puede consultar los datos de demo. Preparar una base exclusiva con datos
-para exhibición. No conectar una base con información privada a este modo.
+Esta guía describe el despliegue que reemplaza la base separada de TASK-024.
+La transición se aplica al mergear el PR y ejecutar CI/CD. El MCP sigue siendo
+de solo lectura y comparte la base que muestra la UI, por pedido del responsable.
 
-## Paquete preparado
+## TASK-025: datos compartidos entre UI y MCP
 
-- Ejecutable Go con MCP_TRANSPORT=http y Streamable HTTP stateless en /mcp.
-- Mismas ocho herramientas y credenciales PostgreSQL de lectura que stdio.
-- Puerto configurable por PORT, predeterminado 8080.
-- /healthz confirma que el proceso HTTP atiende. No mide disponibilidad de DB.
-- MCP_PUBLIC_URL define el origen HTTPS público, sin /mcp ni rutas adicionales.
-  Origin ajeno se rechaza; clientes nativos sin Origin pueden conectarse.
-- El proveedor debe terminar TLS y enviar /mcp al contenedor sin reescribirlo.
-- Contenedor sin usuario root, sin código fuente ni archivos .env en runtime.
-- Cierre por SIGTERM con hasta diez segundos para atender solicitudes en curso.
+URL: **https://seguimiento-medicion.aedestec.com/mcp**.
+La base utilizada es ahora la misma que consulta la API y muestra la UI.
+El usuario solicitó este cambio para comparar los datos desde ambos clientes.
+El endpoint público puede consultar todos los proyectos de esa base; no limita
+la lectura al proyecto cargado por el script. Usar esta instalación con datos
+adecuados para exhibición. No se incorpora autenticación ni aislamiento.
 
-## Construcción y ejecución
+El flujo de main primero actualiza la aplicación (y su esquema), luego ejecuta
+deploy/deploy-mcp.sh con los mismos secrets SSH existentes:
 
-Desde la raíz del repo:
+1. Genera MCP_READER_PASSWORD hexadecimal en .env.mcp solo si el archivo no existe.
+   Conserva las credenciales y corrige el dominio antiguo con cero si corresponde.
+2. Consulta el nombre real de la base usando las variables del contenedor
+   PostgreSQL de producción; no asume IDs ni usa su contraseña desde el runner.
+3. Ejecuta scripts/seed-project.sh sobre esa base.
+4. Prepara mcp_app_reader con SELECT sobre las siete tablas necesarias.
+   Envía su contraseña por stdin, sin argumentos del proceso ni logs.
+5. Despliega MCP conectado a application-database:5432, alias del PostgreSQL
+   principal en seguimiento-medicion-prod_default, con el nombre real de la base.
+6. Comprueba salud y guarda .deploy-mcp-sha; CI compara proyecto y métricas entre
+   la API pública y el MCP mediante scripts/mcp-http-smoke.py.
 
-```bash
-docker build -f backend/Dockerfile.mcp -t seguimiento-mcp:demo .
-```
+No se vuelven a levantar una API auxiliar ni una base de demo. El contenedor y
+volumen de la demo anterior se conservan; pueden aparecer como huérfanos en
+Compose. No ejecutar down -v ni borrar esos recursos para hacer esta transición.
+MCP_ADMIN_PASSWORD puede permanecer en .env.mcp para una reversión histórica,
+pero el despliegue actual no lo utiliza. No editar MCP_READER_PASSWORD fuera
+del despliegue: el rol se aprovisiona con esa credencial en cada ejecución.
+El nombre de la base debe usar letras, números y guion bajo para la URL.
 
-Preparar PostgreSQL y el rol mcp_reader según la [guía](README.md). El MCP no
-inicializa esquemas ni carga datos. En el hosting configurar como secretos o
-variables del servicio:
+## Script de carga
 
-```text
-MCP_TRANSPORT=http
-PORT=8080
-MCP_PUBLIC_URL=https://mcp-demo.example
-MCP_DATABASE_URL=postgres://mcp_reader:PASSWORD@DB_HOST:5432/seguimiento_medicion?sslmode=verify-full
-```
-
-La URL anterior es un ejemplo; usar la cadena TLS y certificados que corresponda
-al proveedor PostgreSQL. No usar el usuario administrador. El arranque rechaza
-permisos efectivos de escritura o creación de tablas/esquemas.
-
-Prueba con un proxy HTTPS propio o del proveedor:
+Desde el checkout del VPS, después de desplegar la API:
 
 ```bash
-docker run --rm -p 8080:8080 --env-file /ruta/privada/mcp-demo.env seguimiento-mcp:demo
+sh scripts/seed-project.sh SHA_DESPLEGADO
 ```
 
-Configurar en el cliente un servidor MCP remoto **Streamable HTTP** con URL:
+Para desarrollo local, con psql instalado y el esquema inicializado por la API:
 
-```text
-https://mcp-demo.example/mcp
+```bash
+DATABASE_URL='postgres://postgres:postgres@localhost:5433/seguimiento_medicion?sslmode=disable' \
+  sh scripts/seed-project.sh
 ```
 
-El comando exacto depende del cliente de IA elegido. No es una API REST de
-herramientas ni un transporte SSE legado. El cliente negocia el protocolo MCP
-con el SDK oficial del servidor.
+Con un SHA explícito el script siempre usa el contenedor de producción, incluso
+si la sesión exporta DATABASE_URL. Sin SHA, usa DATABASE_URL y el cliente psql.
+CI ejecuta la carga automáticamente; no hace falta una ejecución manual inicial.
 
-## Validación en el hosting
+scripts/seed-project.sql usa una transacción y bloqueo asesor para serializar
+las cargas. Inserta con IDs generados por PostgreSQL y registra ui-mcp-v1 en
+demo_seed.runs. Repetirlo conserva los datos existentes y las ediciones de la
+UI, incluso si se renombra el proyecto. No hace TRUNCATE, DELETE ni UPDATE
+sobre tablas del producto. El rol MCP no tiene acceso al registro interno.
+Si falla una inserción, se revierte todo el lote. No se recuperan números de
+secuencia consumidos en intentos fallidos: no se debe asumir un ID concreto.
 
-1. Confirmar HTTPS y GET /healthz con estado 200.
-2. Conectar el cliente real, descubrir ocho herramientas y leer el proyecto Demo.
-3. Consultar get_metrics y get_report y contrastar con los datos preparados.
-4. Comprobar que una herramienta de escritura inventada es rechazada y que los
-   datos permanecen iguales. Mantener las pruebas destructivas de permisos en
-   PostgreSQL de prueba; no ejecutar la suite contra datos de producción.
-5. Registrar URL de servicio, commit de imagen, cliente, fecha y resultado en
-   la evidencia de la demo. Mantener los secretos fuera del reporte.
+Buscar en la UI el proyecto **Demo UI y MCP - Tienda**. El script imprime su ID
+real. Datos iniciales:
 
-Estado: TASK-024 / #111 incorpora publicación de imagen y despliegue automático
-de demo separado de la aplicación. Falta ejecutar CI/CD desde main y registrar
-la prueba pública y de ChatGPT. No hay una URL pública acreditada.
-El Dockerfile de la API sigue en backend/Dockerfile; el del MCP está en
-backend/Dockerfile.mcp y usa el contexto de la raíz del repositorio.
-No hay evidencia de un despliegue publicado ni de una prueba contra esa URL.
+| Dato | Contenido |
+|---|---|
+| Proyecto | Activo, 01/01/2026–31/12/2026 |
+| Integrantes | Ana Demo y Luis Demo |
+| DEMO-001 | Consultar catálogo, done, alta, 8 puntos |
+| DEMO-002 | Administrar carrito, done, alta, 5 puntos |
+| DEMO-003 | Confirmar compra, todo, media, 3 puntos |
+| DEMO-004 | Notificar estado del pedido, todo, baja, 2 puntos |
+| Sprint cerrado | Catálogo y carrito disponibles; DEMO-001 y DEMO-002 |
+| Sprint abierto | Completar el flujo de compra; DEMO-003 |
+| Esfuerzo | Tres registros que suman 6,5 horas |
+| Defectos | Dos detectados; uno resuelto y uno abierto |
 
-## TASK-024: despliegue automático desde main
+Métricas de proyecto esperadas antes de editar: 16 puntos planificados,
+13 completados, velocidad 13, desviación de 3 puntos, 50 % de historias
+completadas y 6,5 horas reales. Las horas estimadas permanecen en cero según
+el servicio existente. Estos valores no son cálculos nuevos del script.
 
-URL configurada: **https://seguimiento-medicion.aedestec.com/mcp**.
-Es la URL prevista por la configuración; no se considera publicada hasta que
-el workflow y la prueba de ChatGPT la validen.
+## Ruta HTTPS y operación
 
-CI publica las tres imágenes con el SHA del commit. Después del despliegue
-habitual de la aplicación ejecuta deploy/deploy-mcp.sh en el VPS con los mismos
-secrets SSH existentes. No necesita un nuevo dominio ni secretos adicionales.
-El script requiere Docker Compose, openssl y curl, disponibles en el servidor.
-
-En el primer despliegue:
-
-1. Genera dos contraseñas aleatorias en .env.mcp con permisos privados. El archivo
-   queda en el VPS y no se imprime ni se envía a GitHub. Se conserva entre releases.
-2. Levanta PostgreSQL en un proyecto y volumen exclusivos de demo.
-3. Ejecuta la API auxiliar sin puertos públicos para inicializar el esquema.
-4. Crea mcp_reader si falta, concede lectura y carga el fixture solo si no hay
-   proyectos. El fixture aborta si detecta otras tablas con datos: no borra nada.
-5. Detiene la API auxiliar y despliega el MCP con healthcheck y reinicio automático.
-6. Guarda el SHA en .deploy-mcp-sha, independiente del estado de la aplicación.
-
-En actualizaciones se conservan credenciales y datos; se vuelve a inicializar el
-esquema de forma idempotente. No editar las contraseñas sin rotar también los
-roles de PostgreSQL. Se puede preparar .env.mcp de antemano usando
- deploy/mcp.env.example; si existe, no se reemplaza. Cambios de esquema deben
-ser compatibles con el SHA anterior: el rollback no revierte tablas ni datos.
-
-Excepción: si .env.mcp conserva el dominio original con un cero
-(`seguimiento0-medicion.aedestec.com`), el script corrige únicamente ese origen
-a `seguimiento-medicion.aedestec.com`. No cambia las contraseñas ni otros dominios.
-
-## Ruta HTTPS
-
-El Nginx HTTPS del host sigue enviando / al frontend como en el despliegue
-existente. frontend/nginx.conf agrega rutas exactas /mcp y /mcp/healthz hacia
-el servicio MCP, usando DNS interno de Docker y desactivando buffering.
-El servicio MCP se conecta también a la red externa
-seguimiento-medicion-prod_default, creada por el Compose principal.
-La resolución dinámica permite que la SPA arranque aunque el MCP aún no exista.
-No se modifica el certificado ni la configuración del Nginx del VPS.
-
-Este recorrido requiere que el proxy del host reenvíe /mcp al frontend, como
-hace el bloque location / documentado en README. Si el VPS tiene una ruta
-especial que lo intercepta, corregirla antes de acreditar la publicación.
-
-El puerto 3008 solo escucha en loopback. PostgreSQL no publica puertos. El
-endpoint no tiene autenticación: usar exclusivamente datos de exhibición.
-
-## Validación y reversión
-
-CI ejecuta scripts/mcp-http-smoke.py después del despliegue. Comprueba HTTPS,
-negociación JSON-RPC, el conjunto exacto de ocho herramientas y consultas de
-proyectos, historias pendientes, métricas e informe. No acepta una página HTML
-con estado 200 como prueba del protocolo. La prueba no sustituye ChatGPT ni
-el contraste manual de los valores del fixture.
-
-El proyecto Demo tiene ID 1, historia completada de 8 puntos e historia pendiente
-de 3 puntos; sprint cerrado 10 y abierto 11. El fixture no carga esfuerzo:
-no atribuirle las 2,5 h de otras pruebas que sí agregan registros.
+El Nginx HTTPS del VPS reenvía / al frontend; frontend/nginx.conf envía /mcp
+y /mcp/healthz al servicio mcp:8080 por la red de Docker. No cambia el dominio
+ni el certificado. El puerto 3008 solo escucha en loopback; PostgreSQL no
+publica puertos.
 
 ```bash
 curl --fail https://seguimiento-medicion.aedestec.com/mcp/healthz
 python3 scripts/mcp-http-smoke.py
 ```
 
-/healthz solo comprueba el proceso HTTP. El script genérico de despliegue vuelve
-al SHA anterior si falla Compose o el healthcheck local. El bootstrap fallido
-aborta antes de actualizar el MCP; la API auxiliar se detiene también en ese caso.
-Si falla el smoke público, CI falla y se debe revisar proxy y conectividad: no
-se revierte automáticamente una configuración externa al contenedor.
+/healthz solo comprueba el proceso. El smoke verifica negociación, ocho
+herramientas y consultas, y contrasta proyecto y métricas con /api. El proyecto
+se descubre dinámicamente, sin depender del ID 1. Usa el nombre de la carga
+si está disponible y, si fue renombrado, un proyecto de los listados.
+La prueba no sustituye la validación manual de UI y ChatGPT.
 
-Reversión manual desde /opt/seguimiento-medicion:
+El despliegue vuelve al SHA anterior si falla Compose o el healthcheck local.
+Un fallo de permisos o carga aborta antes de actualizar MCP. El rollback de
+imagen conserva la base compartida y los datos agregados; no restaura la base
+separada ni cambia el esquema. Para revertir también el origen, recuperar el
+Compose y el script anteriores a TASK-025 con su configuración de la demo.
+El volumen anterior queda preservado para esa operación.
 
-```bash
-sh deploy/deploy-mcp.sh SHA_ANTERIOR
-```
-
-El primer despliegue no tiene imagen anterior. Para detener la demo sin borrar
-los datos, ejecutar docker compose --env-file .env.mcp -f docker-compose.mcp.yml
-down (sin -v). El siguiente deploy a main vuelve a levantarla.
+No se garantiza que el primer despliegue tenga una imagen previa. Si falla el
+smoke público, CI queda en rojo y se revisa conectividad/proxy; no se revierte
+una configuración externa al contenedor automáticamente.
 
 ## Prueba del cliente en ChatGPT
 
@@ -173,9 +129,9 @@ la [guía oficial vigente](https://help.openai.com/en/articles/12584461-connecti
 En un chat nuevo seleccionar el plugin con @ y pedir:
 
 1. Listá los proyectos usando Seguimiento y medición.
-2. Mostrá las historias pendientes del proyecto 1.
-3. Consultá las métricas del proyecto 1 y del sprint 10.
-4. Mostrá el informe del proyecto 1 y explicá en qué datos te basaste.
+2. Mostrá las historias pendientes de Demo UI y MCP - Tienda.
+3. Consultá las métricas del proyecto y de su sprint cerrado.
+4. Mostrá su informe y explicá en qué datos te basaste.
 
 Comprobar que descubre ocho herramientas y que los valores coinciden con el
 fixture. Registrar URL, fecha, SHA, cliente/modelo, llamadas y resultados en
