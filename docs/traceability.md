@@ -88,6 +88,17 @@ auditoría de seguridad con security-audit (perfil standard). Informe en
 [auditoria-seguridad-run-1.md](auditoria-seguridad-run-1.md). Commit auditado
 `1b59e79b45851763c11a8a58f723f1b59a31ac5b`; sin cambios de código de producto.
 
+**TASK-031** ([#134](https://github.com/FaustinoDuran/seguimiento-medicion/issues/134)):
+cierra 12 alertas de Dependabot sin salir de Go 1.24.0 ni de pgx v5.7.6.
+chi 5.4.0, Vite 8.3.8 y source-map-js 1.2.2 entran por los PR
+[#131](https://github.com/FaustinoDuran/seguimiento-medicion/pull/131),
+[#133](https://github.com/FaustinoDuran/seguimiento-medicion/pull/133) y
+[#132](https://github.com/FaustinoDuran/seguimiento-medicion/pull/132).
+`golang.org/x/crypto` 0.48.0 y el SDK MCP 1.4.0 entran en el PR de esta tarea.
+Siguen abiertas las alertas cuyo parche pide Go 1.25: crypto 0.52.0
+([#130](https://github.com/FaustinoDuran/seguimiento-medicion/pull/130), sin merge),
+pgx 5.9.2 y el SDK MCP 1.4.1.
+
 ## BUG-001 — Conteo de resueltos por Sprint
 
 - Issue: [#94](https://github.com/FaustinoDuran/seguimiento-medicion/issues/94).
