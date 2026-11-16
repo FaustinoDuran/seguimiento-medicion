@@ -1,7 +1,9 @@
 # Sprint 5 — Backlog residual
 
-- Estado: en curso
+- Estado: cerrado
 - Fecha de inicio: al cerrar el Sprint 4
+- Issues del objetivo cerradas: 2026-11-12
+- Registro actualizado: 2026-11-15
 - Equipo: Faustino (Agile Enabler), Valentino e Ignacio (Product Builders)
 - Alcance: [ADR 0008](../adr/0008-alcance-sprint-5.md)
 - Tablero: [Seguimiento y medición](https://github.com/users/FaustinoDuran/projects/3)
@@ -24,10 +26,10 @@ Dueños:
 
 | Ítem | Issue | Prioridad | SP | Responsable | Orden |
 |---|---|---|---|---|---|
-| TASK-020 Alcance Sprint 5 | [#98](https://github.com/FaustinoDuran/seguimiento-medicion/issues/98) | alta | — | Faustino | In progress |
-| HU-002 Modificar proyecto | [#11](https://github.com/FaustinoDuran/seguimiento-medicion/issues/11) | media | — | Valentino | Sprint ready |
-| HU-006 Actualizar historia | [#15](https://github.com/FaustinoDuran/seguimiento-medicion/issues/15) | media | — | Ignacio | Sprint ready |
-| TASK-012 Skills de agente | [#54](https://github.com/FaustinoDuran/seguimiento-medicion/issues/54) | alta | — | Faustino | Sprint ready |
+| TASK-020 Alcance Sprint 5 | [#98](https://github.com/FaustinoDuran/seguimiento-medicion/issues/98) | alta | — | Faustino | Done. PR [#99](https://github.com/FaustinoDuran/seguimiento-medicion/pull/99) |
+| HU-002 Modificar proyecto | [#11](https://github.com/FaustinoDuran/seguimiento-medicion/issues/11) | media | — | Valentino | Done. PR [#101](https://github.com/FaustinoDuran/seguimiento-medicion/pull/101) |
+| HU-006 Actualizar historia | [#15](https://github.com/FaustinoDuran/seguimiento-medicion/issues/15) | media | — | Ignacio | Done. PR [#102](https://github.com/FaustinoDuran/seguimiento-medicion/pull/102) |
+| TASK-012 Skills de agente | [#54](https://github.com/FaustinoDuran/seguimiento-medicion/issues/54) | alta | — | Faustino | Done. PR [#100](https://github.com/FaustinoDuran/seguimiento-medicion/pull/100) |
 
 ## Olas
 
@@ -49,6 +51,15 @@ TASK-020 y TASK-012 no llevan SDD/BDD.
 
 Un proyecto existente. Se cambia nombre o fechas, se actualiza una historia
 del backlog, y las skills de agente quedan en el repositorio.
+
+## Cierre
+
+El objetivo quedó en `main` el 2026-11-12. Este registro se actualizó el
+2026-11-15: las cuatro Issues están cerradas y la retrospectiva está en
+[sprint-5.md](../retrospectives/sprint-5.md).
+
+La pantalla no incluye un formulario para modificar el proyecto. HU-002 expone
+esa corrección por API. HU-006 sí actualiza la historia desde el backlog.
 
 ## Fuera de este incremento
 

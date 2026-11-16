@@ -10,15 +10,17 @@ Trabajo práctico integrador — Ingeniería y Calidad de Software, UTN FRSR, 20
 |---|---|
 | Backend (núcleo y reglas) | Go 1.24 + chi + pgx |
 | Base de datos | PostgreSQL 16 |
-| Frontend (presentación, Sprint 2) | TypeScript + React + Tailwind + Vite |
+| Frontend (presentación) | TypeScript + React + Tailwind + Vite |
 
 Las reglas de negocio **no** se implementan en React.
 
 ## Estado actual
 
-Sprint 1 en curso. Con `DATABASE_URL` la API expone proyectos (HU-001),
-integrantes (HU-003), historias de backlog (HU-005), sprints (HU-007),
-asignación de historias (HU-008) y finalización de historias (HU-009).
+El producto cubre el ciclo completo: proyectos, backlog, sprints, Planning
+Poker, esfuerzo, defectos, métricas, dashboard y reporte PDF. El uso de las
+pantallas está en el [manual de usuario](docs/user-manual.md). Los cinco
+sprints están cerrados; sus actas están en `docs/sprints/` y las
+retrospectivas en `docs/retrospectives/`.
 
 ## Cómo levantar PostgreSQL
 
@@ -396,6 +398,7 @@ IMAGE_TAG=local docker compose -f docker-compose.prod.yml config
 
 ## Documentación del equipo
 
+- [Manual de usuario](docs/user-manual.md) — cómo usar las pantallas
 - [Guía de trabajo y trazabilidad](docs/guia-de-trabajo.md) — cómo trabaja el equipo y el agente de Cursor
 - [Registro del Sprint 0](docs/sprints/sprint-0.md)
 - [Trazabilidad](docs/traceability.md)
@@ -414,7 +417,7 @@ backend/docker-compose.yml   PostgreSQL 16 de desarrollo
 docker-compose.prod.yml      API, SPA y PostgreSQL en el VPS
 deploy/deploy.sh             reemplazo de contenedores y rollback
 backend/internal/<feature>/   dominio Go (TDD)
-frontend/src/features/       UI (Sprint 2)
+frontend/src/features/       UI
 docs/sdd/                    especificaciones
 docs/adr/                    decisiones
 features/                    escenarios BDD
