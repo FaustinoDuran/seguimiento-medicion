@@ -8,7 +8,7 @@ Trabajo práctico integrador — Ingeniería y Calidad de Software, UTN FRSR, 20
 
 | Capa | Tecnología |
 |---|---|
-| Backend (núcleo y reglas) | Go 1.24 + chi + pgx |
+| Backend (núcleo y reglas) | Go 1.25 + chi + pgx |
 | Base de datos | PostgreSQL 16 |
 | Frontend (presentación) | TypeScript + React + Tailwind + Vite |
 
@@ -254,7 +254,7 @@ modifica archivos.
 
 ### Requisitos
 
-- Go 1.24 o superior en `PATH`.
+- Go 1.25 o superior en `PATH`.
 - PostgreSQL de pruebas accesible.
 - `DATABASE_URL`, `BACKLOG_TEST_DATABASE_URL` y `SPRINTS_TEST_DATABASE_URL`
   exportadas en la sesión. **Sin las tres, el hook falla a propósito**: sin esas
@@ -281,7 +281,7 @@ ejecución después de un cambio grande compila de nuevo y puede tardar más.
 | Síntoma | Causa probable | Qué hacer |
 | --- | --- | --- |
 | `Faltan variables de entorno…` | Variables no exportadas en esta shell | Exportar las tres y reintentar |
-| `No se encontró 'go' en PATH` | Go no instalado o fuera del `PATH` | Instalar Go 1.24+ |
+| `No se encontró 'go' en PATH` | Go no instalado o fuera del `PATH` | Instalar Go 1.25+ |
 | `connection refused` en los tests | PostgreSQL apagado o URL equivocada | Levantar el contenedor y revisar el puerto `5433` |
 | Un test rojo real | Cambio que rompe el backend | Corregir el código y volver a hacer push |
 

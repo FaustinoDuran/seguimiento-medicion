@@ -60,7 +60,7 @@ HU-XXX / TASK-XXX / BUG-XXX · #N · dueño · estado del tablero
 
 ## Qué no hacer
 - no calcular métricas ni Planning Poker en React
-- no GORM / auth / bump de Go
+- no GORM / auth / bump de Go a 1.26+
 - no un PR con varias HU
 - no SDD/BDD inventados en una TASK
 ```

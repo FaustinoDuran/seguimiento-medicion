@@ -8,7 +8,7 @@ Skills de agente (TASK-012): `.cursor/skills/pre-commit/` antes de implementar o
 
 ## Stack (no cambiar sin ADR)
 
-- Backend: Go 1.24, chi, pgx v5.7.x, PostgreSQL.
+- Backend: Go 1.25, chi, pgx v5 (>= 5.9.2), PostgreSQL.
 - Frontend: React + TypeScript + Tailwind + Vite. Presentación solamente.
 - Núcleo y reglas de negocio: solo Go.
 
@@ -39,7 +39,7 @@ negocio y no adelantarla sin Issue.
 
 `projects`, `backlog`, `sprints`, `planningpoker`, `effort`, `defects`, `metrics`, `reports`.
 
-No crear paquetes `shared` con reglas de negocio. No agregar auth ni GORM. No subir `go` del `go.mod` a 1.25+.
+No crear paquetes `shared` con reglas de negocio. No agregar auth ni GORM. No subir `go` del `go.mod` a 1.26+.
 
 ## Idioma
 

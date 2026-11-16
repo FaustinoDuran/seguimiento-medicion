@@ -99,6 +99,12 @@ Siguen abiertas las alertas cuyo parche pide Go 1.25: crypto 0.52.0
 ([#130](https://github.com/FaustinoDuran/seguimiento-medicion/pull/130), sin merge),
 pgx 5.9.2 y el SDK MCP 1.4.1.
 
+**TASK-032** ([#136](https://github.com/FaustinoDuran/seguimiento-medicion/issues/136))
+y [ADR 0011](adr/0011-go-1-25-parches-dependabot.md): el backend pasa a Go 1.25
+para cerrar esas 18 alertas. pgx queda en v5.9.2 y el SDK MCP en 1.4.1.
+pgx 5.9.2 ya no trae `golang.org/x/crypto`, así que ese módulo sale del grafo.
+CI y las imágenes Docker instalan Go 1.25. El PR #130 se cierra sin merge.
+
 ## BUG-001 — Conteo de resueltos por Sprint
 
 - Issue: [#94](https://github.com/FaustinoDuran/seguimiento-medicion/issues/94).

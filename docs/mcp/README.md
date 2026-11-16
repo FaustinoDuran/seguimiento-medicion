@@ -55,8 +55,8 @@ la variable de entorno (reemplazar contraseña y ruta):
 
 Los mensajes del protocolo usan stdout; los errores de arranque van a stderr.
 Para exponer /mcp por HTTP ver [despliegue de demo remota](deployment.md).
-El servidor usa el SDK oficial Go MCP v1.0.0 y su
-negociación de protocolo. Se conserva Go 1.24.
+El servidor usa el SDK oficial Go MCP v1.4.1 y su
+negociación de protocolo. Se conserva Go 1.25.
 
 ## Herramientas y parámetros
 

@@ -13,5 +13,5 @@ Trabajo de facultad. El producto importa; el proceso (SDD → BDD → TDD → c�
 - Infraestructura/configuración: Issue `TASK-XXX` y PR; no inventar SDD/BDD ni
   adelantar código sin tarea.
 - Decisiones transversales en `docs/adr/`. Guía humana/agente: `docs/guia-de-trabajo.md`.
-- Go 1.24.x y pgx v5.7.x. Sin GORM. Sin auth hasta que una HU lo pida.
+- Go 1.25.x y pgx v5 (>= 5.9.2). Sin GORM. Sin auth hasta que una HU lo pida. No subir `go` del `go.mod` a 1.26+.
 - Nombres de código en inglés; specs, issues y Gherkin en español.
