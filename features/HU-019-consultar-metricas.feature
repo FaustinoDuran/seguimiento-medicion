@@ -1,10 +1,11 @@
-# language: es
+# language: en
 Feature: HU-019 — Consultar métricas
   Como responsable de seguimiento
   quiero ver SP planificados y completados, velocidad, horas estimadas y reales, desviación, porcentaje de historias completadas y cantidad de defectos detectados y resueltos
   para poder decidir con números calculados por el sistema
 
   # AC-019-01
+  @automatizado
   Scenario: consultar las métricas de un proyecto
     Given un proyecto con historias estimadas, un Sprint, horas cargadas y un defecto
     When consulta las métricas del proyecto
@@ -29,6 +30,7 @@ Feature: HU-019 — Consultar métricas
     Then la velocidad es el promedio de esos Sprints cerrados
 
   # AC-019-04
+  @automatizado
   Scenario: velocidad del proyecto sin Sprints cerrados
     Given un proyecto cuyo único Sprint sigue abierto
     When consulta las métricas del proyecto
@@ -59,6 +61,7 @@ Feature: HU-019 — Consultar métricas
     Then no entran las horas ni los defectos del segundo
 
   # AC-019-09
+  @automatizado
   Scenario: rechazar un identificador inválido
     When consulta métricas con un id de proyecto 0
     Then la respuesta es 400
