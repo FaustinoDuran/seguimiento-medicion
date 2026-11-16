@@ -77,6 +77,11 @@ la evidencia histórica de tests. No se declara una nueva validación manual de 
 Las tareas técnicas del Sprint 0 no se agregan a esta matriz porque no recorren
 SDD/BDD. Se registran como Issues `TASK-XXX` y en `docs/sprints/sprint-0.md`.
 
+TASK-025 / [#116](https://github.com/FaustinoDuran/seguimiento-medicion/issues/116)
+es infraestructura sin SDD/BDD: carga en `scripts/seed-project.sql`, acceso
+compartido en los Compose y `deploy/deploy-mcp.sh`, prueba reproducible en
+`scripts/test-shared-data.py` y evidencia en `docs/mcp/evaluation.md`.
+
 **TASK-023** ([#109](https://github.com/FaustinoDuran/seguimiento-medicion/issues/109)):
 auditoría de seguridad con security-audit (perfil standard). Informe en
 [auditoria-seguridad-run-1.md](auditoria-seguridad-run-1.md). Commit auditado

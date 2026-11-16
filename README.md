@@ -373,10 +373,13 @@ Secrets del repositorio: `VPS_HOST`, `VPS_USER` y `VPS_SSH_KEY`. Sin ellos el
 job de deploy falla a propósito. El login de GHCR en el VPS es de lectura y
 queda en la máquina, no en el repo.
 
-TASK-024 agrega un despliegue MCP automático e independiente, con base exclusiva
-de demo y puerto local 3008. CI/CD prepara la demo y la publica en
-`https://seguimiento-medicion.aedestec.com/mcp`, usando el HTTPS existente. Ver [la guía MCP](docs/mcp/deployment.md) para preparar HTTPS,
-conectar ChatGPT y actualizar o revertir la demo.
+TASK-025 conecta el MCP a la misma base que la UI, con un rol de solo lectura.
+CI/CD ejecuta una carga aditiva y repetible: **Demo UI y MCP - Tienda**.
+Para repetirla desde el VPS: `sh scripts/seed-project.sh SHA_DESPLEGADO`.
+El MCP escucha localmente en 3008 y se publica en
+`https://seguimiento-medicion.aedestec.com/mcp`. Ver [la guía MCP](docs/mcp/deployment.md)
+para datos esperados, permisos y reversión. El endpoint público consulta los
+proyectos de la base de la aplicación.
 
 El esquema SQL se aplica al arrancar la API (`EnsureSchema`). Volver a la
 imagen anterior no deshace tablas ni columnas que esa versión ya cambió. Las
