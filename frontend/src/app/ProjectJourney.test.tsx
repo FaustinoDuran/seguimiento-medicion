@@ -27,7 +27,7 @@ test('mantiene navegación transversal y marca la etapa actual en URL directa', 
   serve()
   const user = userEvent.setup()
   open('/projects/4/backlog')
-  await screen.findByRole('heading', { name: /historia a historia/ })
+  await screen.findByRole('heading', { name: 'Backlog' })
   const navigation = screen.getByRole('navigation', { name: 'Trabajo del proyecto' })
   expect(within(navigation).getByRole('link', { name: 'Backlog' })).toHaveAttribute('aria-current', 'page')
   await user.click(within(navigation).getByRole('link', { name: 'Esfuerzo y defectos' }))

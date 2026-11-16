@@ -37,7 +37,7 @@ test('muestra nombre, fechas y estado, y enlaza el trabajo del proyecto', async 
   expect(screen.getByRole('link', { name: 'Backlog' })).toHaveAttribute('href', '/projects/4/backlog')
   expect(screen.getByRole('link', { name: 'Sprints' })).toHaveAttribute('href', '/projects/4/sprints')
   await user.click(screen.getByRole('link', { name: /Volver al listado/ }))
-  expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent('proyecto a proyecto')
+  expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent('Proyectos')
 })
 
 // AC-024-07: proyecto inexistente.

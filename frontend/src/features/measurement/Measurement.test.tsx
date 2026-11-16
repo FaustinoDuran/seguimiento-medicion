@@ -280,7 +280,7 @@ test('no calcula horas ni desviaciones en la pantalla', async () => {
   serveCatalogs()
   open()
 
-  await screen.findByRole('heading', { name: /Las horas reales/ })
+  await screen.findByRole('heading', { name: 'Esfuerzo y defectos' })
   expect(screen.queryByText(/desviación/i)).not.toBeInTheDocument()
   expect(screen.queryByText(/horas totales/i)).not.toBeInTheDocument()
 })
