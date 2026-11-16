@@ -2,8 +2,8 @@
 
 - Issue: [#126](https://github.com/FaustinoDuran/seguimiento-medicion/issues/126)
 - Responsable: Ignacio (`nachopatinoc`).
-- Estado: implementada en rama de HU-031; validación local documentada. Pendiente
-  de publicación, revisión de otra persona y merge.
+- Estado: implementada; validación local documentada. [PR #127](https://github.com/FaustinoDuran/seguimiento-medicion/pull/127)
+  contra `main`, pendiente de revisión de otra persona y merge.
 - Presentación: `frontend/src/features/`, composición en `frontend/src/App.tsx`.
 
 ## Objetivo y dirección
