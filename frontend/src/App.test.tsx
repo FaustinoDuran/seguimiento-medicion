@@ -36,3 +36,12 @@ test('muestra la página de dirección no encontrada', () => {
   expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Página no encontrada')
   expect(screen.getByRole('link', { name: /Volver al inicio/ })).toBeInTheDocument()
 })
+
+test('presenta accesos operativos y marca la sección activa', () => {
+  renderAt('/')
+
+  expect(screen.getByRole('navigation', { name: 'Navegación principal' })).toBeInTheDocument()
+  expect(screen.getByRole('link', { name: /Inicio/ })).toHaveAttribute('aria-current', 'page')
+  expect(screen.getByRole('link', { name: /Área principal Proyectos/ })).toHaveAttribute('href', '/projects')
+  expect(screen.getByRole('region', { name: 'Del alcance al seguimiento' })).toBeInTheDocument()
+})
