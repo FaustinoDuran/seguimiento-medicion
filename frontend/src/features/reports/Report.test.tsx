@@ -155,4 +155,20 @@ test('descarga el PDF del alcance que está en pantalla', async () => {
   expect(await screen.findByRole('link', { name: 'Exportar PDF' })).toHaveAttribute('href', '/api/projects/4/report.pdf')
   await user.selectOptions(screen.getByRole('combobox', { name: 'Alcance del reporte' }), '3')
   expect(await screen.findByRole('link', { name: 'Exportar PDF' })).toHaveAttribute('href', '/api/projects/4/sprints/3/report.pdf')
+  expect(window.location.search).toBe('?sprint=3')
+})
+
+// AC-031-10: URL compartida o recargada conserva el alcance del PDF.
+test('abre por URL directa el sprint seleccionado y permite volver al proyecto completo', async () => {
+  const user = userEvent.setup()
+  serveReport()
+  server.use(http.get('*/api/projects/4/sprints/3/report', () => HttpResponse.json({
+    ...report, sprint: report.available_sprints[1], metrics: { ...report.metrics, sprint_id: 3 },
+  })))
+  open('/projects/4/report?sprint=3')
+  expect(await screen.findByRole('link', { name: 'Exportar PDF' })).toHaveAttribute('href', '/api/projects/4/sprints/3/report.pdf')
+  expect(screen.getByLabelText('Alcance del reporte')).toHaveValue('3')
+  await user.selectOptions(screen.getByLabelText('Alcance del reporte'), '')
+  expect(await screen.findByRole('link', { name: 'Exportar PDF' })).toHaveAttribute('href', '/api/projects/4/report.pdf')
+  expect(window.location.search).toBe('')
 })
