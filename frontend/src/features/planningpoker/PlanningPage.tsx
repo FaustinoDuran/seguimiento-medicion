@@ -71,7 +71,7 @@ function PlanningSession({ project }: { project: Project }) {
       </header>
       <section aria-labelledby="planning-stories-heading" aria-busy={stories.kind === 'loading'}>
         <div className="poker-section-heading">
-          
+
           <div>
             <h2 id="planning-stories-heading">Historias</h2>
             <p>La estimación que ya tiene cada una.</p>
@@ -152,7 +152,7 @@ function PlanningLoader({ projectId }: { projectId: string }) {
   if (state.kind === 'missing') {
     return (
       <>
-        
+
         <h1>Proyecto no encontrado</h1>
         <Link className="text-link" to="/projects">Volver al listado</Link>
       </>
@@ -175,7 +175,7 @@ export function PlanningPage() {
     <section className="poker-page">
       {/^[1-9]\d*$/.test(projectId) ? <PlanningLoader projectId={projectId} /> : (
         <>
-          
+
           <h1>Proyecto no encontrado</h1>
         </>
       )}

@@ -1,7 +1,6 @@
 .sprints-page { padding: 40px 0 72px; }
 .sprints-page-heading { padding-top: 24px; }
 .sprints-page-heading h1 { font-size: clamp(32px, 4.5vw, 56px); overflow-wrap: anywhere; }
-.sprints-page-heading .eyebrow { margin-bottom: 16px; }
 .sprints-page-heading .lead { margin: 20px 0 36px; }
 .sprints-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; color: var(--color-ink-muted); font-size: 14px; margin: 20px 0 32px; }
 .sprints-form, .sprints-panel { border: 1px solid color-mix(in oklch, var(--color-ink) 20%, transparent); padding: clamp(20px, 4vw, 36px); background: var(--color-surface); }

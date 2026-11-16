@@ -61,10 +61,10 @@ export function MemberSection({ projectId }: { projectId: number }) {
   return (
     <section className="project-members" aria-labelledby="members-heading">
       <div className="project-section-heading">
-        
+
         <div>
           <h2 id="members-heading">Integrantes</h2>
-          
+
         </div>
       </div>
       <form className="project-form" onSubmit={submit} noValidate>
@@ -82,7 +82,7 @@ export function MemberSection({ projectId }: { projectId: number }) {
           : null}
         {error && !error.field ? <p className="project-alert" role="alert">{error.message}</p> : null}
         <div className="project-form-footer">
-          
+
           <button className="button" type="submit" disabled={sending}>
             {sending ? 'Agregando…' : 'Agregar integrante'}
           </button>

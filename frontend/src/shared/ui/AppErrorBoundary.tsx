@@ -24,7 +24,7 @@ export class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorB
     if (this.state.failed) {
       return (
         <main className="fatal-error" id="main-content">
-          
+
           <h1>No pudimos mostrar esta pantalla</h1>
           <p className="lead">
             Recargá la aplicación. Si el problema continúa, comprobá la conexión con el backend.

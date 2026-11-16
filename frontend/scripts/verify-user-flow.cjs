@@ -12,12 +12,14 @@ let browser;
  page.on('pageerror', e=>errors.push(String(e)));
  const activate = async locator => {await locator.focus(); await locator.press('Enter');};
  const nav = label => page.getByRole('navigation',{name:'Trabajo del proyecto'}).getByRole('link',{name:label,exact:true});
- const name = 'Proyecto integrador · Equipo de calidad';
+ const name = 'Lanzamiento de la plataforma';
  await page.goto(''+baseURL+'/projects');
  await page.getByLabel('Nombre',{exact:true}).fill(name);
  await page.getByLabel('Inicio',{exact:true}).fill('2026-11-01');
  await page.getByLabel('Fin',{exact:true}).fill('2026-12-01');
  await activate(page.getByRole('button',{name:'Crear proyecto',exact:true}));
+ await page.getByText('Proyecto creado correctamente.',{exact:true}).waitFor();
+ await page.waitForFunction(()=>!document.body.innerText.includes('Cargando proyectos…'));
  await activate(page.getByRole('link',{name,exact:true}).last());
  await page.getByRole('heading',{name,exact:true}).waitFor();
  const projectId = page.url().match(/projects\/(\d+)/)[1];
@@ -25,7 +27,7 @@ let browser;
  await page.getByLabel('Nombre del proyecto').fill(name+' · revisado');
  await activate(page.getByRole('button',{name:'Guardar cambios'}));
  await page.getByText('Proyecto actualizado correctamente.').waitFor();
- assert.equal(await page.getByRole('button',{name:'Editar proyecto',exact:true}).evaluate(e=>e===document.activeElement),true);
+ await page.waitForFunction(()=>document.activeElement?.textContent?.trim()==='Editar proyecto');
  for (const member of ['Ignacio · demo','Valentino · demo']) {
    await page.getByLabel('Nombre',{exact:true}).fill(member);
    await activate(page.getByRole('button',{name:'Agregar integrante'}));
@@ -121,6 +123,7 @@ let browser;
    for (const [route,label] of [['report?sprint='+sprintId,'report'],['','project'],['measurement','measurement'],['sprints/'+sprintId,'sprint'],['backlog','backlog'],['planning','planning'],['dashboard','dashboard']]) {
      await page.goto(''+baseURL+'/projects/'+projectId+(route?'/'+route:''));
      await page.locator('h1').waitFor();
+     await page.evaluate(()=>document.fonts.ready);
      await page.waitForTimeout(180);
      const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth+1);
      assert.equal(overflow,false,'Overflow at '+width+' '+label);
@@ -134,6 +137,15 @@ let browser;
    await page.getByRole('alert').waitFor();
    await capture('edit-error-'+width+'.png');
    if(width!==768) await audit('edit-error-'+width);
+   for(const [route,label] of [['/projects','projects'],['/connection','connection']]) {
+     await page.goto(baseURL+route);
+     await page.locator('h1').waitFor();
+     await page.evaluate(()=>document.fonts.ready);
+     await page.waitForTimeout(180);
+     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'Overflow at '+width+' '+label);
+     await capture(label+'-'+width+'.png');
+     if(width!==768) await audit(label+'-'+width);
+   }
  }
  await page.setViewportSize({width:720,height:500});
  await page.goto(baseURL+'/projects/'+projectId+'/measurement');
@@ -170,6 +182,6 @@ let browser;
  assert.equal(violations.length,0,'Axe WCAG A/AA violations');
  assert.deepEqual(errors,[]);
  fs.writeFileSync(path.join(evidence,'flow.json'),JSON.stringify({projectId,sprintId,name,viewports:[1440,768,360],pdf:true,browserErrors:errors},null,2));
- console.log(JSON.stringify({projectId,sprintId,pdf:true,screenshots:27,accessibilityAudits:audits.length}));
+ console.log(JSON.stringify({projectId,sprintId,pdf:true,screenshots:33,accessibilityAudits:audits.length}));
  await browser.close();
 })().catch(async error=>{console.error(error);await browser?.close();process.exitCode=1});

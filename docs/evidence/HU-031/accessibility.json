@@ -1,21 +1,16 @@
 [
   {
-    "label": "report-1440",
+    "label": "projects-1440",
+    "violations": [],
+    "incomplete": []
+  },
+  {
+    "label": "connection-1440",
     "violations": [],
     "incomplete": []
   },
   {
     "label": "project-1440",
-    "violations": [],
-    "incomplete": []
-  },
-  {
-    "label": "measurement-1440",
-    "violations": [],
-    "incomplete": []
-  },
-  {
-    "label": "sprint-1440",
     "violations": [],
     "incomplete": []
   },
@@ -30,7 +25,22 @@
     "incomplete": []
   },
   {
+    "label": "measurement-1440",
+    "violations": [],
+    "incomplete": []
+  },
+  {
     "label": "dashboard-1440",
+    "violations": [],
+    "incomplete": []
+  },
+  {
+    "label": "sprint-1440",
+    "violations": [],
+    "incomplete": []
+  },
+  {
+    "label": "report-1440",
     "violations": [],
     "incomplete": []
   },
@@ -40,7 +50,12 @@
     "incomplete": []
   },
   {
-    "label": "report-360",
+    "label": "projects-360",
+    "violations": [],
+    "incomplete": []
+  },
+  {
+    "label": "connection-360",
     "violations": [],
     "incomplete": []
   },
@@ -50,19 +65,11 @@
     "incomplete": []
   },
   {
-    "label": "measurement-360",
-    "violations": [],
-    "incomplete": []
-  },
-  {
-    "label": "sprint-360",
-    "violations": [],
-    "incomplete": []
-  },
-  {
     "label": "backlog-360",
     "violations": [],
-    "incomplete": []
+    "incomplete": [
+      "color-contrast"
+    ]
   },
   {
     "label": "planning-360",
@@ -72,9 +79,26 @@
     ]
   },
   {
+    "label": "measurement-360",
+    "violations": [],
+    "incomplete": []
+  },
+  {
     "label": "dashboard-360",
     "violations": [],
     "incomplete": []
+  },
+  {
+    "label": "sprint-360",
+    "violations": [],
+    "incomplete": []
+  },
+  {
+    "label": "report-360",
+    "violations": [],
+    "incomplete": [
+      "color-contrast"
+    ]
   },
   {
     "label": "edit-error-360",

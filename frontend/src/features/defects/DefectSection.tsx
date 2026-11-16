@@ -132,7 +132,7 @@ export function DefectSection({ projectId, stories, sprints }: {
   return (
     <section className="measurement-panel" aria-labelledby="defects-heading">
       <div className="measurement-section-heading">
-        
+
         <div>
           <h2 id="defects-heading">Defectos</h2>
           <p>Lo que falló y en qué sprint se detectó o resolvió.</p>

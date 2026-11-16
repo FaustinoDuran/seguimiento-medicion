@@ -87,3 +87,11 @@ Característica: Recorrido completo y contextual desde la interfaz
     Cuando recorro la navegación y los formularios con teclado
     Entonces los controles permanecen accesibles con foco visible
     Y los mensajes se anuncian y el contenido extenso no desborda la página
+
+  # AC-031-02, AC-031-12
+  Escenario: Entrar directamente al trabajo sin contenido redundante
+    Cuando abro la aplicación desde el inicio
+    Entonces veo Proyectos sin una portada intermedia
+    Y encuentro los controles para crear y consultar proyectos
+    Y no veo contenido académico ni explicaciones de implementación
+    Y los datos guardados de los proyectos se conservan

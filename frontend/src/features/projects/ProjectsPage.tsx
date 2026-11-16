@@ -34,7 +34,7 @@ export function ProjectsPage() {
   return (
     <section className="project-page">
       <header className="project-page-heading">
-        
+
         <h1>Proyectos</h1>
         <p className="lead">Creá un proyecto o continuá con uno existente.</p>
       </header>
@@ -47,10 +47,10 @@ export function ProjectsPage() {
       </div>
       <section className="project-list" aria-labelledby="projects-heading" aria-busy={state.kind === 'loading'}>
         <div className="project-section-heading">
-          
+
           <div>
             <h2 id="projects-heading">Proyectos existentes</h2>
-            
+
           </div>
         </div>
         {state.kind === 'loading' ? <LoadingState className="project-loading">Cargando proyectos…</LoadingState> : null}
@@ -83,9 +83,9 @@ export function ProjectsPage() {
                 {state.projects.map(project => (
                   <tr key={project.id}>
                     <td><Link to={`/projects/${project.id}`}>{project.name}</Link></td>
-                    <td>{formatDay(project.start_date)}</td>
-                    <td>{formatDay(project.end_date)}</td>
-                    <td>{statusLabels[project.status]}</td>
+                    <td data-label="Inicio">{formatDay(project.start_date)}</td>
+                    <td data-label="Fin">{formatDay(project.end_date)}</td>
+                    <td data-label="Estado">{statusLabels[project.status]}</td>
                   </tr>
                 ))}
               </tbody>

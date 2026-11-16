@@ -1,0 +1,464 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-16T05:20:22.362276+00:00",
+  "title": "Design System: Seguimiento y medición",
+  "extensions": {
+    "colorMeta": {
+      "canvas": {
+        "role": "neutral",
+        "displayName": "Carbón base",
+        "tonalRamp": [
+          "oklch(15% 0.005 265)",
+          "oklch(26% 0.01 265)",
+          "oklch(38% 0.015 265)",
+          "oklch(50% 0.02 265)",
+          "oklch(62% 0.02 265)",
+          "oklch(74% 0.015 265)",
+          "oklch(86% 0.01 265)",
+          "oklch(95% 0.003 265)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Superficie de trabajo",
+        "tonalRamp": [
+          "oklch(15% 0.005 265)",
+          "oklch(26% 0.01 265)",
+          "oklch(38% 0.015 265)",
+          "oklch(50% 0.02 265)",
+          "oklch(62% 0.02 265)",
+          "oklch(74% 0.015 265)",
+          "oklch(86% 0.01 265)",
+          "oklch(95% 0.003 265)"
+        ]
+      },
+      "surface-muted": {
+        "role": "neutral",
+        "displayName": "Superficie activa",
+        "tonalRamp": [
+          "oklch(15% 0.005 265)",
+          "oklch(26% 0.01 265)",
+          "oklch(38% 0.015 265)",
+          "oklch(50% 0.02 265)",
+          "oklch(62% 0.02 265)",
+          "oklch(74% 0.015 265)",
+          "oklch(86% 0.01 265)",
+          "oklch(95% 0.003 265)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Texto claro",
+        "tonalRamp": [
+          "oklch(15% 0.005 265)",
+          "oklch(26% 0.01 265)",
+          "oklch(38% 0.015 265)",
+          "oklch(50% 0.02 265)",
+          "oklch(62% 0.02 265)",
+          "oklch(74% 0.015 265)",
+          "oklch(86% 0.01 265)",
+          "oklch(95% 0.003 265)"
+        ]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Texto secundario",
+        "tonalRamp": [
+          "oklch(15% 0.005 265)",
+          "oklch(26% 0.01 265)",
+          "oklch(38% 0.015 265)",
+          "oklch(50% 0.02 265)",
+          "oklch(62% 0.02 265)",
+          "oklch(74% 0.015 265)",
+          "oklch(86% 0.01 265)",
+          "oklch(95% 0.003 265)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Línea estructural",
+        "tonalRamp": [
+          "oklch(15% 0.005 265)",
+          "oklch(26% 0.01 265)",
+          "oklch(38% 0.015 265)",
+          "oklch(50% 0.02 265)",
+          "oklch(62% 0.02 265)",
+          "oklch(74% 0.015 265)",
+          "oklch(86% 0.01 265)",
+          "oklch(95% 0.003 265)"
+        ]
+      },
+      "brand": {
+        "role": "primary",
+        "displayName": "Índigo operativo",
+        "tonalRamp": [
+          "oklch(15% 0.03 280)",
+          "oklch(26% 0.07 280)",
+          "oklch(38% 0.12 280)",
+          "oklch(50% 0.16 280)",
+          "oklch(62% 0.16 280)",
+          "oklch(74% 0.12 280)",
+          "oklch(86% 0.07 280)",
+          "oklch(95% 0.02 280)"
+        ]
+      },
+      "brand-strong": {
+        "role": "primary",
+        "displayName": "Índigo presionado",
+        "tonalRamp": [
+          "oklch(15% 0.03 280)",
+          "oklch(26% 0.07 280)",
+          "oklch(38% 0.12 280)",
+          "oklch(50% 0.16 280)",
+          "oklch(62% 0.16 280)",
+          "oklch(74% 0.12 280)",
+          "oklch(86% 0.07 280)",
+          "oklch(95% 0.02 280)"
+        ]
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "Lavanda clara",
+        "tonalRamp": [
+          "oklch(15% 0.03 280)",
+          "oklch(26% 0.07 280)",
+          "oklch(38% 0.12 280)",
+          "oklch(50% 0.16 280)",
+          "oklch(62% 0.16 280)",
+          "oklch(74% 0.12 280)",
+          "oklch(86% 0.07 280)",
+          "oklch(95% 0.02 280)"
+        ]
+      },
+      "accent-soft": {
+        "role": "primary",
+        "displayName": "Lavanda oscura",
+        "tonalRamp": [
+          "oklch(15% 0.03 280)",
+          "oklch(26% 0.07 280)",
+          "oklch(38% 0.12 280)",
+          "oklch(50% 0.16 280)",
+          "oklch(62% 0.16 280)",
+          "oklch(74% 0.12 280)",
+          "oklch(86% 0.07 280)",
+          "oklch(95% 0.02 280)"
+        ]
+      },
+      "success": {
+        "role": "neutral",
+        "displayName": "Verde de éxito",
+        "tonalRamp": [
+          "oklch(15% 0.005 155)",
+          "oklch(26% 0.01 155)",
+          "oklch(38% 0.015 155)",
+          "oklch(50% 0.02 155)",
+          "oklch(62% 0.02 155)",
+          "oklch(74% 0.015 155)",
+          "oklch(86% 0.01 155)",
+          "oklch(95% 0.003 155)"
+        ]
+      },
+      "success-soft": {
+        "role": "neutral",
+        "displayName": "Fondo de éxito",
+        "tonalRamp": [
+          "oklch(15% 0.005 155)",
+          "oklch(26% 0.01 155)",
+          "oklch(38% 0.015 155)",
+          "oklch(50% 0.02 155)",
+          "oklch(62% 0.02 155)",
+          "oklch(74% 0.015 155)",
+          "oklch(86% 0.01 155)",
+          "oklch(95% 0.003 155)"
+        ]
+      },
+      "danger": {
+        "role": "neutral",
+        "displayName": "Rosa de error",
+        "tonalRamp": [
+          "oklch(15% 0.005 15)",
+          "oklch(26% 0.01 15)",
+          "oklch(38% 0.015 15)",
+          "oklch(50% 0.02 15)",
+          "oklch(62% 0.02 15)",
+          "oklch(74% 0.015 15)",
+          "oklch(86% 0.01 15)",
+          "oklch(95% 0.003 15)"
+        ]
+      },
+      "danger-soft": {
+        "role": "neutral",
+        "displayName": "Fondo de error",
+        "tonalRamp": [
+          "oklch(15% 0.005 15)",
+          "oklch(26% 0.01 15)",
+          "oklch(38% 0.015 15)",
+          "oklch(50% 0.02 15)",
+          "oklch(62% 0.02 15)",
+          "oklch(74% 0.015 15)",
+          "oklch(86% 0.01 15)",
+          "oklch(95% 0.003 15)"
+        ]
+      },
+      "control-bg": {
+        "role": "neutral",
+        "displayName": "Fondo de campo",
+        "tonalRamp": [
+          "oklch(15% 0.005 265)",
+          "oklch(26% 0.01 265)",
+          "oklch(38% 0.015 265)",
+          "oklch(50% 0.02 265)",
+          "oklch(62% 0.02 265)",
+          "oklch(74% 0.015 265)",
+          "oklch(86% 0.01 265)",
+          "oklch(95% 0.003 265)"
+        ]
+      },
+      "control-border": {
+        "role": "neutral",
+        "displayName": "Borde de campo",
+        "tonalRamp": [
+          "oklch(15% 0.005 265)",
+          "oklch(26% 0.01 265)",
+          "oklch(38% 0.015 265)",
+          "oklch(50% 0.02 265)",
+          "oklch(62% 0.02 265)",
+          "oklch(74% 0.015 265)",
+          "oklch(86% 0.01 265)",
+          "oklch(95% 0.003 265)"
+        ]
+      },
+      "sidebar": {
+        "role": "neutral",
+        "displayName": "Carbón del rail",
+        "tonalRamp": [
+          "oklch(15% 0.005 265)",
+          "oklch(26% 0.01 265)",
+          "oklch(38% 0.015 265)",
+          "oklch(50% 0.02 265)",
+          "oklch(62% 0.02 265)",
+          "oklch(74% 0.015 265)",
+          "oklch(86% 0.01 265)",
+          "oklch(95% 0.003 265)"
+        ]
+      },
+      "table-head": {
+        "role": "neutral",
+        "displayName": "Encabezado de tabla",
+        "tonalRamp": [
+          "oklch(15% 0.005 265)",
+          "oklch(26% 0.01 265)",
+          "oklch(38% 0.015 265)",
+          "oklch(50% 0.02 265)",
+          "oklch(62% 0.02 265)",
+          "oklch(74% 0.015 265)",
+          "oklch(86% 0.01 265)",
+          "oklch(95% 0.003 265)"
+        ]
+      },
+      "table-hover": {
+        "role": "neutral",
+        "displayName": "Fila al pasar",
+        "tonalRamp": [
+          "oklch(15% 0.005 265)",
+          "oklch(26% 0.01 265)",
+          "oklch(38% 0.015 265)",
+          "oklch(50% 0.02 265)",
+          "oklch(62% 0.02 265)",
+          "oklch(74% 0.015 265)",
+          "oklch(86% 0.01 265)",
+          "oklch(95% 0.003 265)"
+        ]
+      },
+      "warning": {
+        "role": "neutral",
+        "displayName": "Texto de aviso",
+        "tonalRamp": [
+          "oklch(15% 0.005 65)",
+          "oklch(26% 0.01 65)",
+          "oklch(38% 0.015 65)",
+          "oklch(50% 0.02 65)",
+          "oklch(62% 0.02 65)",
+          "oklch(74% 0.015 65)",
+          "oklch(86% 0.01 65)",
+          "oklch(95% 0.003 65)"
+        ]
+      },
+      "warning-soft": {
+        "role": "neutral",
+        "displayName": "Fondo de aviso",
+        "tonalRamp": [
+          "oklch(15% 0.005 65)",
+          "oklch(26% 0.01 65)",
+          "oklch(38% 0.015 65)",
+          "oklch(50% 0.02 65)",
+          "oklch(62% 0.02 65)",
+          "oklch(74% 0.015 65)",
+          "oklch(86% 0.01 65)",
+          "oklch(95% 0.003 65)"
+        ]
+      },
+      "warning-border": {
+        "role": "neutral",
+        "displayName": "Borde de aviso",
+        "tonalRamp": [
+          "oklch(15% 0.005 65)",
+          "oklch(26% 0.01 65)",
+          "oklch(38% 0.015 65)",
+          "oklch(50% 0.02 65)",
+          "oklch(62% 0.02 65)",
+          "oklch(74% 0.015 65)",
+          "oklch(86% 0.01 65)",
+          "oklch(95% 0.003 65)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Título principal",
+        "purpose": "Encabezado de página."
+      },
+      "title": {
+        "displayName": "Título de sección",
+        "purpose": "Encabezado de sección."
+      },
+      "body": {
+        "displayName": "Texto base",
+        "purpose": "Lectura general."
+      },
+      "label": {
+        "displayName": "Etiqueta",
+        "purpose": "Etiquetas y acciones."
+      },
+      "table": {
+        "displayName": "Texto operativo",
+        "purpose": "Tablas y contenido operativo."
+      },
+      "metric": {
+        "displayName": "Valor métrico",
+        "purpose": "Valores numéricos con cifras tabulares."
+      },
+      "action": {
+        "displayName": "Acción principal",
+        "purpose": "Acción compacta con peso variable 550."
+      }
+    },
+    "shadows": [
+      {
+        "name": "panel",
+        "value": "none",
+        "purpose": "Profundidad por capas y bordes."
+      }
+    ],
+    "motion": [
+      {
+        "name": "button-background",
+        "value": "background 140ms ease",
+        "purpose": "Cambio de fondo de la acción principal; se desactiva con movimiento reducido."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "module-mobile",
+        "value": "600px"
+      },
+      {
+        "name": "shell-mobile",
+        "value": "640px"
+      },
+      {
+        "name": "metrics-stack",
+        "value": "720px"
+      },
+      {
+        "name": "shell-compact",
+        "value": "880px"
+      },
+      {
+        "name": "project-wide",
+        "value": "1100px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Acción principal",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Acción de guardado con estado de espera.",
+      "html": "<button class=\"ds-primary\">Guardar proyecto</button>",
+      "css": ".ds-primary{font-family:var(--font-sans);display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:7px 12px;border:1px solid transparent;border-radius:var(--radius-control);background:var(--color-brand);color:#fff;font-size:12px;font-weight:550;cursor:pointer;transition:background 140ms ease;}.ds-primary:hover:enabled{background:var(--color-brand-strong);}.ds-primary:focus-visible{outline:2px solid var(--color-accent);outline-offset:3px;}.ds-primary:disabled{opacity:.55;cursor:wait;}@media(prefers-reduced-motion:reduce){.ds-primary{transition:none;}}"
+    },
+    {
+      "name": "Enlace de acción",
+      "kind": "button",
+      "refersTo": "button-link",
+      "description": "Acción secundaria en texto.",
+      "html": "<a class=\"ds-link\" href=\"#contenido\">Ver detalle</a>",
+      "css": ".ds-link{font-family:var(--font-sans);color:var(--color-ink);font-size:12px;font-weight:500;text-decoration:none;text-underline-offset:4px;}.ds-link:hover{color:var(--color-accent);text-decoration:underline;}.ds-link:focus-visible{outline:2px solid var(--color-accent);outline-offset:3px;}"
+    },
+    {
+      "name": "Campo nativo",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Etiqueta y campo de formulario.",
+      "html": "<label class=\"ds-label\" for=\"ds-name\">Nombre</label><input class=\"ds-input\" id=\"ds-name\" placeholder=\"Nombre del proyecto\">",
+      "css": ".ds-label{font-family:var(--font-sans);display:block;font-size:12px;font-weight:500;margin-bottom:7px;color:var(--color-ink);}.ds-input{font-family:var(--font-sans);min-height:38px;max-width:100%;padding:8px 10px;border:1px solid #626571;border-radius:var(--radius-control);background:#111216;color:var(--color-ink);font-size:13px;caret-color:var(--color-accent);}.ds-input::placeholder{color:var(--color-ink-muted);opacity:1;}.ds-input:focus-visible{outline:2px solid var(--color-accent);outline-offset:3px;}.ds-input[aria-invalid=true]{border-color:var(--color-danger);}"
+    },
+    {
+      "name": "Navegación",
+      "kind": "nav",
+      "refersTo": "nav-item",
+      "description": "Estado activo y enlace secundario del rail.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Principal\"><a href=\"#proyectos\" aria-current=\"page\">Proyectos</a><a href=\"#conexion\">Conexión</a></nav>",
+      "css": ".ds-nav{font-family:var(--font-sans);display:flex;flex-direction:column;gap:4px;background:#0c0d0f;padding:12px;}.ds-nav a{display:flex;align-items:center;min-height:38px;padding:8px 11px;border-radius:5px;color:var(--color-ink-muted);font-size:13px;text-decoration:none;}.ds-nav a:hover{color:var(--color-ink);background:var(--color-surface);}.ds-nav a[aria-current]{color:var(--color-ink);background:var(--color-surface-muted);font-weight:550;}.ds-nav a:focus-visible{outline:2px solid var(--color-accent);outline-offset:3px;}"
+    },
+    {
+      "name": "Estado",
+      "kind": "chip",
+      "refersTo": "status",
+      "description": "Etiqueta informativa de tabla.",
+      "html": "<span class=\"ds-status\">Pendiente</span><span class=\"ds-status ds-done\">Completada</span>",
+      "css": ".ds-status{font-family:var(--font-sans);display:inline-block;padding:4px 8px;background:var(--color-surface-muted);color:var(--color-ink);white-space:nowrap;font-size:12px;}.ds-done{background:var(--color-success-soft);}"
+    },
+    {
+      "name": "Panel de trabajo",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "Contenedor plano para formularios y medición.",
+      "html": "<section class=\"ds-panel\"><h2>Registrar esfuerzo</h2><p>Seleccioná una historia del sprint.</p></section>",
+      "css": ".ds-panel{font-family:var(--font-sans);padding:20px;border:1px solid var(--color-line);border-radius:var(--radius-panel);background:var(--color-surface);color:var(--color-ink);box-shadow:none;}.ds-panel h2{margin:0 0 8px;font-size:16px;font-weight:580;line-height:1.4;letter-spacing:-.015em;}.ds-panel p{margin:0;color:var(--color-ink-muted);font-size:13px;}@media(max-width:640px){.ds-panel{padding:16px;}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Herramienta operativa oscura inspirada en Linear, sin copiar marca",
+    "overview": "Inter Variable local, carbón y capas neutras, acento índigo, bordes y luminancia sin sombras, densidad compacta. La referencia del usuario fija fuentes y colores; la identidad y los SVG geométricos pertenecen al producto.\n\nLa lectura prioriza títulos literales, datos y acciones. Texto claro, secundarios apagados y controles nativos mantienen una interfaz directa en español. El tamaño y el espacio distinguen jerarquías dentro de una sola familia sans.",
+    "keyCharacteristics": [
+      "Superficies oscuras con bordes finos.",
+      "Una familia sans local y cifras tabulares en métricas e identificadores.",
+      "Controles compactos, foco visible y adaptación móvil."
+    ],
+    "rules": [
+      {
+        "name": "The Luminance Rule",
+        "body": "Separar regiones con capas neutras y bordes; los paneles no usan sombras.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Single Family Rule",
+        "body": "Usar Inter Variable para títulos, texto y cifras destacadas; el título principal conserva la escala compacta.",
+        "section": "typography"
+      }
+    ],
+    "dos": [
+      "Do conservar los tokens del frontmatter como referencia normativa.",
+      "Do mantener controles nativos, etiquetas visibles y foco de teclado.",
+      "Do permitir que títulos largos se ajusten y que tablas extensas se desplacen dentro de su región."
+    ],
+    "donts": [
+      "Don't copiar la marca ni el contenido comercial de Linear.",
+      "Don't agregar sombras o brillos a los paneles planos.",
+      "Don't introducir una familia serif o titulares promocionales en el espacio operativo."
+    ]
+  }
+}

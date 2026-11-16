@@ -20,18 +20,26 @@ desarrollo existente. Cada ejecución crea proyectos propios sin limpiar datos.
   disponible y actividad conservada después del reintento contra la API real.
 - Navegación y activación mediante foco + Enter; retorno de foco de edición y
   cancelación de cierre. Enlace de precondición al equipo enfoca `#members`.
-- 27 capturas: siete pantallas y edición con error en 360/768/1440 px, más vacío,
+- 33 capturas: nueve pantallas y edición con error en 360/768/1440 px, más vacío,
   fallo parcial y viewport de 720 px equivalente al ancho CSS de un escritorio
   de 1440 px ampliado al 200 %. Sin desborde horizontal del documento. Las
   tablas anchas usan regiones desplazables con teclado.
-- Axe: 18 auditorías WCAG A/AA sin violaciones detectadas; el informe conserva
+- Axe: 22 auditorías WCAG A/AA sin violaciones detectadas; el informe conserva
   los chequeos incompletos de contraste de celdas fuera del área visible en
   tablas móviles. No equivale a una certificación integral de accesibilidad.
+
+## Dirección visual actual
+
+Pedido explícito de Ignacio: diseño oscuro basado en [Linear](https://linear.app),
+con Inter Variable y menos ruido de presentación. Se retiraron portada, chrome
+académico/técnico, numeración y repeticiones. No se borraron datos. Los tokens y
+la dirección vigente se documentan en `DESIGN.md` y el brief de superficie.
 
 ## Capturas seleccionadas
 
 - [Resumen en escritorio](desktop.png).
 - [Planning Poker en móvil](mobile.png).
+- [Proyectos adaptados a móvil](projects-mobile.png).
 - [Backlog móvil con columnas legibles](backlog-mobile.png).
 - [Edición rechazada sin perder datos](edit-error.png).
 - [Fallo parcial con esfuerzo disponible](partial-error.png).
@@ -70,8 +78,8 @@ CSS equivalente; no se presenta como una prueba del control nativo. Las celdas
 de tablas fuera del área visible requieren revisión manual del contraste.
 La aprobación de otra persona, PR y merge siguen el proceso habitual del repo.
 
-Revisión de Impeccable en contexto independiente: inspeccionó las 27 capturas y
-pidió corregir el quiebre de columnas del backlog y las cejas ornamentales de
-backlog/dashboard/reporte. Tras la corrección y recaptura, el verdict pass marcó
-ambos hallazgos **resueltos**, `remaining: clear`, `disposition: ship`. Ese
-veredicto puntúa los dos fixes; no sustituye la revisión humana del PR.
+La revisión independiente del sistema oscuro inspeccionó las 33 capturas. Pidió
+mover los metadatos del sprint debajo del título y evitar el quiebre del ID de
+defecto en móvil. El verdict pass marcó ambos fixes **resueltos**,
+`remaining: clear`, `disposition: ship`. Ese veredicto puntúa los dos fixes;
+no sustituye la revisión humana del PR ni los límites de accesibilidad indicados.

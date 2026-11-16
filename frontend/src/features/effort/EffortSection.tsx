@@ -71,7 +71,7 @@ export function EffortSection({ projectId, stories, members }: {
   return (
     <section className="measurement-panel" aria-labelledby="effort-heading">
       <div className="measurement-section-heading">
-        
+
         <div>
           <h2 id="effort-heading">Cargar esfuerzo</h2>
           <p>Horas reales de un integrante sobre una historia.</p>

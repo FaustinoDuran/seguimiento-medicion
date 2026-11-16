@@ -18,7 +18,7 @@ type PageState =
 function MissingProject() {
   return (
     <>
-      
+
       <h1>Proyecto no encontrado</h1>
       <p className="lead">No encontramos el proyecto de esta dirección.</p>
       <Link className="text-link" to="/projects">Volver al listado</Link>

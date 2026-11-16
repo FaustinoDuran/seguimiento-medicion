@@ -28,7 +28,7 @@ Vite reenvía `/api` a la API. Abrí la dirección que informa Vite.
 
 ## Recorrido inicial
 
-1. Entrá a **Inicio**.
+1. Abrí la aplicación: el inicio lleva directamente a **Proyectos**.
 2. Entrá a **Proyectos** y creá el primero o abrí uno existente.
 3. Si una operación falla, **Conexión** permite comprobar el servicio y volver
    a intentarlo. Es una herramienta de diagnóstico opcional.
@@ -36,7 +36,8 @@ Vite reenvía `/api` a la API. Abrí la dirección que informa Vite.
 Dentro de un proyecto, la navegación **Resumen → Backlog → Planning Poker →
 Sprints → Esfuerzo y defectos → Dashboard → Reporte** permite cambiar de etapa
 sin volver al inicio. La etapa actual está marcada y se conserva el proyecto.
-El pie de cada pantalla propone un siguiente paso; podés seguir otro orden.
+Al final de cada pantalla hay un acceso al siguiente paso; podés seguir otro orden.
+La interfaz usa un tema oscuro con tipografía Inter y conserva los datos de los proyectos.
 
 ## Proyectos e integrantes
 

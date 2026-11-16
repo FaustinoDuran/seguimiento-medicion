@@ -97,7 +97,7 @@ function AppLayout() {
 function NotFoundPage() {
   return (
     <section className="page-intro">
-      
+
       <h1>Página no encontrada</h1>
       <p className="lead">La dirección que buscás no está disponible.</p>
       <Link className="text-link" to="/">

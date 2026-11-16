@@ -58,7 +58,7 @@ function SprintsPage({ projectId }: { projectId: string }) {
   return (
     <>
       <header className="sprints-page-heading">
-        
+
         <h1>Sprints</h1>
         <p className="lead"><span>{project.name}</span></p>
       </header>
@@ -71,7 +71,7 @@ function SprintsPage({ projectId }: { projectId: string }) {
       <OpenSprints projectId={projectId} />
       <section className="sprints-list" aria-labelledby="previous-sprints-heading">
         <div className="sprints-section-heading">
-          
+
           <div>
             <h2 id="previous-sprints-heading">Sprints anteriores</h2>
             <p>Solo los sprints cerrados del proyecto.</p>
@@ -125,7 +125,7 @@ function SprintsPage({ projectId }: { projectId: string }) {
 function MissingProject() {
   return (
     <>
-      
+
       <h1>Proyecto no encontrado</h1>
       <p className="lead">No encontramos el proyecto de esta dirección.</p>
       <Link className="text-link" to="/">Volver al inicio</Link>

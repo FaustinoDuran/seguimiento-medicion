@@ -73,10 +73,10 @@ export function ProjectForm({ onCreated, onSubmitting }: {
   return (
     <form className="project-form" ref={form} onSubmit={submit} noValidate>
       <div className="project-section-heading">
-        
+
         <div>
           <h2>Nuevo proyecto</h2>
-          
+
         </div>
       </div>
       {error && !error.field ? <p className="project-alert" role="alert">{error.message}</p> : null}
@@ -106,7 +106,7 @@ export function ProjectForm({ onCreated, onSubmitting }: {
         </div>
       </div>
       <div className="project-form-footer">
-        
+
         <button className="button" type="submit" disabled={sending}>{sending ? 'Creando…' : 'Crear proyecto'}</button>
       </div>
     </form>

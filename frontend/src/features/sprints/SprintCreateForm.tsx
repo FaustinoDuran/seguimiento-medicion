@@ -40,7 +40,7 @@ export function SprintCreateForm({ projectId, onCreated }: {
   return (
     <form className="sprints-form" onSubmit={submit} noValidate aria-labelledby="new-sprint-heading">
       <div className="sprints-section-heading">
-        
+
         <div>
           <h2 id="new-sprint-heading">Nuevo sprint</h2>
           <p>Un objetivo para empezar.</p>

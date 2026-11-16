@@ -256,7 +256,7 @@ function RoundSession({ projectId, roundId }: { projectId: string; roundId: stri
             onChange={event => setPoints(event.target.value)}
           />
           <div className="poker-form-footer">
-            
+
             <button className="button" type="submit" disabled={sending}>Votar</button>
           </div>
           <div className="poker-actions">

@@ -105,8 +105,8 @@ completan en esta SDD y `docs/traceability.md` al finalizar.
 ## Evidencia local
 
 [Informe y capturas](../evidence/HU-031/README.md): 131 pruebas React/HTTP,
-lint/build aprobados, recorrido real con PDF y 27 capturas de tres tamaños y
-estados de error/vacío. Axe: 18 auditorías sin violaciones detectadas; celdas
+lint/build aprobados, recorrido real con PDF y 33 capturas de tres tamaños y
+estados de error/vacío. Axe: 22 auditorías sin violaciones detectadas; celdas
 fuera del área visible requieren revisión manual. El arnés reproduce el ancho
 CSS equivalente al 200 %; no verifica el control nativo de zoom ni reemplaza
 una revisión humana con lector de pantalla. No se declara certificación AA.

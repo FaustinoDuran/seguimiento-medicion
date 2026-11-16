@@ -5,7 +5,6 @@
 .project-edit-fields .text-link { background: none; border: 0; cursor: pointer; }
 .project-page-heading { padding-top: 28px; }
 .project-page-heading h1 { font-size: clamp(38px, 5vw, 64px); }
-.project-page-heading .eyebrow { margin-bottom: 16px; }
 .project-page-heading .lead { margin: 20px 0 36px; }
 .project-form { border: 1px solid color-mix(in oklch, var(--color-ink) 20%, transparent); padding: clamp(20px, 4vw, 36px); background: var(--color-surface); }
 .project-section-heading { display: flex; align-items: baseline; gap: 20px; margin-bottom: 24px; }

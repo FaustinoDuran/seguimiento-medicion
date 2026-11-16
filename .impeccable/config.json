@@ -2,16 +2,6 @@
   "detector": {
     "ignoreRules": [],
     "ignoreFiles": [],
-    "ignoreValues": [
-      {
-        "rule": "side-tab",
-        "value": "*",
-        "files": [
-          "frontend/src/index.css"
-        ],
-        "createdAt": "2026-11-16T04:57:16.744Z",
-        "reason": "Agente: los dos bordes pertenecen a avisos de error y confirmaciones con roles alert/status, no a tarjetas decorativas; ya existen en main y HU-031 conserva el sistema visual de TASK-029."
-      }
-    ]
+    "ignoreValues": []
   }
 }
