@@ -41,5 +41,5 @@ trap - EXIT
 export COMPOSE_FILE="$root/docker-compose.mcp.yml"
 export COMPOSE_ENV_FILE="$root/.env.mcp"
 export STATE_FILE="$root/.deploy-mcp-sha"
-export HEALTH_URL=http://127.0.0.1:3004/healthz
+export HEALTH_URL=http://127.0.0.1:3008/healthz
 sh "$root/deploy/deploy.sh" "$@"

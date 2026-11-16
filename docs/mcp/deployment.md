@@ -117,7 +117,7 @@ Este recorrido requiere que el proxy del host reenvíe /mcp al frontend, como
 hace el bloque location / documentado en README. Si el VPS tiene una ruta
 especial que lo intercepta, corregirla antes de acreditar la publicación.
 
-El puerto 3004 solo escucha en loopback. PostgreSQL no publica puertos. El
+El puerto 3008 solo escucha en loopback. PostgreSQL no publica puertos. El
 endpoint no tiene autenticación: usar exclusivamente datos de exhibición.
 
 ## Validación y reversión
