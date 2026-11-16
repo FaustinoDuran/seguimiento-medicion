@@ -4,7 +4,7 @@ go 1.24.0
 
 require (
 	github.com/cucumber/godog v0.15.1
-	github.com/go-chi/chi/v5 v5.3.2
+	github.com/go-chi/chi/v5 v5.4.0
 	github.com/go-pdf/fpdf v0.9.0
 	github.com/jackc/pgx/v5 v5.7.6
 	github.com/modelcontextprotocol/go-sdk v1.0.0
