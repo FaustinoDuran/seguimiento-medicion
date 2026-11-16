@@ -18,7 +18,7 @@ type PageState =
 function MissingProject() {
   return (
     <>
-      <p className="eyebrow">Dashboard</p>
+      
       <h1>Proyecto no encontrado</h1>
       <p className="lead">No encontramos el proyecto de esta dirección.</p>
       <Link className="text-link" to="/projects">Volver al listado</Link>
@@ -56,13 +56,13 @@ function StoryPointChart({ report }: { report: MetricsReport }) {
 function MetricsPanel({ project, report }: { project: Project; report: MetricsReport }) {
   return (
     <>
-      <Link className="text-link" to={`/projects/${project.id}`}>← Volver al proyecto</Link>
+      <Link className="text-link" to={`/projects/${project.id}`}>Volver al proyecto</Link>
       <header className="metrics-heading">
         <h1>{project.name}</h1>
         <p className="lead">Estado del proyecto: <span>{statusLabels[project.status]}</span>.</p>
       </header>
       {hasNoMetrics(report) ? (
-        <div className="metrics-empty"><p>Todavía no hay métricas para mostrar.</p><p>La API devuelve valores en cero para este alcance. <Link className="text-link" to={`/projects/${project.id}/sprints`}>Organizar un sprint</Link> o <Link className="text-link" to={`/projects/${project.id}/measurement`}>Registrar esfuerzo y defectos</Link>.</p></div>
+        <div className="metrics-empty"><p>Todavía no hay métricas para mostrar.</p><p>Este alcance todavía no tiene actividad registrada. <Link className="text-link" to={`/projects/${project.id}/sprints`}>Organizar un sprint</Link> o <Link className="text-link" to={`/projects/${project.id}/measurement`}>Registrar esfuerzo y defectos</Link>.</p></div>
       ) : (
         <>
           <dl className="metrics-facts">

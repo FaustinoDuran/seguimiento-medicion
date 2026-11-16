@@ -13,7 +13,7 @@
 .measurement-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
 .measurement-field label, .measurement-resolve label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 8px; }
 .measurement-field input, .measurement-field select, .measurement-field textarea, .measurement-resolve select {
-  width: 100%; border: 1px solid color-mix(in oklch, var(--color-ink) 25%, transparent); background: #fff; padding: 12px 14px;
+  width: 100%; border: 1px solid color-mix(in oklch, var(--color-ink) 25%, transparent); background: var(--color-surface); padding: 12px 14px;
   font: inherit; color: inherit;
 }
 .measurement-field textarea { resize: vertical; }
@@ -26,8 +26,8 @@
 .measurement-hint { color: var(--color-ink-muted); font-size: 13px; margin: 0; }
 .measurement-notice { color: var(--color-ink-muted); font-size: 14px; margin: 0 0 16px; }
 .measurement-loading { color: var(--color-ink-muted); font-size: 14px; }
-.measurement-success { color: #1d6b4a; font-size: 14px; margin: 16px 0 0; }
-.measurement-alert { color: #8a2b1f; font-size: 14px; margin: 16px 0 0; }
+.measurement-success { color: var(--color-success); font-size: 14px; margin: 16px 0 0; }
+.measurement-alert { color: var(--color-danger); font-size: 14px; margin: 16px 0 0; }
 .measurement-list-heading {
   display: flex; flex-wrap: wrap; gap: 16px; align-items: baseline; justify-content: space-between;
   border-top: 1px solid color-mix(in oklch, var(--color-ink) 15%, transparent); margin-top: 28px; padding-top: 24px;
@@ -39,7 +39,7 @@
 }
 .measurement-quiet-button:disabled { opacity: .55; cursor: not-allowed; }
 .measurement-defects { list-style: none; padding: 0; margin: 20px 0 0; display: grid; gap: 12px; }
-.measurement-defect { border: 1px solid color-mix(in oklch, var(--color-ink) 15%, transparent); padding: 16px; background: #fff; }
+.measurement-defect { border: 1px solid color-mix(in oklch, var(--color-ink) 15%, transparent); padding: 16px; background: var(--color-surface); }
 .measurement-defect-head { display: flex; gap: 12px; align-items: baseline; }
 .measurement-defect-id { color: var(--color-ink-muted); font-size: 13px; }
 .measurement-defect-meta { color: var(--color-ink-muted); font-size: 14px; margin: 8px 0 0; }

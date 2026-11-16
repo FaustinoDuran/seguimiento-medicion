@@ -32,12 +32,12 @@
 .backlog-form-footer { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 28px; }
 .backlog-form-footer > span { font-size: 13px; color: var(--color-ink-muted); }
 .backlog-field-error { color: var(--color-danger); font-size: 13px; margin: 8px 0 0; }
-.backlog-alert { border-left: 3px solid var(--color-accent); background: var(--color-accent-soft); padding: 18px 22px; margin: 20px 0; }
+.backlog-alert { background: var(--color-accent-soft); padding: 18px 22px; margin: 20px 0; }
 .backlog-alert p { margin: 0 0 16px; }
 .backlog-alert h1 { font-size: 32px; }
-.backlog-success { border-left: 3px solid var(--color-brand); padding: 16px 22px; background: var(--color-success-soft); }
+.backlog-success { padding: 16px 22px; background: var(--color-success-soft); }
 .backlog-list { margin-top: 44px; }
-.backlog-edit-form { margin-bottom: 28px; border-left: 3px solid var(--color-brand); }
+.backlog-edit-form { margin-bottom: 28px; }
 .backlog-edit-hint { margin: 8px 0 0; font-size: 13px; color: var(--color-ink-muted); }
 .backlog-edit-form input:disabled { opacity: .65; cursor: not-allowed; }
 .backlog-table-scroll { overflow-x: auto; }

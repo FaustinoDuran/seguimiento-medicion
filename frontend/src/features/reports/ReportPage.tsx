@@ -44,7 +44,7 @@ function ReportLoader({ projectId }: { projectId: string }) {
     return () => controller.abort()
   }, [projectId, selected, attempt])
   return <>
-    <Link className="text-link" to={`/projects/${projectId}`}>← Volver al proyecto</Link>
+    <Link className="text-link" to={`/projects/${projectId}`}>Volver al proyecto</Link>
     <div className="report-selector">
       <label htmlFor="report-scope">Alcance del reporte</label>
       <select id="report-scope" value={selected} onChange={event => {

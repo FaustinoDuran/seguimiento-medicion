@@ -88,8 +88,8 @@ export function StoryForm({ projectId, onCreated, onSubmitting, disabled = false
 
   return (
     <form ref={form} className="backlog-form" onSubmit={submit} noValidate aria-labelledby="new-story-heading">
-      <div className="backlog-section-heading"><span className="section-number" aria-hidden="true">01 /</span>
-        <div><h2 id="new-story-heading">Nueva historia</h2><p>Un identificador y un título para empezar.</p></div></div>
+      <div className="backlog-section-heading">
+        <div><h2 id="new-story-heading">Nueva historia</h2></div></div>
       {error && !error.field ? <p className="backlog-alert" role="alert">{error.message}</p> : null}
       <fieldset disabled={sending || closed || disabled}>
         <div className="backlog-form-grid">

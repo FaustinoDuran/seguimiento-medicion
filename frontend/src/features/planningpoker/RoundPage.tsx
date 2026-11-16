@@ -174,7 +174,7 @@ function RoundSession({ projectId, roundId }: { projectId: string; roundId: stri
 
   return (
     <>
-      <Link className="text-link" to={`/projects/${projectId}/planning`}>← Volver a las historias</Link>
+      <Link className="text-link" to={`/projects/${projectId}/planning`}>Volver a las historias</Link>
       <header className="poker-page-heading">
         <h1>{story ? story.title : 'Ronda de estimación'}</h1>
         <p className="lead">{context.project.name} · Ronda #{roundId}. Elegí quién vota. Hasta revelar, cada integrante ve solo su puntaje.</p>
@@ -256,7 +256,7 @@ function RoundSession({ projectId, roundId }: { projectId: string; roundId: stri
             onChange={event => setPoints(event.target.value)}
           />
           <div className="poker-form-footer">
-            <span>El servidor valida el puntaje.</span>
+            
             <button className="button" type="submit" disabled={sending}>Votar</button>
           </div>
           <div className="poker-actions">

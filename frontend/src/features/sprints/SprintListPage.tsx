@@ -58,9 +58,9 @@ function SprintsPage({ projectId }: { projectId: string }) {
   return (
     <>
       <header className="sprints-page-heading">
-        <p className="eyebrow">{project.name}</p>
-        <h1>Sprints,<br /><em>uno por objetivo.</em></h1>
-        <p className="lead">Creá un Sprint y consultá los anteriores del proyecto.</p>
+        
+        <h1>Sprints</h1>
+        <p className="lead"><span>{project.name}</span></p>
       </header>
       <SprintCreateForm
         projectId={projectId}
@@ -71,7 +71,7 @@ function SprintsPage({ projectId }: { projectId: string }) {
       <OpenSprints projectId={projectId} />
       <section className="sprints-list" aria-labelledby="previous-sprints-heading">
         <div className="sprints-section-heading">
-          <span className="section-number" aria-hidden="true">02 /</span>
+          
           <div>
             <h2 id="previous-sprints-heading">Sprints anteriores</h2>
             <p>Solo los sprints cerrados del proyecto.</p>
@@ -125,7 +125,7 @@ function SprintsPage({ projectId }: { projectId: string }) {
 function MissingProject() {
   return (
     <>
-      <p className="eyebrow">Sprints</p>
+      
       <h1>Proyecto no encontrado</h1>
       <p className="lead">No encontramos el proyecto de esta dirección.</p>
       <Link className="text-link" to="/">Volver al inicio</Link>

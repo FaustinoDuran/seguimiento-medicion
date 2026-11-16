@@ -73,10 +73,10 @@ export function ProjectForm({ onCreated, onSubmitting }: {
   return (
     <form className="project-form" ref={form} onSubmit={submit} noValidate>
       <div className="project-section-heading">
-        <span className="section-number" aria-hidden="true">01 /</span>
+        
         <div>
           <h2>Nuevo proyecto</h2>
-          <p>Nombre, fechas y estado. El estado inicial es Activo.</p>
+          
         </div>
       </div>
       {error && !error.field ? <p className="project-alert" role="alert">{error.message}</p> : null}
@@ -106,7 +106,7 @@ export function ProjectForm({ onCreated, onSubmitting }: {
         </div>
       </div>
       <div className="project-form-footer">
-        <span>Las fechas se validan en el servidor.</span>
+        
         <button className="button" type="submit" disabled={sending}>{sending ? 'Creando…' : 'Crear proyecto'}</button>
       </div>
     </form>

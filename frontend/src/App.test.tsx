@@ -45,7 +45,7 @@ test('abre proyectos directamente y elimina el contenido que no ayuda a operar',
   renderAt('/')
   expect(await screen.findByRole('heading', { level: 1, name: 'Proyectos' })).toBeInTheDocument()
   expect(window.location.pathname).toBe('/projects')
-  expect(screen.getByRole('link', { name: 'Proyectos', exact: true })).toHaveAttribute('aria-current', 'page')
+  expect(screen.getByRole('link', { name: 'Proyectos' })).toHaveAttribute('aria-current', 'page')
   expect(screen.queryByText('UTN FRSR')).not.toBeInTheDocument()
   expect(screen.queryByText('Panel de seguimiento')).not.toBeInTheDocument()
   expect(screen.queryByText('Herramienta de trabajo del equipo')).not.toBeInTheDocument()

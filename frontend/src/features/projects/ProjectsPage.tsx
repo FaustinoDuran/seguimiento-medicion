@@ -34,9 +34,9 @@ export function ProjectsPage() {
   return (
     <section className="project-page">
       <header className="project-page-heading">
-        <p className="eyebrow">Proyectos</p>
-        <h1>El trabajo,<br /><em>proyecto a proyecto.</em></h1>
-        <p className="lead">Creá un proyecto y abrilo para seguir el equipo, el backlog y los sprints.</p>
+        
+        <h1>Proyectos</h1>
+        <p className="lead">Creá un proyecto o continuá con uno existente.</p>
       </header>
       <ProjectForm onSubmitting={() => setCreated(false)} onCreated={() => {
         setCreated(true)
@@ -47,10 +47,10 @@ export function ProjectsPage() {
       </div>
       <section className="project-list" aria-labelledby="projects-heading" aria-busy={state.kind === 'loading'}>
         <div className="project-section-heading">
-          <span className="section-number" aria-hidden="true">02 /</span>
+          
           <div>
             <h2 id="projects-heading">Proyectos existentes</h2>
-            <p>En el orden en que fueron dados de alta.</p>
+            
           </div>
         </div>
         {state.kind === 'loading' ? <LoadingState className="project-loading">Cargando proyectos…</LoadingState> : null}

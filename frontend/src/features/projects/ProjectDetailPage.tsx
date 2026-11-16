@@ -17,7 +17,7 @@ type DetailState =
 function MissingProject() {
   return (
     <>
-      <p className="eyebrow">Proyecto</p>
+      
       <h1>Proyecto no encontrado</h1>
       <p className="lead">No encontramos el proyecto de esta dirección.</p>
       <Link className="text-link" to="/projects">Volver al listado</Link>
@@ -36,11 +36,9 @@ function ProjectDetail({ project: initial }: { project: Project }) {
   }
   return (
     <>
-      <Link className="text-link" to="/projects">← Volver al listado</Link>
+      <Link className="text-link" to="/projects">Volver al listado</Link>
       <header className="project-page-heading">
-        <p>{statusLabels[project.status]}</p>
         <h1>{project.name}</h1>
-        <p className="lead">Del {formatDay(project.start_date)} al {formatDay(project.end_date)}.</p>
       </header>
       <button ref={editButton} className="button project-edit-trigger" type="button" hidden={editing} onClick={() => { setNotice(''); setEditing(true) }}>Editar proyecto</button>
       {notice ? <p className="project-success" role="status">{notice}</p> : null}
@@ -50,10 +48,6 @@ function ProjectDetail({ project: initial }: { project: Project }) {
         finishEditing()
       }} /> : null}
       <dl className="project-facts">
-        <div>
-          <dt>Nombre</dt>
-          <dd>{project.name}</dd>
-        </div>
         <div>
           <dt>Inicio</dt>
           <dd>{formatDay(project.start_date)}</dd>

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import {
   BrowserRouter,
+  Navigate,
   Link,
   NavLink,
   Outlet,
@@ -62,129 +63,45 @@ function AppLayout() {
         <Link
           className="brand"
           to="/"
-          aria-label="sm. Seguimiento y medición, inicio"
+          aria-label="Seguimiento y medición, proyectos"
         >
           <span className="brand-mark" aria-hidden="true">
-            sm.
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 17V12M12 17V7M19 17V4" stroke="currentColor" strokeWidth="3" strokeLinecap="round" /></svg>
           </span>
           <span className="brand-copy">
-            Seguimiento{" "}
-            <br />
-            <strong>y medición</strong>
+            Seguimiento <span>y medición</span>
           </span>
         </Link>
         <nav aria-label="Navegación principal">
-          <NavLink to="/" end>
-            Inicio
-          </NavLink>
           <NavLink to="/projects">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h6l2-3h8v15H4V7Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /></svg>
             Proyectos
           </NavLink>
           <NavLink to="/connection">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 12h4l3-6 4 12 3-6h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
             Conexión
           </NavLink>
         </nav>
-        <div className="sidebar-context">
-          <span className="context-label">Espacio</span>
-          <strong>UTN FRSR</strong>
-          <span>Ingeniería y Calidad</span>
-        </div>
       </aside>
       <div className="app-workspace">
-        <header className="workspace-bar">
-          <span>Panel de seguimiento</span>
-        </header>
         <main id="main-content" tabIndex={-1}>
           {validProject ? <ProjectNavigation projectId={validProject} /> : null}
           <Outlet key={pathname} />
           {validProject ? <JourneyNextStep projectId={validProject} /> : null}
         </main>
-        <footer className="site-footer">
-          <span>Seguimiento y medición</span>
-          <span>Herramienta de trabajo del equipo</span>
-        </footer>
       </div>
     </div>
-  );
-}
-
-function HomePage() {
-  return (
-    <section className="home-page">
-      <header className="home-heading">
-        <div>
-          <p className="eyebrow">Espacio de trabajo</p>
-          <h1>
-            Cada proyecto, <em>con perspectiva.</em>
-          </h1>
-        </div>
-        <p className="lead">
-          Organizá el trabajo del equipo desde el backlog hasta los reportes,
-          con la información que entrega la API.
-        </p>
-      </header>
-      <div className="home-grid">
-        <Link className="workspace-card workspace-card-primary" to="/projects">
-          <span className="card-index">01</span>
-          <div>
-            <span className="card-kicker">Área principal</span>
-            <h2>Proyectos</h2>
-            <p>
-              Gestioná proyectos, integrantes, backlog y sprints desde un mismo
-              contexto.
-            </p>
-          </div>
-          <span className="card-arrow" aria-hidden="true">
-            ↗
-          </span>
-        </Link>
-        <Link className="workspace-card" to="/connection">
-          <span className="card-index">02</span>
-          <div>
-            <span className="card-kicker">Sistema</span>
-            <h2>Estado de conexión</h2>
-            <p>Comprobá la disponibilidad del backend antes de comenzar.</p>
-          </div>
-          <span className="card-arrow" aria-hidden="true">
-            ↗
-          </span>
-        </Link>
-      </div>
-      <section className="workflow-strip" aria-labelledby="workflow-heading">
-        <div>
-          <p className="eyebrow">Flujo de trabajo</p>
-          <h2 id="workflow-heading">Del alcance al seguimiento</h2>
-        </div>
-        <ol>
-          <li>
-            <span>01</span>Proyecto
-          </li>
-          <li>
-            <span>02</span>Backlog
-          </li>
-          <li>
-            <span>03</span>Sprint
-          </li>
-          <li>
-            <span>04</span>Medición
-          </li>
-          <li>
-            <span>05</span>Reporte
-          </li>
-        </ol>
-      </section>
-    </section>
   );
 }
 
 function NotFoundPage() {
   return (
     <section className="page-intro">
-      <p className="eyebrow">Error 404</p>
+      
       <h1>Página no encontrada</h1>
       <p className="lead">La dirección que buscás no está disponible.</p>
       <Link className="text-link" to="/">
-        Volver al inicio ↗
+        Volver al inicio
       </Link>
     </section>
   );
@@ -196,7 +113,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route element={<AppLayout />}>
-            <Route index element={<HomePage />} />
+            <Route index element={<Navigate to="/projects" replace />} />
             <Route path="connection" element={<ConnectionPage />} />
             <Route path="projects" element={<ProjectsPage />} />
             <Route path="projects/:projectId" element={<ProjectDetailPage />} />

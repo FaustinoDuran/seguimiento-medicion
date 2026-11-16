@@ -64,14 +64,14 @@ function PlanningSession({ project }: { project: Project }) {
 
   return (
     <>
-      <Link className="text-link" to={`/projects/${project.id}`}>← Volver al proyecto</Link>
+      <Link className="text-link" to={`/projects/${project.id}`}>Volver al proyecto</Link>
       <header className="poker-page-heading">
-        <h1>Planning<br /><em>Poker.</em></h1>
-        <p className="lead">{project.name}. Elegí una historia y abrí una ronda. El puntaje de los demás queda oculto hasta revelar.</p>
+        <h1>Planning Poker</h1>
+        <p className="lead">{project.name}. Los votos permanecen ocultos hasta revelar la ronda.</p>
       </header>
       <section aria-labelledby="planning-stories-heading" aria-busy={stories.kind === 'loading'}>
         <div className="poker-section-heading">
-          <span className="section-number" aria-hidden="true">01 /</span>
+          
           <div>
             <h2 id="planning-stories-heading">Historias</h2>
             <p>La estimación que ya tiene cada una.</p>
@@ -152,7 +152,7 @@ function PlanningLoader({ projectId }: { projectId: string }) {
   if (state.kind === 'missing') {
     return (
       <>
-        <p className="eyebrow">Planning Poker</p>
+        
         <h1>Proyecto no encontrado</h1>
         <Link className="text-link" to="/projects">Volver al listado</Link>
       </>
@@ -175,7 +175,7 @@ export function PlanningPage() {
     <section className="poker-page">
       {/^[1-9]\d*$/.test(projectId) ? <PlanningLoader projectId={projectId} /> : (
         <>
-          <p className="eyebrow">Planning Poker</p>
+          
           <h1>Proyecto no encontrado</h1>
         </>
       )}

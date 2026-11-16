@@ -51,10 +51,10 @@ function MeasurementLoader({ projectId }: { projectId: string }) {
     </div>
   }
   return <>
-    <Link className="text-link" to={`/projects/${projectId}`}>← Volver al proyecto</Link>
+    <Link className="text-link" to={`/projects/${projectId}`}>Volver al proyecto</Link>
     <header className="measurement-page-heading">
-      <h1>Las horas reales,<br /><em>y lo que falló.</em></h1>
-      <p className="lead">{project.state.data.name}: registrá el esfuerzo y seguí los defectos del equipo.</p>
+      <h1>Esfuerzo y defectos</h1>
+      <p className="lead">{project.state.data.name}</p>
     </header>
     <CatalogStatus name="historias" resource={stories} />
     <CatalogStatus name="integrantes" resource={members} />

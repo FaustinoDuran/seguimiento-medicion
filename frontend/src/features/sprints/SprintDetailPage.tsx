@@ -177,7 +177,7 @@ function SprintDetail({ projectId, sprintId }: { projectId: string; sprintId: st
 
   return (
     <>
-      <Link className="text-link" to={`/projects/${projectId}/sprints`}>← Volver a los sprints</Link>
+      <Link className="text-link" to={`/projects/${projectId}/sprints`}>Volver a los sprints</Link>
       <header className="sprints-page-heading">
         <p>Sprint {sprint.id} · Proyecto #{projectId}</p>
         <h1>{sprint.goal}</h1>
@@ -198,7 +198,7 @@ function SprintDetail({ projectId, sprintId }: { projectId: string; sprintId: st
         ? (
           <section className="sprints-panel" aria-labelledby="assign-heading">
             <div className="sprints-section-heading">
-              <span className="section-number" aria-hidden="true">01 /</span>
+              
               <div>
                 <h2 id="assign-heading">Asignar historia</h2>
                 <p>El Sprint recibe historias del mismo proyecto.</p>
@@ -243,7 +243,7 @@ function SprintDetail({ projectId, sprintId }: { projectId: string; sprintId: st
 
       <section className="sprints-list" aria-labelledby="sprint-stories-heading">
         <div className="sprints-section-heading">
-          <span className="section-number" aria-hidden="true">{open ? '02 /' : '01 /'}</span>
+          
           <div>
             <h2 id="sprint-stories-heading">Historias del sprint</h2>
             <p>{stories.length} {stories.length === 1 ? 'historia asignada' : 'historias asignadas'}.</p>
@@ -291,7 +291,7 @@ function SprintDetail({ projectId, sprintId }: { projectId: string; sprintId: st
 function MissingSprint({ projectId }: { projectId: string }) {
   return (
     <>
-      <p className="eyebrow">Sprint</p>
+      
       <h1>Sprint no encontrado</h1>
       <p className="lead">No encontramos el sprint de esta dirección en este proyecto.</p>
       <Link className="text-link" to={`/projects/${projectId}/sprints`}>Volver a los sprints</Link>
