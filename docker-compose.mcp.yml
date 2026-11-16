@@ -39,7 +39,7 @@ services:
       MCP_PUBLIC_URL: ${MCP_PUBLIC_URL:?MCP_PUBLIC_URL is required}
       MCP_DATABASE_URL: postgres://mcp_reader:${MCP_READER_PASSWORD:?MCP_READER_PASSWORD is required}@postgres:5432/seguimiento_medicion?sslmode=disable
     ports:
-      - "127.0.0.1:3004:8080"
+      - "127.0.0.1:3008:8080"
     depends_on:
       postgres:
         condition: service_healthy

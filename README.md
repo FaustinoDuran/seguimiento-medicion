@@ -374,7 +374,7 @@ job de deploy falla a propósito. El login de GHCR en el VPS es de lectura y
 queda en la máquina, no en el repo.
 
 TASK-024 agrega un despliegue MCP automático e independiente, con base exclusiva
-de demo y puerto local 3004. CI/CD prepara la demo y la publica en
+de demo y puerto local 3008. CI/CD prepara la demo y la publica en
 `https://seguimiento0-medicion.aedestec.com/mcp`, usando el HTTPS existente. Ver [la guía MCP](docs/mcp/deployment.md) para preparar HTTPS,
 conectar ChatGPT y actualizar o revertir la demo.
 
