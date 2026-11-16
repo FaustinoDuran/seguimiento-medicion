@@ -46,10 +46,10 @@ function ProjectBacklog({ project }: { project: BacklogProject }) {
 
   return (
     <>
-      <Link className="text-link" to={`/projects/${project.id}`}>← Volver al proyecto</Link>
-      <header className="backlog-page-heading"><p className="eyebrow">{project.name}</p>
-        <h1>El trabajo,<br /><em>historia a historia.</em></h1>
-        <p className="lead">Creá, consultá y actualizá las historias del backlog de tu proyecto.</p></header>
+      <Link className="text-link" to={`/projects/${project.id}`}>Volver al proyecto</Link>
+      <header className="backlog-page-heading">
+        <h1>Backlog</h1>
+        <p className="lead"><span>{project.name}</span></p></header>
       {project.status === 'closed'
         ? <p className="backlog-alert" role="status">El proyecto está cerrado. Podés consultar sus historias, pero no crear ni editar.</p>
         : <StoryForm projectId={String(project.id)} disabled={saving} onPendingChange={setCreating}
@@ -62,8 +62,8 @@ function ProjectBacklog({ project }: { project: BacklogProject }) {
         {updated ? <p className="backlog-success" role="status">Historia actualizada correctamente.</p> : null}
       </div>
       <section className="backlog-list" aria-labelledby="stories-heading" aria-busy={state.kind === 'loading'}>
-        <div className="backlog-section-heading"><span className="section-number" aria-hidden="true">02 /</span>
-          <div><h2 id="stories-heading">Historias del proyecto</h2><p>Altas más recientes primero.</p></div>
+        <div className="backlog-section-heading">
+          <div><h2 id="stories-heading">Historias del proyecto</h2></div>
           <button className="backlog-quiet-button" type="button" disabled={state.kind === 'loading' || mutating} onClick={refresh}>
             Actualizar listado</button></div>
         {state.kind === 'loading' ? <p className="backlog-loading" role="status">Cargando historias…</p> : null}
@@ -121,7 +121,7 @@ function BacklogProjectLoader({ projectId }: { projectId: string }) {
 }
 
 function MissingProject() {
-  return <><p className="eyebrow">Backlog</p><h1>Proyecto no encontrado</h1>
+  return <><h1>Proyecto no encontrado</h1>
     <p className="lead">No encontramos el proyecto de esta dirección.</p>
     <Link className="text-link" to="/projects">Volver a proyectos</Link></>
 }

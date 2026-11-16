@@ -30,14 +30,14 @@ export function ConnectionPage() {
 
   return (
     <section className="page-intro">
-      <p className="eyebrow">Estado del servicio</p>
-      <h1>Una buena conexión.<br /><em>El primer paso.</em></h1>
+
+      <h1>Conexión</h1>
       <p className="lead">Comprobá la comunicación con el servicio de seguimiento y medición.</p>
       <div className="connection-panel">
         <div role="status" aria-live="polite" aria-atomic="true">
-          <p className="eyebrow">Conexión</p>
+
           {state.kind === 'loading' ? <h2>Comprobando conexión…</h2> : null}
-          {state.kind === 'success' ? <><h2>El servicio responde</h2><p>Estado informado: <strong>{state.status}</strong></p></> : null}
+          {state.kind === 'success' ? <><h2>El servicio responde</h2></> : null}
           {state.kind === 'error' ? <><h2>No pudimos conectar</h2><p>El servicio no está disponible en este momento. Volvé a intentarlo.</p></> : null}
         </div>
         <button className="button" type="button" disabled={state.kind === 'loading'} onClick={retry}>

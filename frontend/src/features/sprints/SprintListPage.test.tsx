@@ -206,3 +206,19 @@ test('muestra el rechazo de goal vacío junto al campo', async () => {
   expect(goal).toHaveAttribute('aria-describedby', message.id)
   expect(screen.queryByText('Sprint creado correctamente.')).not.toBeInTheDocument()
 })
+
+// AC-031-01/02: retomar un sprint después de registrar horas en otra pantalla.
+test('permite retomar los sprints abiertos desde el listado del proyecto', async () => {
+  serveProject()
+  server.use(
+    http.get('*/api/projects/1/sprints/closed', () => HttpResponse.json([])),
+    http.get('*/api/projects/1/sprints', () => HttpResponse.json([
+      sprint({ id: 7, goal: 'Trabajo en curso', status: 'open' }),
+      sprint({ id: 4, goal: 'Ya cerrado', status: 'closed' }),
+    ])),
+  )
+  openRoute()
+  const current = await screen.findByRole('region', { name: 'Sprints abiertos' })
+  expect(await within(current).findByRole('link', { name: /Trabajo en curso/ })).toHaveAttribute('href', '/projects/1/sprints/7')
+  expect(within(current).queryByText('Ya cerrado')).not.toBeInTheDocument()
+})

@@ -28,10 +28,16 @@ Vite reenvía `/api` a la API. Abrí la dirección que informa Vite.
 
 ## Recorrido inicial
 
-1. Entrá a **Inicio**.
-2. Abrí **Conexión** y esperá «El servicio responde». Si aparece «No pudimos
-   conectar», comprobá que la API esté levantada y usá **Volver a comprobar**.
-3. Entrá a **Proyectos**.
+1. Abrí la aplicación: el inicio lleva directamente a **Proyectos**.
+2. Entrá a **Proyectos** y creá el primero o abrí uno existente.
+3. Si una operación falla, **Conexión** permite comprobar el servicio y volver
+   a intentarlo. Es una herramienta de diagnóstico opcional.
+
+Dentro de un proyecto, la navegación **Resumen → Backlog → Planning Poker →
+Sprints → Esfuerzo y defectos → Dashboard → Reporte** permite cambiar de etapa
+sin volver al inicio. La etapa actual está marcada y se conserva el proyecto.
+Al final de cada pantalla hay un acceso al siguiente paso; podés seguir otro orden.
+La interfaz usa un tema oscuro con tipografía Inter y conserva los datos de los proyectos.
 
 ## Proyectos e integrantes
 
@@ -51,8 +57,11 @@ devuelve la API.
 Desde el detalle se entra a Backlog, Sprints, Planning Poker, Esfuerzo y
 defectos, Dashboard y Reporte.
 
-La pantalla no tiene un formulario para corregir un proyecto ya creado. Esa
-corrección se hace por API, con el ejemplo `PATCH /projects/{id}` del README.
+**Editar proyecto** abre los datos actuales en el mismo detalle. Cambiá nombre,
+fechas o estado y usá **Guardar cambios**. **Cancelar edición** descarta la
+edición. Ante un rechazo, los datos permanecen y el campo afectado muestra el
+motivo. Si se corta la conexión, revisá el detalle antes de repetir el guardado:
+el servidor podría haber recibido el cambio.
 
 ## Backlog
 
@@ -70,6 +79,8 @@ cerrado también rechaza la edición.
 ## Sprints
 
 En **Sprints**, **Nuevo sprint** pide un goal. **Crear sprint** lo deja abierto.
+**Sprints abiertos** permite retomar uno existente después de visitar otra
+pantalla. **Sprints anteriores** conserva el historial cerrado.
 
 En el detalle de un Sprint abierto:
 
@@ -81,6 +92,8 @@ En el detalle de un Sprint abierto:
 Un Sprint cerrado se puede consultar. La pantalla avisa que no permite asignar,
 completar ni volver a cerrar. **Sprints anteriores** lista los Sprints ya
 cerrados.
+Si otra persona cambia el estado mientras operás, el rechazo ofrece
+**Actualizar sprint** para consultar nuevamente la información del servidor.
 
 ## Planning Poker
 
@@ -96,6 +109,9 @@ revelar, **Story points acordados** y **Guardar estimación** registran el núme
 que elige el equipo. La pantalla no calcula ese acuerdo.
 
 Mientras la ronda está abierta, los votos de las otras personas no se muestran.
+Cambiar **Quién vota** descarta la entrada privada anterior y vuelve a consultar
+la ronda. La tabla de historias se puede desplazar horizontalmente en móvil;
+también admite foco y desplazamiento con teclado.
 
 ## Esfuerzo y defectos
 
@@ -110,6 +126,11 @@ En **Esfuerzo y defectos**:
 - En un defecto abierto, elegí **Sprint de resolución** y usá **Marcar
   resuelto**. El Sprint tiene que ser el de detección o uno posterior.
 
+Cuando faltan integrantes, historias o sprints, los avisos incluyen accesos para
+crearlos en el mismo proyecto. Si falla una carga parcial, las secciones que
+tienen información siguen disponibles. **Reintentar sprints**, por ejemplo,
+recupera ese catálogo sin borrar una actividad que estés escribiendo.
+
 ## Dashboard y reporte
 
 **Dashboard** muestra el estado del proyecto y las métricas que calcula la API:
@@ -120,6 +141,8 @@ los story points planificados y completados; no los recalcula.
 **Reporte** permite elegir **Todo el proyecto** o un Sprint. Muestra métricas,
 historias, esfuerzo y defectos de ese alcance. **Exportar PDF** descarga el
 mismo alcance que está en pantalla.
+La selección del sprint queda en la URL (`?sprint=ID`), por lo que se conserva
+al recargar, compartir la dirección o usar Atrás/Adelante.
 
 ## Errores frecuentes
 
@@ -135,7 +158,6 @@ mismo alcance que está en pantalla.
 
 - No hay inicio de sesión ni permisos por persona. «Quién vota» es una elección
   en la pantalla, no una cuenta.
-- No hay formulario para modificar nombre, fechas o estado de un proyecto.
 - Cerrar un Sprint no se deshace desde la pantalla.
 - La velocidad, la desviación y los porcentajes salen de la API. La pantalla
   solo los muestra.

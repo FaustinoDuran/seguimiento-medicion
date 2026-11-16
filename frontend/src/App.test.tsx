@@ -1,9 +1,12 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { expect, test } from 'vitest'
+import { http, HttpResponse } from 'msw'
+import { server } from './test/server'
 import App from './App'
 
 function renderAt(path: string) {
+  server.use(http.get('*/api/projects', () => HttpResponse.json([])))
   window.history.pushState({}, '', path)
   return render(<App />)
 }
@@ -13,11 +16,11 @@ test('navega de la portada a la pantalla de conexión', async () => {
   const user = userEvent.setup()
   renderAt('/')
 
-  expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Cada proyecto')
+  expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent('Proyectos')
 
   await user.click(screen.getByRole('link', { name: 'Conexión' }))
 
-  expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent('Una buena conexión')
+  expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent('Conexión')
   expect(await screen.findByText('El servicio responde')).toBeInTheDocument()
   expect(screen.getByRole('main')).toHaveFocus()
 })
@@ -38,11 +41,13 @@ test('muestra la página de dirección no encontrada', () => {
   expect(screen.getByRole('link', { name: /Volver al inicio/ })).toBeInTheDocument()
 })
 
-test('presenta accesos operativos y marca la sección activa', () => {
+test('abre proyectos directamente y elimina el contenido que no ayuda a operar', async () => {
   renderAt('/')
-
-  expect(screen.getByRole('navigation', { name: 'Navegación principal' })).toBeInTheDocument()
-  expect(screen.getByRole('link', { name: /Inicio/ })).toHaveAttribute('aria-current', 'page')
-  expect(screen.getByRole('link', { name: /Área principal Proyectos/ })).toHaveAttribute('href', '/projects')
-  expect(screen.getByRole('region', { name: 'Del alcance al seguimiento' })).toBeInTheDocument()
+  expect(await screen.findByRole('heading', { level: 1, name: 'Proyectos' })).toBeInTheDocument()
+  expect(window.location.pathname).toBe('/projects')
+  expect(screen.getByRole('link', { name: 'Proyectos' })).toHaveAttribute('aria-current', 'page')
+  expect(screen.queryByText('UTN FRSR')).not.toBeInTheDocument()
+  expect(screen.queryByText('Panel de seguimiento')).not.toBeInTheDocument()
+  expect(screen.queryByText('Herramienta de trabajo del equipo')).not.toBeInTheDocument()
+  expect(screen.queryByText('Las fechas se validan en el servidor.')).not.toBeInTheDocument()
 })

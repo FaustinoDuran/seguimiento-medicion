@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ApiError } from '../../shared/api/client'
 import { listStories } from '../backlog/api'
 import type { Story } from '../backlog/model'
@@ -30,11 +30,12 @@ function estimation(points: number | null | undefined) {
 
 function RoundSession({ projectId, roundId }: { projectId: string; roundId: string }) {
   const navigate = useNavigate()
+  const location = useLocation()
   const [context, setContext] = useState<ContextState>({ kind: 'loading' })
   const [contextAttempt, setContextAttempt] = useState(0)
   const [stories, setStories] = useState<StoriesState>({ kind: 'loading' })
   const [storyAttempt, setStoryAttempt] = useState(0)
-  const [memberId, setMemberId] = useState('')
+  const [memberId, setMemberId] = useState<string>(() => location.state?.memberId ?? '')
   const [round, setRound] = useState<RoundState>({ kind: 'idle' })
   const [roundAttempt, setRoundAttempt] = useState(0)
   const [loadedKey, setLoadedKey] = useState('')
@@ -129,7 +130,7 @@ function RoundSession({ projectId, roundId }: { projectId: string; roundId: stri
   function anotherRound(storyId: number) {
     void run(async signal => {
       const created = await openRound(projectId, storyId, signal)
-      if (!signal.aborted) navigate(`/projects/${projectId}/planning/rounds/${created.id}`)
+      if (!signal.aborted) navigate(`/projects/${projectId}/planning/rounds/${created.id}`, { state: { memberId } })
     })
   }
 
@@ -173,21 +174,28 @@ function RoundSession({ projectId, roundId }: { projectId: string; roundId: stri
 
   return (
     <>
-      <Link className="text-link" to={`/projects/${projectId}/planning`}>← Volver a las historias</Link>
+      <Link className="text-link" to={`/projects/${projectId}/planning`}>Volver a las historias</Link>
       <header className="poker-page-heading">
-        <p className="eyebrow">{context.project.name}</p>
         <h1>{story ? story.title : 'Ronda de estimación'}</h1>
-        <p className="lead">Elegí quién vota. Hasta revelar, cada integrante ve solo su puntaje.</p>
+        <p className="lead">{context.project.name} · Ronda #{roundId}. Elegí quién vota. Hasta revelar, cada integrante ve solo su puntaje.</p>
       </header>
       <form className="poker-form" onSubmit={event => event.preventDefault()}>
         <label htmlFor="voter">Quién vota</label>
-        <select id="voter" value={memberId} onChange={event => setMemberId(event.target.value)}>
+        <select id="voter" value={memberId} disabled={sending} onChange={event => {
+          setMemberId(event.target.value)
+          setPoints('')
+          setAgreed('')
+          setError(null)
+          setSaved(false)
+        }}>
           <option value="">Elegí un integrante</option>
           {context.members.map(member => (
             <option key={member.id} value={member.id}>{member.name}</option>
           ))}
         </select>
       </form>
+      {context.members.length === 0 ? <p className="poker-empty">Para votar, primero sumá al equipo. <Link className="text-link" to={`/projects/${projectId}#members`}>Agregar integrantes</Link></p> : null}
+      {stories.kind === 'error' ? <div className="poker-alert" role="alert"><p>No pudimos cargar las historias.</p><button className="button" type="button" onClick={() => { setStories({ kind: 'loading' }); setStoryAttempt(previous => previous + 1) }}>Reintentar historias</button></div> : null}
       {!memberId ? <p className="poker-empty">Elegí quién vota para ver la ronda.</p> : null}
       {round.kind === 'loading' ? <p className="poker-loading" role="status">Cargando ronda…</p> : null}
       {round.kind === 'error' ? (
@@ -248,7 +256,7 @@ function RoundSession({ projectId, roundId }: { projectId: string; roundId: stri
             onChange={event => setPoints(event.target.value)}
           />
           <div className="poker-form-footer">
-            <span>El servidor valida el puntaje.</span>
+
             <button className="button" type="submit" disabled={sending}>Votar</button>
           </div>
           <div className="poker-actions">
@@ -281,7 +289,7 @@ export function RoundPage() {
   return (
     <section className="poker-page">
       {valid
-        ? <RoundSession projectId={projectId} roundId={roundId} />
+        ? <RoundSession key={`${projectId}:${roundId}`} projectId={projectId} roundId={roundId} />
         : <h1>Ronda no encontrada</h1>}
     </section>
   )

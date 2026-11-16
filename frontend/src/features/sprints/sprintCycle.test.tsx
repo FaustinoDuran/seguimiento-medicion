@@ -94,7 +94,7 @@ test('recorre el ciclo Scrum completo desde la interfaz', async () => {
   expect(screen.queryByRole('button', { name: 'Cerrar sprint' })).not.toBeInTheDocument()
 
   // Volver al listado: el sprint figura entre los anteriores.
-  await user.click(screen.getByRole('link', { name: '← Volver a los sprints' }))
+  await user.click(screen.getByRole('link', { name: 'Volver a los sprints' }))
 
   expect(await screen.findByRole('heading', { name: 'Sprints anteriores' })).toBeInTheDocument()
   const listRow = (await screen.findByRole('link', { name: 'Sprint 5' })).closest('tr') as HTMLElement

@@ -58,7 +58,7 @@ export function StoryEditForm({ story, onUpdated, onCancel, onPendingChange }: P
 
   return (
     <form className="backlog-form backlog-edit-form" aria-labelledby="edit-story-heading" onSubmit={submit}>
-      <div className="backlog-section-heading"><span className="section-number" aria-hidden="true">↳</span>
+      <div className="backlog-section-heading">
         <div><h2 id="edit-story-heading">Editar {story.identifier}</h2><p>{story.title}</p></div></div>
       {error ? <p className="backlog-alert" role="alert">{error}</p> : null}
       <fieldset disabled={sending}>

@@ -11,7 +11,7 @@
 .metrics-facts dt { color: var(--color-ink-muted); font-size: 12px; margin-bottom: 6px; }
 .metrics-facts dd { margin: 0; font-size: 22px; }
 .metrics-empty, .metrics-loading { padding: 32px 0; color: var(--color-ink-muted); }
-.metrics-alert { border-left: 3px solid var(--color-accent); background: var(--color-accent-soft); padding: 18px 22px; margin: 20px 0; }
+.metrics-alert { background: var(--color-accent-soft); padding: 18px 22px; margin: 20px 0; }
 .metrics-chart { margin: 0; padding: 24px 0; }
 .metrics-chart figcaption { font-weight: 600; margin-bottom: 16px; }
 .metrics-bar-row {

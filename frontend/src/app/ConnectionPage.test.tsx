@@ -10,7 +10,7 @@ test('muestra la respuesta exitosa del servicio', async () => {
 
   expect(screen.getByText('Comprobando conexión…')).toBeInTheDocument()
   expect(await screen.findByText('El servicio responde')).toBeInTheDocument()
-  expect(screen.getByText('ok')).toBeInTheDocument()
+  expect(screen.queryByText('Estado informado:')).not.toBeInTheDocument()
 })
 
 test('muestra el error y permite reintentar la consulta', async () => {

@@ -1,5 +1,20 @@
 import { ApiError } from '../../shared/api/client'
 
+const fields: Record<string, string> = {
+  'effort date is required': 'date',
+  'activity is required': 'activity',
+  'activity must be at most 200 characters': 'activity',
+  'hours are required': 'hours',
+  'hours must be greater than zero': 'hours',
+  'hours are invalid': 'hours',
+  'story not found': 'story',
+  'member not found': 'member',
+}
+
+export function effortErrorField(error: unknown) {
+  return error instanceof ApiError ? fields[error.message] ?? '' : ''
+}
+
 const knownErrors: Record<string, string> = {
   'project, story and member ids must be positive': 'Elegí el proyecto, la historia y el integrante.',
   'effort date is required': 'Elegí la fecha del esfuerzo.',

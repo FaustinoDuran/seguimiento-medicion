@@ -64,15 +64,14 @@ function PlanningSession({ project }: { project: Project }) {
 
   return (
     <>
-      <Link className="text-link" to={`/projects/${project.id}`}>← Volver al proyecto</Link>
+      <Link className="text-link" to={`/projects/${project.id}`}>Volver al proyecto</Link>
       <header className="poker-page-heading">
-        <p className="eyebrow">{project.name}</p>
-        <h1>Planning<br /><em>Poker.</em></h1>
-        <p className="lead">Elegí una historia y abrí una ronda. El puntaje de los demás queda oculto hasta revelar.</p>
+        <h1>Planning Poker</h1>
+        <p className="lead">{project.name}. Los votos permanecen ocultos hasta revelar la ronda.</p>
       </header>
       <section aria-labelledby="planning-stories-heading" aria-busy={stories.kind === 'loading'}>
         <div className="poker-section-heading">
-          <span className="section-number" aria-hidden="true">01 /</span>
+
           <div>
             <h2 id="planning-stories-heading">Historias</h2>
             <p>La estimación que ya tiene cada una.</p>
@@ -92,11 +91,11 @@ function PlanningSession({ project }: { project: Project }) {
         {stories.kind === 'ready' && stories.stories.length === 0 ? (
           <div className="poker-empty">
             <h3>Todavía no hay historias</h3>
-            <p>Cuando el backlog tenga una historia, vas a poder estimarla acá.</p>
+            <p>Cuando el backlog tenga una historia, vas a poder estimarla acá. <Link className="text-link" to={`/projects/${project.id}/backlog`}>Crear historias</Link></p>
           </div>
         ) : null}
         {stories.kind === 'ready' && stories.stories.length > 0 ? (
-          <table className="poker-table">
+          <div className="poker-table-scroll" tabIndex={0} role="region" aria-label="Historias para estimar"><table className="poker-table">
             <thead>
               <tr>
                 <th scope="col">Identificador</th>
@@ -124,7 +123,7 @@ function PlanningSession({ project }: { project: Project }) {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
         ) : null}
       </section>
     </>
@@ -153,7 +152,7 @@ function PlanningLoader({ projectId }: { projectId: string }) {
   if (state.kind === 'missing') {
     return (
       <>
-        <p className="eyebrow">Planning Poker</p>
+
         <h1>Proyecto no encontrado</h1>
         <Link className="text-link" to="/projects">Volver al listado</Link>
       </>
@@ -176,7 +175,7 @@ export function PlanningPage() {
     <section className="poker-page">
       {/^[1-9]\d*$/.test(projectId) ? <PlanningLoader projectId={projectId} /> : (
         <>
-          <p className="eyebrow">Planning Poker</p>
+
           <h1>Proyecto no encontrado</h1>
         </>
       )}

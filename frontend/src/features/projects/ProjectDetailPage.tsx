@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ApiError } from '../../shared/api/client'
 import { getProject } from './api'
 import { formatDay, isProject, statusLabels } from './model'
 import type { Project } from './model'
 import { MemberSection } from './MemberSection'
+import { ProjectEditForm } from './ProjectEditForm'
 import './projects.css'
 
 type DetailState =
@@ -16,7 +17,7 @@ type DetailState =
 function MissingProject() {
   return (
     <>
-      <p className="eyebrow">Proyecto</p>
+
       <h1>Proyecto no encontrado</h1>
       <p className="lead">No encontramos el proyecto de esta dirección.</p>
       <Link className="text-link" to="/projects">Volver al listado</Link>
@@ -24,20 +25,29 @@ function MissingProject() {
   )
 }
 
-function ProjectDetail({ project }: { project: Project }) {
+function ProjectDetail({ project: initial }: { project: Project }) {
+  const [project, setProject] = useState(initial)
+  const [editing, setEditing] = useState(false)
+  const [notice, setNotice] = useState('')
+  const editButton = useRef<HTMLButtonElement>(null)
+  function finishEditing() {
+    setEditing(false)
+    requestAnimationFrame(() => editButton.current?.focus())
+  }
   return (
     <>
-      <Link className="text-link" to="/projects">← Volver al listado</Link>
+      <Link className="text-link" to="/projects">Volver al listado</Link>
       <header className="project-page-heading">
-        <p className="eyebrow">{statusLabels[project.status]}</p>
         <h1>{project.name}</h1>
-        <p className="lead">Del {formatDay(project.start_date)} al {formatDay(project.end_date)}.</p>
       </header>
+      <button ref={editButton} className="button project-edit-trigger" type="button" hidden={editing} onClick={() => { setNotice(''); setEditing(true) }}>Editar proyecto</button>
+      {notice ? <p className="project-success" role="status">{notice}</p> : null}
+      {editing ? <ProjectEditForm project={project} onCancel={finishEditing} onSaved={updated => {
+        setProject(updated)
+        setNotice('Proyecto actualizado correctamente.')
+        finishEditing()
+      }} /> : null}
       <dl className="project-facts">
-        <div>
-          <dt>Nombre</dt>
-          <dd>{project.name}</dd>
-        </div>
         <div>
           <dt>Inicio</dt>
           <dd>{formatDay(project.start_date)}</dd>
@@ -51,15 +61,7 @@ function ProjectDetail({ project }: { project: Project }) {
           <dd>{statusLabels[project.status]}</dd>
         </div>
       </dl>
-      <MemberSection projectId={project.id} />
-      <nav className="project-links" aria-label="Trabajo del proyecto">
-        <Link className="text-link" to={`/projects/${project.id}/backlog`}>Backlog</Link>
-        <Link className="text-link" to={`/projects/${project.id}/sprints`}>Sprints</Link>
-        <Link className="text-link" to={`/projects/${project.id}/planning`}>Planning Poker</Link>
-        <Link className="text-link" to={`/projects/${project.id}/measurement`}>Esfuerzo y defectos</Link>
-        <Link className="text-link" to={`/projects/${project.id}/dashboard`}>Dashboard</Link>
-        <Link className="text-link" to={`/projects/${project.id}/report`}>Reporte</Link>
-      </nav>
+      <div id="members" tabIndex={-1}><MemberSection projectId={project.id} /></div>
     </>
   )
 }

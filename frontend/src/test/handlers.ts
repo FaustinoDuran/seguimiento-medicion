@@ -4,4 +4,5 @@ import { http, HttpResponse } from 'msw'
 // prefijo y en las pruebas MSW intercepta la URL absoluta resultante.
 export const handlers = [
   http.get('*/api/health', () => HttpResponse.json({ status: 'ok' })),
+  http.get('*/api/projects/:projectId/sprints', () => HttpResponse.json([])),
 ]

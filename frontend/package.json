@@ -9,6 +9,7 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:journey": "node scripts/verify-user-flow.cjs",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
   },

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { ApiError } from '../../shared/api/client'
@@ -34,6 +34,13 @@ function SprintDetail({ projectId, sprintId }: { projectId: string; sprintId: st
   const [completingId, setCompletingId] = useState<number | null>(null)
   const [confirmingClose, setConfirmingClose] = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
+  const closeButton = useRef<HTMLButtonElement>(null)
+  const confirmation = useRef<HTMLButtonElement>(null)
+  const pending = useRef<AbortController | null>(null)
+  useEffect(() => () => pending.current?.abort(), [])
+  useEffect(() => {
+    if (confirmingClose) confirmation.current?.focus()
+  }, [confirmingClose])
   const location = useLocation()
   const [notice, setNotice] = useState<string | null>(() => (
     location.state?.created ? 'Sprint creado correctamente.' : null
@@ -96,24 +103,31 @@ function SprintDetail({ projectId, sprintId }: { projectId: string; sprintId: st
   const open = sprint.status === 'open'
 
   async function run(action: (signal: AbortSignal) => Promise<void>, fallback: string) {
+    if (pending.current) return
     const controller = new AbortController()
+    pending.current = controller
+    setBusy(true)
     setActionError(null)
     setNotice(null)
     try {
       await action(controller.signal)
     } catch (cause) {
-      setActionError(sprintError(cause, fallback).message)
+      if (!controller.signal.aborted) setActionError(sprintError(cause, fallback).message)
+    } finally {
+      pending.current = null
+      if (!controller.signal.aborted) setBusy(false)
     }
   }
 
   async function handleAssign(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (!selectedStory || busy) return
+    if (!selectedStory || pending.current) return
     const storyId = Number(selectedStory)
     const story = available.find(item => item.id === storyId)
     setBusy(true)
     await run(async signal => {
       const assigned = await assignStory(sprintId, storyId, signal)
+      if (signal.aborted) return
       setState(previous => previous.kind === 'ready'
         ? {
           ...previous,
@@ -128,9 +142,11 @@ function SprintDetail({ projectId, sprintId }: { projectId: string; sprintId: st
   }
 
   async function handleComplete(story: AssignedStory) {
+    if (pending.current) return
     setCompletingId(story.story_id)
     await run(async signal => {
       const completed = await completeStory(sprintId, story.story_id, signal)
+      if (signal.aborted) return
       setState(previous => previous.kind === 'ready'
         ? {
           ...previous,
@@ -145,9 +161,11 @@ function SprintDetail({ projectId, sprintId }: { projectId: string; sprintId: st
   }
 
   async function handleClose() {
+    if (pending.current) return
     setBusy(true)
     await run(async signal => {
       const closed = await closeSprint(sprintId, signal)
+      if (signal.aborted) return
       setState(previous => previous.kind === 'ready'
         ? { ...previous, sprint: closed, available: [] }
         : previous)
@@ -159,11 +177,11 @@ function SprintDetail({ projectId, sprintId }: { projectId: string; sprintId: st
 
   return (
     <>
-      <Link className="text-link" to={`/projects/${projectId}/sprints`}>← Volver a los sprints</Link>
+      <Link className="text-link" to={`/projects/${projectId}/sprints`}>Volver a los sprints</Link>
       <header className="sprints-page-heading">
-        <p className="eyebrow">Sprint {sprint.id}</p>
         <h1>{sprint.goal}</h1>
         <p className="sprints-meta">
+          <span>Sprint {sprint.id} · Proyecto #{projectId}</span>
           <span className={`sprints-status sprints-status-${sprint.status}`}>
             {sprintStatusLabels[sprint.status]}
           </span>
@@ -173,14 +191,14 @@ function SprintDetail({ projectId, sprintId }: { projectId: string; sprintId: st
 
       <div aria-live="polite" aria-atomic="true">
         {notice ? <p className="sprints-success" role="status">{notice}</p> : null}
-        {actionError ? <p className="sprints-alert" role="alert">{actionError}</p> : null}
+        {actionError ? <div className="sprints-alert" role="alert"><p>{actionError}</p><button className="button" type="button" disabled={busy} onClick={() => { setActionError(null); reload() }}>Actualizar sprint</button></div> : null}
       </div>
 
       {open
         ? (
           <section className="sprints-panel" aria-labelledby="assign-heading">
             <div className="sprints-section-heading">
-              <span className="section-number" aria-hidden="true">01 /</span>
+
               <div>
                 <h2 id="assign-heading">Asignar historia</h2>
                 <p>El Sprint recibe historias del mismo proyecto.</p>
@@ -225,7 +243,7 @@ function SprintDetail({ projectId, sprintId }: { projectId: string; sprintId: st
 
       <section className="sprints-list" aria-labelledby="sprint-stories-heading">
         <div className="sprints-section-heading">
-          <span className="section-number" aria-hidden="true">{open ? '02 /' : '01 /'}</span>
+
           <div>
             <h2 id="sprint-stories-heading">Historias del sprint</h2>
             <p>{stories.length} {stories.length === 1 ? 'historia asignada' : 'historias asignadas'}.</p>
@@ -235,6 +253,7 @@ function SprintDetail({ projectId, sprintId }: { projectId: string; sprintId: st
           stories={stories}
           onComplete={open ? handleComplete : undefined}
           completingId={completingId}
+          disabled={busy}
         />
       </section>
 
@@ -248,17 +267,17 @@ function SprintDetail({ projectId, sprintId }: { projectId: string; sprintId: st
             {confirmingClose
               ? (
                 <div className="sprints-close-actions">
-                  <button className="button" type="button" disabled={busy} onClick={handleClose}>
+                  <button ref={confirmation} className="button" type="button" disabled={busy} onClick={handleClose}>
                     {busy ? 'Cerrando…' : 'Confirmar cierre'}
                   </button>
                   <button className="sprints-quiet-button" type="button" disabled={busy}
-                    onClick={() => setConfirmingClose(false)}>
+                    onClick={() => { setConfirmingClose(false); requestAnimationFrame(() => closeButton.current?.focus()) }}>
                     Cancelar
                   </button>
                 </div>
               )
               : (
-                <button className="button" type="button" onClick={() => setConfirmingClose(true)}>
+                <button ref={closeButton} className="button" type="button" disabled={busy} onClick={() => setConfirmingClose(true)}>
                   Cerrar sprint
                 </button>
               )}
@@ -272,7 +291,7 @@ function SprintDetail({ projectId, sprintId }: { projectId: string; sprintId: st
 function MissingSprint({ projectId }: { projectId: string }) {
   return (
     <>
-      <p className="eyebrow">Sprint</p>
+
       <h1>Sprint no encontrado</h1>
       <p className="lead">No encontramos el sprint de esta dirección en este proyecto.</p>
       <Link className="text-link" to={`/projects/${projectId}/sprints`}>Volver a los sprints</Link>

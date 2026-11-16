@@ -98,10 +98,12 @@ test('el integrante ve su voto y el ajeno queda oculto', async () => {
   await user.click(screen.getByRole('button', { name: 'Votar' }))
 
   expect(await screen.findByText('5 SP')).toBeInTheDocument()
+  await user.type(screen.getByLabelText('Tu story point'), '13')
   await user.selectOptions(screen.getByLabelText('Quién vota'), '2')
 
   expect(await screen.findByText('Oculto')).toBeInTheDocument()
   expect(screen.queryByText('5 SP')).not.toBeInTheDocument()
+  expect(screen.getByLabelText('Tu story point')).toHaveValue('')
 })
 
 // AC-029-02

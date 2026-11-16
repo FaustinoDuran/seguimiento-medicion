@@ -1,10 +1,11 @@
 import type { AssignedStory } from './model'
 import { storyStatusLabels } from './model'
 
-export function SprintStories({ stories, onComplete, completingId }: {
+export function SprintStories({ stories, onComplete, completingId, disabled = false }: {
   stories: AssignedStory[]
   onComplete?: (story: AssignedStory) => void
   completingId?: number | null
+  disabled?: boolean
 }) {
   if (stories.length === 0) {
     return (
@@ -43,7 +44,7 @@ export function SprintStories({ stories, onComplete, completingId }: {
                     {story.status === 'todo'
                       ? (
                         <button className="sprints-quiet-button" type="button"
-                          disabled={completingId === story.story_id}
+                          disabled={disabled || completingId === story.story_id}
                           onClick={() => onComplete(story)}>
                           {completingId === story.story_id ? 'Completando…' : 'Completar'}
                         </button>
