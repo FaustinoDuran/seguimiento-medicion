@@ -1,54 +1,145 @@
-import { BrowserRouter, Link, NavLink, Outlet, Route, Routes } from 'react-router-dom'
-import { ConnectionPage } from './app/ConnectionPage'
-import { BacklogPage } from './features/backlog/BacklogPage'
-import { ReportPage } from './features/reports/ReportPage'
-import { DashboardPage } from './features/metrics/DashboardPage'
-import { MeasurementPage } from './features/measurement/MeasurementPage'
-import { PlanningPage } from './features/planningpoker/PlanningPage'
-import { RoundPage } from './features/planningpoker/RoundPage'
-import { ProjectDetailPage } from './features/projects/ProjectDetailPage'
-import { ProjectsPage } from './features/projects/ProjectsPage'
-import { SprintDetailPage } from './features/sprints/SprintDetailPage'
-import { SprintListPage } from './features/sprints/SprintListPage'
+import {
+  BrowserRouter,
+  Link,
+  NavLink,
+  Outlet,
+  Route,
+  Routes,
+} from "react-router-dom";
+import { ConnectionPage } from "./app/ConnectionPage";
+import { BacklogPage } from "./features/backlog/BacklogPage";
+import { ReportPage } from "./features/reports/ReportPage";
+import { DashboardPage } from "./features/metrics/DashboardPage";
+import { MeasurementPage } from "./features/measurement/MeasurementPage";
+import { PlanningPage } from "./features/planningpoker/PlanningPage";
+import { RoundPage } from "./features/planningpoker/RoundPage";
+import { ProjectDetailPage } from "./features/projects/ProjectDetailPage";
+import { ProjectsPage } from "./features/projects/ProjectsPage";
+import { SprintDetailPage } from "./features/sprints/SprintDetailPage";
+import { SprintListPage } from "./features/sprints/SprintListPage";
 
 function AppLayout() {
   return (
     <div className="app-shell">
-      <a className="skip-link" href="#main-content">Saltar al contenido</a>
-      <header className="site-header">
-        <Link className="brand" to="/" aria-label="Seguimiento y medición, inicio">
-          <span className="brand-mark" aria-hidden="true">sm.</span>
-          <span>Seguimiento<br /><strong>y medición</strong></span>
+      <a className="skip-link" href="#main-content">
+        Saltar al contenido
+      </a>
+      <aside className="site-sidebar">
+        <Link
+          className="brand"
+          to="/"
+          aria-label="Seguimiento y medición, inicio"
+        >
+          <span className="brand-mark" aria-hidden="true">
+            sm.
+          </span>
+          <span className="brand-copy">
+            Seguimiento
+            <br />
+            <strong>y medición</strong>
+          </span>
         </Link>
         <nav aria-label="Navegación principal">
-          <NavLink to="/" end>Inicio</NavLink>
-          <NavLink to="/projects">Proyectos</NavLink>
-          <NavLink to="/connection">Conexión</NavLink>
+          <NavLink to="/" end>
+            <span aria-hidden="true">⌂</span> Inicio
+          </NavLink>
+          <NavLink to="/projects">
+            <span aria-hidden="true">▦</span> Proyectos
+          </NavLink>
+          <NavLink to="/connection">
+            <span aria-hidden="true">⌁</span> Conexión
+          </NavLink>
         </nav>
-      </header>
-      <main id="main-content" tabIndex={-1}><Outlet /></main>
-      <footer className="site-footer">
-        <span>UTN FRSR</span><span>Ingeniería y Calidad de Software</span>
-      </footer>
+        <div className="sidebar-context">
+          <span className="context-label">Espacio</span>
+          <strong>UTN FRSR</strong>
+          <span>Ingeniería y Calidad</span>
+        </div>
+      </aside>
+      <div className="app-workspace">
+        <header className="workspace-bar">
+          <span>Panel de seguimiento</span>
+          <span className="workspace-status">Backend Go</span>
+        </header>
+        <main id="main-content" tabIndex={-1}>
+          <Outlet />
+        </main>
+        <footer className="site-footer">
+          <span>Seguimiento y medición</span>
+          <span>Herramienta de trabajo del equipo</span>
+        </footer>
+      </div>
     </div>
-  )
+  );
 }
 
 function HomePage() {
   return (
-    <section className="page-intro">
-      <p className="eyebrow">Espacio de trabajo</p>
-      <h1>Cada proyecto,<br /><em>con perspectiva.</em></h1>
-      <p className="lead">Un lugar para acompañar el trabajo del equipo y seguir el avance de sus proyectos.</p>
-      <div className="notice">
-        <span className="section-number" aria-hidden="true">01 /</span>
-        <div><h2>Empezá por un proyecto</h2>
-          <p>Creá el proyecto y desde ahí seguí el backlog y los sprints.</p>
-          <Link className="text-link" to="/projects">Ver proyectos <span aria-hidden="true">↗</span></Link>
+    <section className="home-page">
+      <header className="home-heading">
+        <div>
+          <p className="eyebrow">Espacio de trabajo</p>
+          <h1>
+            Cada proyecto, <em>con perspectiva.</em>
+          </h1>
         </div>
+        <p className="lead">
+          Organizá el trabajo del equipo desde el backlog hasta los reportes,
+          con la información que entrega la API.
+        </p>
+      </header>
+      <div className="home-grid">
+        <Link className="workspace-card workspace-card-primary" to="/projects">
+          <span className="card-index">01</span>
+          <div>
+            <span className="card-kicker">Área principal</span>
+            <h2>Proyectos</h2>
+            <p>
+              Gestioná proyectos, integrantes, backlog y sprints desde un mismo
+              contexto.
+            </p>
+          </div>
+          <span className="card-arrow" aria-hidden="true">
+            ↗
+          </span>
+        </Link>
+        <Link className="workspace-card" to="/connection">
+          <span className="card-index">02</span>
+          <div>
+            <span className="card-kicker">Sistema</span>
+            <h2>Estado de conexión</h2>
+            <p>Comprobá la disponibilidad del backend antes de comenzar.</p>
+          </div>
+          <span className="card-arrow" aria-hidden="true">
+            ↗
+          </span>
+        </Link>
       </div>
+      <section className="workflow-strip" aria-labelledby="workflow-heading">
+        <div>
+          <p className="eyebrow">Flujo de trabajo</p>
+          <h2 id="workflow-heading">Del alcance al seguimiento</h2>
+        </div>
+        <ol>
+          <li>
+            <span>01</span>Proyecto
+          </li>
+          <li>
+            <span>02</span>Backlog
+          </li>
+          <li>
+            <span>03</span>Sprint
+          </li>
+          <li>
+            <span>04</span>Medición
+          </li>
+          <li>
+            <span>05</span>Reporte
+          </li>
+        </ol>
+      </section>
     </section>
-  )
+  );
 }
 
 function NotFoundPage() {
@@ -57,9 +148,11 @@ function NotFoundPage() {
       <p className="eyebrow">Error 404</p>
       <h1>Página no encontrada</h1>
       <p className="lead">La dirección que buscás no está disponible.</p>
-      <Link className="text-link" to="/">Volver al inicio ↗</Link>
+      <Link className="text-link" to="/">
+        Volver al inicio ↗
+      </Link>
     </section>
-  )
+  );
 }
 
 export default function App() {
@@ -72,16 +165,34 @@ export default function App() {
           <Route path="projects" element={<ProjectsPage />} />
           <Route path="projects/:projectId" element={<ProjectDetailPage />} />
           <Route path="projects/:projectId/report" element={<ReportPage />} />
-          <Route path="projects/:projectId/dashboard" element={<DashboardPage />} />
-          <Route path="projects/:projectId/planning/rounds/:roundId" element={<RoundPage />} />
-          <Route path="projects/:projectId/planning" element={<PlanningPage />} />
+          <Route
+            path="projects/:projectId/dashboard"
+            element={<DashboardPage />}
+          />
+          <Route
+            path="projects/:projectId/planning/rounds/:roundId"
+            element={<RoundPage />}
+          />
+          <Route
+            path="projects/:projectId/planning"
+            element={<PlanningPage />}
+          />
           <Route path="projects/:projectId/backlog" element={<BacklogPage />} />
-          <Route path="projects/:projectId/measurement" element={<MeasurementPage />} />
-          <Route path="projects/:projectId/sprints" element={<SprintListPage />} />
-          <Route path="projects/:projectId/sprints/:sprintId" element={<SprintDetailPage />} />
+          <Route
+            path="projects/:projectId/measurement"
+            element={<MeasurementPage />}
+          />
+          <Route
+            path="projects/:projectId/sprints"
+            element={<SprintListPage />}
+          />
+          <Route
+            path="projects/:projectId/sprints/:sprintId"
+            element={<SprintDetailPage />}
+          />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
