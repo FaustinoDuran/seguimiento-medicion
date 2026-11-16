@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   BrowserRouter,
   Link,
@@ -5,6 +6,7 @@ import {
   Outlet,
   Route,
   Routes,
+  useLocation,
 } from "react-router-dom";
 import { ConnectionPage } from "./app/ConnectionPage";
 import { BacklogPage } from "./features/backlog/BacklogPage";
@@ -17,10 +19,22 @@ import { ProjectDetailPage } from "./features/projects/ProjectDetailPage";
 import { ProjectsPage } from "./features/projects/ProjectsPage";
 import { SprintDetailPage } from "./features/sprints/SprintDetailPage";
 import { SprintListPage } from "./features/sprints/SprintListPage";
+import { AppErrorBoundary } from "./shared/ui/AppErrorBoundary";
+
+function RouteFocus() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    document.querySelector<HTMLElement>("#main-content")?.focus();
+  }, [pathname]);
+
+  return null;
+}
 
 function AppLayout() {
   return (
     <div className="app-shell">
+      <RouteFocus />
       <a className="skip-link" href="#main-content">
         Saltar al contenido
       </a>
@@ -157,42 +171,44 @@ function NotFoundPage() {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<AppLayout />}>
-          <Route index element={<HomePage />} />
-          <Route path="connection" element={<ConnectionPage />} />
-          <Route path="projects" element={<ProjectsPage />} />
-          <Route path="projects/:projectId" element={<ProjectDetailPage />} />
-          <Route path="projects/:projectId/report" element={<ReportPage />} />
-          <Route
-            path="projects/:projectId/dashboard"
-            element={<DashboardPage />}
-          />
-          <Route
-            path="projects/:projectId/planning/rounds/:roundId"
-            element={<RoundPage />}
-          />
-          <Route
-            path="projects/:projectId/planning"
-            element={<PlanningPage />}
-          />
-          <Route path="projects/:projectId/backlog" element={<BacklogPage />} />
-          <Route
-            path="projects/:projectId/measurement"
-            element={<MeasurementPage />}
-          />
-          <Route
-            path="projects/:projectId/sprints"
-            element={<SprintListPage />}
-          />
-          <Route
-            path="projects/:projectId/sprints/:sprintId"
-            element={<SprintDetailPage />}
-          />
-          <Route path="*" element={<NotFoundPage />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <AppErrorBoundary>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<AppLayout />}>
+            <Route index element={<HomePage />} />
+            <Route path="connection" element={<ConnectionPage />} />
+            <Route path="projects" element={<ProjectsPage />} />
+            <Route path="projects/:projectId" element={<ProjectDetailPage />} />
+            <Route path="projects/:projectId/report" element={<ReportPage />} />
+            <Route
+              path="projects/:projectId/dashboard"
+              element={<DashboardPage />}
+            />
+            <Route
+              path="projects/:projectId/planning/rounds/:roundId"
+              element={<RoundPage />}
+            />
+            <Route
+              path="projects/:projectId/planning"
+              element={<PlanningPage />}
+            />
+            <Route path="projects/:projectId/backlog" element={<BacklogPage />} />
+            <Route
+              path="projects/:projectId/measurement"
+              element={<MeasurementPage />}
+            />
+            <Route
+              path="projects/:projectId/sprints"
+              element={<SprintListPage />}
+            />
+            <Route
+              path="projects/:projectId/sprints/:sprintId"
+              element={<SprintDetailPage />}
+            />
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AppErrorBoundary>
   );
 }

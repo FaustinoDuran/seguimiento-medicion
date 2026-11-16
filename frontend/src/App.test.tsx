@@ -19,6 +19,7 @@ test('navega de la portada a la pantalla de conexión', async () => {
 
   expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent('Una buena conexión')
   expect(await screen.findByText('El servicio responde')).toBeInTheDocument()
+  expect(screen.getByRole('main')).toHaveFocus()
 })
 
 // TASK-011 (#44): la ruta de conexión se sostiene en una recarga directa.
