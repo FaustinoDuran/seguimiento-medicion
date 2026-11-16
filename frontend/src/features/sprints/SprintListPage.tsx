@@ -5,6 +5,7 @@ import { getSprintProject, listClosedSprints } from './api'
 import type { Sprint, SprintProject } from './model'
 import { formatCreatedAt, sprintStatusLabels } from './model'
 import { SprintCreateForm } from './SprintCreateForm'
+import { OpenSprints } from './OpenSprints'
 import './sprints.css'
 
 type PageState =
@@ -67,6 +68,7 @@ function SprintsPage({ projectId }: { projectId: string }) {
           state: { created: true },
         })}
       />
+      <OpenSprints projectId={projectId} />
       <section className="sprints-list" aria-labelledby="previous-sprints-heading">
         <div className="sprints-section-heading">
           <span className="section-number" aria-hidden="true">02 /</span>

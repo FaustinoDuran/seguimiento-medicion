@@ -66,3 +66,5 @@
   .sprints-form-footer, .sprints-close { flex-direction: column; align-items: flex-start; }
   .sprints-section-heading { flex-wrap: wrap; gap: 8px 20px; }
 }
+.open-sprints { display: grid; gap: 4px; margin-block: 16px 28px; }
+.open-sprints a { padding-block: 14px; border-bottom: 1px solid var(--color-line); }

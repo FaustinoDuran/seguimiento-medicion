@@ -38,6 +38,10 @@ export async function listClosedSprints(projectId: string, signal: AbortSignal) 
   )
 }
 
+export async function listSprints(projectId: string, signal: AbortSignal) {
+  return asSprintList(await apiRequest<unknown>(`/projects/${projectId}/sprints`, { signal }), 'Invalid sprints response')
+}
+
 export function createSprint(projectId: string, goal: string, signal: AbortSignal) {
   return apiRequest<unknown>(`/projects/${projectId}/sprints`, {
     method: 'POST', body: { goal }, signal,
