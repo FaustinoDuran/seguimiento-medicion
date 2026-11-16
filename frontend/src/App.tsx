@@ -12,6 +12,7 @@ import {
 } from "react-router-dom";
 import { JourneyNextStep, ProjectNavigation } from './app/ProjectNavigation';
 import { ConnectionPage } from "./app/ConnectionPage";
+import { McpPage } from "./app/McpPage";
 import { BacklogPage } from "./features/backlog/BacklogPage";
 import { ReportPage } from "./features/reports/ReportPage";
 import { DashboardPage } from "./features/metrics/DashboardPage";
@@ -77,6 +78,10 @@ function AppLayout() {
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h6l2-3h8v15H4V7Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /></svg>
             Proyectos
           </NavLink>
+          <NavLink to="/mcp">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 8h8v8H8zM12 4v4M12 16v4M4 12h4M16 12h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            MCP
+          </NavLink>
           <NavLink to="/connection">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 12h4l3-6 4 12 3-6h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
             Conexión
@@ -115,6 +120,7 @@ export default function App() {
           <Route element={<AppLayout />}>
             <Route index element={<Navigate to="/projects" replace />} />
             <Route path="connection" element={<ConnectionPage />} />
+            <Route path="mcp" element={<McpPage />} />
             <Route path="projects" element={<ProjectsPage />} />
             <Route path="projects/:projectId" element={<ProjectDetailPage />} />
             <Route path="projects/:projectId/report" element={<ReportPage />} />
